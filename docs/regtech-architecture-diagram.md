@@ -1,123 +1,162 @@
-# RegTech Architecture Diagram
+# RegTech Recon Engine Diagram (Project-Aligned)
 
 ```mermaid
-flowchart LR
-  %% Layer 1 - sources
-  subgraph L1["Layer 1 - Source Systems (Internal + External)"]
-    direction TB
-    subgraph INT["Internal systems"]
-      SYN["Synapse (DWH)\nPositions / Instruments / Customers"]
-      SQLSRC["SQL Server RegReportDB (AZR-WE-BI-21)\nReporting + RegExt datasets"]
-      HEDGE["Hedge system (AZR-W-REAL-DB-2-BIDBUser)\nExecution logs"]
-      VISION["Databricks Vision\nSFTR trading data"]
+flowchart TD
+  %% Header metrics from project deck
+  subgraph KPI["Regulatory Reconciliation Engine - Operating Profile"]
+    direction LR
+    K1["10-20 External SFTPs\nNCA submissions, ARM feeds, TR files"]
+    K2["Daily automated runs\nScheduled Databricks Jobs"]
+    K3["3 quality checks\nCompleteness / Correctness / Timeliness"]
+  end
+
+  %% Layer 1
+  subgraph L1["Layer 1 - Data Sources"]
+    direction LR
+    subgraph EXT["External sources"]
+      E1["Regulatory SFTPs (10-20)\nNCAs, vendors, TRs, LP feeds"]
+      E2["FIRDS / FITRS reference data\nSFTP or API"]
+      E3["External market data\nField-level validation inputs"]
     end
-    subgraph EXT["External + manual sources"]
-      LP["Liquidity providers\nSaxo / UBS / IG / Marex / Goldman Sachs"]
-      GS["Google Sheets\nLEI / EMIR mappings (manual risk)"]
+    subgraph INT["Internal sources"]
+      I1["Production trading transactions"]
+      I2["End-of-day positions"]
+      I3["Client master data (KYC/accounts)"]
+      I4["Instrument reference data"]
     end
   end
 
   %% Layer 2
-  subgraph L2["Layer 2 - Upstream / RegExt (SQL Server)"]
-    UP["Customer + position + instrument enrichment\nTrade transformation inputs"]
+  subgraph L2["Layer 2 - Ingestion Layer"]
+    direction LR
+    API["SFTP / API connectors"]
+    ADF["Azure Data Factory"]
+    AL["Databricks Auto Loader"]
   end
 
   %% Layer 3
-  subgraph L3["Layer 3 - Regulatory Reporting Golden Source (SQL Server)"]
-    GOLDEN["Audit baseline tables (expected state)\nMiFID / EMIR / ASIC / CAT"]
+  subgraph L3["Layer 3 - Normalisation + Recon Core (Databricks)"]
+    direction LR
+    DL["Normalisation layer\nDedicated Data/Delta Lake with unified schema"]
+    VAL["Per-report validation packs\nPass/fail by report type"]
+    ENG["Recon engine matching\nRule-based + tolerance logic"]
+    AUD["Full audit trail + semantic updates\nTimestamp, context, user attribution"]
   end
 
   %% Layer 4
-  subgraph L4["Layer 4 - Submission Channels / Endpoints"]
-    direction TB
-    VEN["Vendor platforms\nCappitech / Trax"]
-    TRSUB["Trade repositories\nRegis-TR / DTCC / LSEG"]
-    APASUB["APA endpoint\nTradeEcho"]
+  subgraph L4["Layer 4 - Outputs"]
+    direction LR
+    TABLES["Results + audit logs\nDelta Lake tables"]
+    DASH["Frontend dashboard\nAzure App Service (React + API)"]
+    ALERTS["Operational notifications\nEmail / Slack / Microsoft Teams"]
+    PBI["Compliance reporting\nPower BI and exports"]
   end
 
-  %% Layer 5
-  subgraph L5["Layer 5 - Databricks Ingestion + Medallion"]
-    direction TB
-    BR["Bronze ingestion\nSFTP: REGIS / DTCC / TRAX\nEventHub: APA confirmations\nSFTR ingestion"]
-    SI["Silver enrichment\nESMA + FCA reference data"]
-    GO["Gold curated + replication\nSQL reporting replicas + recon-ready sets"]
-    TRR["TR response datasets (main.regtech)\nReconciliation reports / Rejections / Warnings / Trade state"]
+  %% Visual process view
+  subgraph FLOW["Daily Solution Flow"]
+    direction LR
+    F1["Ingest"] --> F2["Normalise"] --> F3["Validate"] --> F4["Log & Report"] --> F5["Dashboard"]
   end
 
-  %% Layer 6
-  subgraph L6["Layer 6 - Reconciliation Engine (Databricks)"]
-    direction TB
-    INP["Three-way comparison inputs\nExpected (audit tables) / Actual (TR responses) / Execution reality (LP + source systems)"]
-    MATCH["Matching logic\nDeterministic: UTI / Trade ID / LEI\nFuzzy: tolerances + lifecycle alignment"]
-    VALID["Validations\nCompleteness / Field-level accuracy / Lifecycle consistency / Submission correctness"]
-    OUT["Monitoring outputs\nExceptions / Audit logs / Power BI / Alerts & notifications"]
+  %% Failure handling UI from deck
+  subgraph REM["Failure Detection + Remediation UI"]
+    direction LR
+    C["Critical\nSubmission blocked/rejected\nImmediate action + escalation"]
+    W["Warning\nSubmitted with anomalies or threshold breaches"]
+    A["Advisory\nNon-blocking informational deviations"]
+    PANEL["Context + remediation tools\nFailure panel / step-by-step fix guide /\nseverity filter / resolution audit log"]
   end
 
   %% Cross-cutting controls
-  subgraph SG["Security + Governance (Cross-Cutting)"]
+  subgraph SEC["Security + Governance"]
     direction LR
+    UC["Unity Catalog"]
+    RBAC["RBAC user management"]
     KV["Key Vault"]
-    AAD["AAD groups"]
-    VNET["VNet injection + private endpoints"]
-    UC["Unity Catalog ACLs"]
+    NET["Network controls\nprivate endpoints / VNet"]
   end
 
-  %% Primary lineage
-  SYN --> UP
-  SQLSRC --> UP
-  HEDGE --> UP
-  VISION --> UP
-  LP --> UP
-  GS --> UP
-  UP --> GOLDEN
-  GOLDEN --> VEN
-  VEN --> TRSUB
-  GOLDEN --> APASUB
-  TRSUB --> BR
-  APASUB --> BR
-  BR --> SI --> GO
-  BR --> TRR
-  GO --> INP
-  GOLDEN --> INP
-  TRR --> INP
-  LP --> INP
-  SYN --> INP
-  INP --> MATCH --> VALID --> OUT
+  %% Roadmap capabilities
+  subgraph ROAD["Next-Gen Capabilities (Roadmap)"]
+    direction LR
+    R1["Self-reporting\nAuto-submit corrected reports"]
+    R2["Manual fix from UI"]
+    R3["Custom alerts and thresholds"]
+    R4["NCA auto-reporting (SFTP/API)"]
+    R5["Custom checks from UI (no-code)"]
+  end
 
-  %% Principles
-  P1["Design principle:\nSQL Server = reporting logic"]
-  P2["Design principle:\nDatabricks = ingestion + reconciliation"]
-  P1 -.-> GOLDEN
-  P2 -.-> BR
-  P2 -.-> INP
+  %% Primary architecture lineage
+  E1 --> API
+  E2 --> API
+  E3 --> API
+  I1 --> ADF
+  I2 --> ADF
+  I3 --> ADF
+  I4 --> ADF
+  API --> AL
+  ADF --> AL
+  AL --> DL --> VAL --> ENG --> AUD
+  ENG --> TABLES
+  AUD --> TABLES
+  TABLES --> DASH
+  TABLES --> PBI
+  DASH --> ALERTS
 
-  %% Controls mapped to layers
-  KV -.-> UP
-  KV -.-> BR
-  AAD -.-> GO
-  AAD -.-> INP
-  VNET -.-> TRSUB
-  VNET -.-> BR
-  UC -.-> SI
-  UC -.-> GO
+  %% Process-to-architecture mapping
+  K1 --> E1
+  K2 --> FLOW
+  K3 --> VAL
+  F1 -.-> AL
+  F2 -.-> DL
+  F3 -.-> VAL
+  F4 -.-> AUD
+  F5 -.-> DASH
 
-  %% Visual styling
-  classDef internal fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
-  classDef external fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
-  classDef risk fill:#ffe2e2,stroke:#b83b3b,stroke-width:1px,color:#4a1212;
-  classDef sql fill:#f7f1da,stroke:#a67c00,stroke-width:1px,color:#4a3900;
-  classDef dbx fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
-  classDef outputs fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  %% Failure and remediation flow
+  ENG --> C
+  ENG --> W
+  ENG --> A
+  C --> PANEL
+  W --> PANEL
+  A --> PANEL
+  PANEL --> DASH
+
+  %% Security mappings
+  UC -.-> DL
+  UC -.-> TABLES
+  RBAC -.-> DASH
+  KV -.-> AL
+  KV -.-> DASH
+  NET -.-> ADF
+  NET -.-> DASH
+
+  %% Roadmap attached to dashboard platform
+  DASH -.-> R1
+  DASH -.-> R2
+  DASH -.-> R3
+  DASH -.-> R4
+  DASH -.-> R5
+
+  %% Styling
+  classDef kpi fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef sourceExt fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef sourceInt fill:#e6f0ff,stroke:#3267b0,stroke-width:1px,color:#102d52;
+  classDef ingest fill:#f7f1da,stroke:#a67c00,stroke-width:1px,color:#4a3900;
+  classDef core fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
+  classDef output fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef fail fill:#ffe2e2,stroke:#b83b3b,stroke-width:1px,color:#4a1212;
   classDef controls fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
-  classDef principle fill:#fff7d6,stroke:#9b8700,stroke-width:1px,color:#3d3400;
+  classDef roadmap fill:#fff7d6,stroke:#9b8700,stroke-width:1px,color:#3d3400;
 
-  class SYN,SQLSRC,HEDGE,VISION internal;
-  class LP,VEN,TRSUB,APASUB external;
-  class GS risk;
-  class UP,GOLDEN sql;
-  class BR,TRR,SI,GO,INP,MATCH,VALID dbx;
-  class OUT outputs;
-  class KV,AAD,VNET,UC controls;
-  class P1,P2 principle;
+  class K1,K2,K3 kpi;
+  class E1,E2,E3 sourceExt;
+  class I1,I2,I3,I4 sourceInt;
+  class API,ADF,AL ingest;
+  class DL,VAL,ENG,AUD,F1,F2,F3,F4,F5 core;
+  class TABLES,DASH,ALERTS,PBI output;
+  class C,W,A,PANEL fail;
+  class UC,RBAC,KV,NET controls;
+  class R1,R2,R3,R4,R5 roadmap;
 ```
 
