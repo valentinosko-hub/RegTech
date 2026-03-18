@@ -1,0 +1,101 @@
+flowchart TB
+  %% Layer 1
+  subgraph L1["Layer 1 - Data Sources"]
+    direction LR
+    BI["Internal BI / DWH<br/>(internal, high trust)"]
+    LP["LP Data<br/>(internal, high trust)"]
+    SFTP["External SFTPs<br/>(external, ingress-controlled)"]
+    EH["EventHub Feeds (APA)<br/>(external ingress)"]
+    GS["Google Sheets<br/>(governance risk)"]
+  end
+
+  %% Layer 2
+  subgraph L2["Layer 2 - Ingestion"]
+    direction LR
+    ADF["Azure Data Factory<br/>Managed IR (SQL Server extraction)"]
+    AL["Databricks Auto Loader<br/>(SFTP file landing)"]
+    ESS["EventHub Structured Streaming<br/>(APA stream ingestion)"]
+    ADLS["ADLS Gen2 Raw Zone<br/>(staging before bronze)"]
+  end
+
+  %% Layer 3
+  subgraph L3["Layer 3 - Databricks (Medallion + Workloads)"]
+    direction LR
+    BR["Bronze<br/>(raw as received)"]
+    SI["Silver<br/>(ext_ transformation tables per regulation)"]
+    GO["Gold<br/>(golden source of reported data)"]
+    RE["Recon Engine<br/>(submitted vs expected diff engine)"]
+    TSM["Trade Surveillance Models"]
+    REF["Reference Data Workloads"]
+  end
+
+  %% Layer 4
+  subgraph L4["Layer 4 - Outputs"]
+    direction LR
+    DASH["React Dashboard on Azure App Service"]
+    SEV["Severity Levels<br/>Critical / Warning / Advisory"]
+    AUD["Delta Lake Audit Trail"]
+    ALT["Alerting<br/>Email / Slack / Teams"]
+    NCA["NCA SFTP Submission<br/>CySEC / FCA / DTCC"]
+  end
+
+  %% Cross-cutting controls
+  subgraph SG["Security and Governance (Cross-Cutting)"]
+    direction LR
+    KV["Key Vault"]
+    AAD["AAD Groups"]
+    VNET["VNet Injection + Private Endpoints"]
+    UC["Unity Catalog ACLs"]
+  end
+
+  %% Flow from sources to ingestion
+  BI --> ADF
+  LP --> ADF
+  SFTP --> AL
+  EH --> ESS
+  GS --> AL
+
+  %% Ingestion to raw/bronze
+  ADF --> ADLS
+  AL --> ADLS
+  ESS --> ADLS
+  ADLS --> BR
+
+  %% Medallion progression + workloads
+  BR --> SI --> GO --> RE
+  SI --> TSM
+  SI --> REF
+
+  %% Outputs
+  RE --> DASH
+  RE --> AUD
+  RE --> ALT
+  RE --> NCA
+  DASH --> SEV
+
+  %% Controls applied across layers
+  KV -.-> ADF
+  KV -.-> BR
+  AAD -.-> BR
+  AAD -.-> GO
+  VNET -.-> ADF
+  VNET -.-> DASH
+  UC -.-> SI
+  UC -.-> GO
+
+  %% Visual styling
+  classDef internal fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef external fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef risk fill:#ffe2e2,stroke:#b83b3b,stroke-width:1px,color:#4a1212;
+  classDef ingestion fill:#f7f1da,stroke:#a67c00,stroke-width:1px,color:#4a3900;
+  classDef core fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
+  classDef outputs fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef controls fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
+
+  class BI,LP internal;
+  class SFTP,EH external;
+  class GS risk;
+  class ADF,AL,ESS,ADLS ingestion;
+  class BR,SI,GO,RE,TSM,REF core;
+  class DASH,SEV,AUD,ALT,NCA outputs;
+  class KV,AAD,VNET,UC controls;
