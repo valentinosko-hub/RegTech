@@ -2,6 +2,10 @@
 
 ## Architecture Diagram
 
+- **Business view (regulations + source domains)**
+  - [Recon engine business architecture (Mermaid)](docs/regtech-recon-business-architecture.md)
+  - [Editable Mermaid source (`.mmd`)](docs/regtech-recon-business-architecture.mmd)
+
 - **Executive summary**
   - [Recon engine executive diagram (Mermaid)](docs/regtech-recon-engine-exec-diagram.md)
   - [Editable Mermaid source (`.mmd`)](docs/regtech-recon-engine-exec-diagram.mmd)
