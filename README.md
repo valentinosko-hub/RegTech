@@ -14,6 +14,10 @@
   - [Recon engine detailed project-aligned diagram (Mermaid)](docs/regtech-architecture-diagram.md)
   - [Editable Mermaid source (`.mmd`)](docs/regtech-architecture-diagram.mmd)
 
+- **XML-converted technical view**
+  - [Trade recon architecture v2 (from draw.io XML)](docs/trade-recon-architecture-v2-from-xml.md)
+  - [Editable Mermaid source (`.mmd`)](docs/trade-recon-architecture-v2-from-xml.mmd)
+
 ### Edit options
 
 - Open either `.mmd` file in https://mermaid.live for visual editing and export.
