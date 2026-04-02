@@ -1,100 +1,137 @@
 # RegTech Recon Engine Diagram (Business Flow by Regulation)
 
 ```mermaid
-flowchart TD
-  subgraph HEADER["Business Flow by Regulation and Data Sources"]
+flowchart TB
+  TITLE["Regulation-by-Regulation Data Source Flow"]
+
+  subgraph MIFID["MiFID (EU/UK) - TR/ARM-Based"]
     direction LR
-    H1["Goal\nShow each regulation's source-to-reporting flow"]
-    H2["Control lens\nExpected -> Submitted -> Actual"]
+    MF_S1["Trading + execution activity"]
+    MF_S2["Client and account data"]
+    MF_S3["Instrument and reference data"]
+    MF_SUB["Submission channel\nCappitech -> TRAX/REGIS/DTCC"]
+    MF_ACT["Feedback / actual state\nTR or ARM response files"]
+    MF_S1 --> MF_SUB
+    MF_S2 --> MF_SUB
+    MF_S3 --> MF_SUB
+    MF_SUB --> MF_ACT
   end
 
-  subgraph SOURCEDOMAINS["Common Source Domains"]
+  subgraph EMIR["EMIR (EU/UK) - TR/ARM-Based"]
     direction LR
-    SD1["Trading events\norders, trades, executions"]
-    SD2["Positions and exposure\nEOD holdings, valuation, collateral"]
-    SD3["Client and account data\nKYC and ownership"]
-    SD4["Instrument/reference data\nISIN, UPI, FIRDS/FITRS"]
-    SD5["External counterparties\nLP and venue data"]
+    EM_S1["Trades + lifecycle events"]
+    EM_S2["Collateral and valuation data"]
+    EM_S3["Counterparty + UTI references"]
+    EM_SUB["Submission channel\nCappitech -> REGIS/DTCC"]
+    EM_ACT["Feedback / actual state\nTR reconciliations, rejections, warnings"]
+    EM_S1 --> EM_SUB
+    EM_S2 --> EM_SUB
+    EM_S3 --> EM_SUB
+    EM_SUB --> EM_ACT
   end
 
-  subgraph FLOW1["MiFID / EMIR / ASIC - TR/ARM-based"]
+  subgraph ASIC["ASIC - TR/ARM-Based"]
     direction LR
-    F1S["Sources\nSD1 + SD2 + SD3 + SD4"] --> F1E["Expected\nRegReportDB regulatory reports"] --> F1U["Submitted\nCappitech -> TRAX/Regis/DTCC"] --> F1A["Actual\nTR/ARM responses\n(REGIS live, DTCC/TRAX partial)"]
+    AS_S1["Trades, positions, collateral"]
+    AS_S2["Customer and instrument enrichment"]
+    AS_SUB["Submission channel\nCappitech vendor path"]
+    AS_ACT["Feedback / actual state\nARM/TR response files"]
+    AS_S1 --> AS_SUB
+    AS_S2 --> AS_SUB
+    AS_SUB --> AS_ACT
   end
 
-  subgraph FLOW2["CAT (US) - Event-driven"]
+  subgraph CAT["CAT (US) - Event-Based"]
     direction LR
-    F2S["Sources\nOrders + executions + customer data"] --> F2E["Expected\nReg_US_* reporting datasets"] --> F2U["Submitted\nS3 vendor exchange -> FINRA CAT"] --> F2A["Actual\nCAT feedback files (SharePoint)"]
+    CAT_S1["Order lifecycle events\ncreate, route, modify, cancel, execute"]
+    CAT_S2["Customer and account mappings"]
+    CAT_SUB["Submission channel\nS3 vendor exchange -> FINRA CAT"]
+    CAT_ACT["Feedback / actual state\nCAT portal files (SharePoint)"]
+    CAT_S1 --> CAT_SUB
+    CAT_S2 --> CAT_SUB
+    CAT_SUB --> CAT_ACT
   end
 
-  subgraph FLOW3["SFTR - Direct to DTCC"]
+  subgraph SFTR["SFTR - Direct to DTCC"]
     direction LR
-    F3S["Sources\nVision snapshots + positions + collateral"] --> F3E["Expected\nDerived SFTR lifecycle events"] --> F3U["Submitted\nDirect DTCC XML (no vendor)"] --> F3A["Actual\nDTCC acknowledgements/rejections"]
+    SF_S1["Vision EOD snapshots"]
+    SF_S2["Derived lifecycle + collateral events"]
+    SF_SUB["Submission channel\nDirect DTCC SFTP (no vendor)"]
+    SF_ACT["Feedback / actual state\nDTCC acknowledgements/rejections"]
+    SF_S1 --> SF_S2 --> SF_SUB --> SF_ACT
   end
 
-  subgraph FLOW4["LTR - Manual / Transitional"]
+  subgraph LTR["LTR - Manual / Transitional"]
     direction LR
-    F4S["Sources\nFutures holdings + customer ownership"] --> F4E["Expected\nLTR + 102A datasets"] --> F4U["Submitted\nFIPS VM -> CME/CFTC"] --> F4A["Actual (limited)\nAcknowledgements + transfer logs"]
+    LT_S1["Futures EOD holdings + ownership data"]
+    LT_S2["Threshold and aggregation controls"]
+    LT_SUB["Submission channel\nFIPS VM -> CME/CFTC"]
+    LT_ACT["Feedback / actual state\nAcknowledgements + transfer logs (limited)"]
+    LT_S1 --> LT_S2 --> LT_SUB --> LT_ACT
   end
 
-  subgraph FLOW5["LP Delegated - Two-stage reconciliation"]
+  subgraph LP["LP Delegated Reporting"]
     direction LR
-    F5S["Sources\nInternal DUCO + LP provider files"] --> F5E["Expected stage\nInternal vs LP alignment"] --> F5U["Submitted stage\nLP reports to REGIS/UNAVISTA/DTCC"] --> F5A["Actual\nTR responses\n(REGIS full, others partial)"]
+    LP_S1["Internal DUCO execution data"]
+    LP_S2["LP-provided trade and position files"]
+    LP_SUB["Submission channel\nLP reports to REGIS/UNAVISTA/DTCC"]
+    LP_ACT["Feedback / actual state\nTR responses (REGIS full, others partial)"]
+    LP_S1 --> LP_SUB
+    LP_S2 --> LP_SUB
+    LP_SUB --> LP_ACT
   end
 
-  subgraph FLOW6["APA (MiFID) - Real-time publication"]
+  subgraph APA["APA (MiFID) - Real-Time Publication"]
     direction LR
-    F6S["Sources\nTrading event stream"] --> F6E["Expected events\nTrade events prepared for APA"] --> F6U["Submitted\nEventHub -> TradeEcho"] --> F6A["Actual\nTradeEcho SFTP responses"]
+    AP_S1["Trade events from trading systems"]
+    AP_S2["Internal event-processing services"]
+    AP_SUB["Submission channel\nAPA Event Hub -> TradeEcho"]
+    AP_ACT["Feedback / actual state\nTradeEcho SFTP confirmations"]
+    AP_S1 --> AP_S2 --> AP_SUB --> AP_ACT
   end
 
-  subgraph OUT["Business Outcomes"]
+  subgraph SHARED["Shared Business Controls"]
     direction LR
-    O1["Coverage clarity by regulation"]
-    O2["Break visibility\nby severity and model"]
-    O3["Evidence trail\nfor compliance and audit"]
+    C1["Expected vs Submitted vs Actual control view"]
+    C2["Severity model\nCritical / Warning / Advisory"]
+    C3["Audit evidence and traceability"]
   end
 
-  subgraph GAPS["Known Gaps"]
-    direction LR
-    G1["Partial ingestion\nDTCC/TRAX/UNAVISTA pending"]
-    G2["LTR lacks full actual-state lifecycle feedback"]
-    G3["Manual sources remain governance risk"]
-  end
+  MF_ACT --> C1
+  EM_ACT --> C1
+  AS_ACT --> C1
+  CAT_ACT --> C1
+  SF_ACT --> C1
+  LT_ACT --> C1
+  LP_ACT --> C1
+  AP_ACT --> C1
+  C1 --> C2 --> C3
 
-  SD1 --> F1S
-  SD1 --> F2S
-  SD1 --> F6S
-  SD2 --> F1S
-  SD2 --> F3S
-  SD2 --> F4S
-  SD3 --> F1S
-  SD3 --> F2S
-  SD3 --> F4S
-  SD4 --> F1S
-  SD4 --> F3S
-  SD5 --> F5S
-
-  F1A --> O1
-  F2A --> O1
-  F3A --> O1
-  F4A --> O1
-  F5A --> O1
-  F6A --> O1
-  O1 --> O2 --> O3
-
-  G1 -.-> O2
-  G2 -.-> O2
-  G3 -.-> O2
-
-  classDef head fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef lane fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef mifidLane fill:#e6f0ff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef emirLane fill:#e8f8ea,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
   classDef source fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
-  classDef flow fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
-  classDef out fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
-  classDef gap fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
+  classDef subm fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
+  classDef act fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
+  classDef mifidSource fill:#dbe9ff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef mifidSubm fill:#ece4ff,stroke:#5a3aa6,stroke-width:1px,color:#26154f;
+  classDef mifidAct fill:#ffe6e6,stroke:#b83b3b,stroke-width:1px,color:#4a1212;
+  classDef emirSource fill:#ddf6e2,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef emirSubm fill:#e5f3e8,stroke:#2f7a47,stroke-width:1px,color:#1a4a2a;
+  classDef emirAct fill:#fff3df,stroke:#b07b2f,stroke-width:1px,color:#4a340f;
+  classDef ctrl fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
 
-  class H1,H2 head;
-  class SD1,SD2,SD3,SD4,SD5 source;
-  class F1S,F1E,F1U,F1A,F2S,F2E,F2U,F2A,F3S,F3E,F3U,F3A,F4S,F4E,F4U,F4A,F5S,F5E,F5U,F5A,F6S,F6E,F6U,F6A flow;
-  class O1,O2,O3 out;
-  class G1,G2,G3 gap;
+  class MIFID mifidLane;
+  class EMIR emirLane;
+  class ASIC,CAT,SFTR,LTR,LP,APA lane;
+  class MF_S1,MF_S2,MF_S3 mifidSource;
+  class MF_SUB mifidSubm;
+  class MF_ACT mifidAct;
+  class EM_S1,EM_S2,EM_S3 emirSource;
+  class EM_SUB emirSubm;
+  class EM_ACT emirAct;
+  class AS_S1,AS_S2,CAT_S1,CAT_S2,SF_S1,SF_S2,LT_S1,LT_S2,LP_S1,LP_S2,AP_S1,AP_S2 source;
+  class AS_SUB,CAT_SUB,SF_SUB,LT_SUB,LP_SUB,AP_SUB subm;
+  class AS_ACT,CAT_ACT,SF_ACT,LT_ACT,LP_ACT,AP_ACT act;
+  class C1,C2,C3 ctrl;
 ```

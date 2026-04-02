@@ -105,13 +105,29 @@ flowchart TB
   C1 --> C2 --> C3
 
   classDef lane fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef mifidLane fill:#e6f0ff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef emirLane fill:#e8f8ea,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
   classDef source fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
   classDef subm fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
   classDef act fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
+  classDef mifidSource fill:#dbe9ff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef mifidSubm fill:#ece4ff,stroke:#5a3aa6,stroke-width:1px,color:#26154f;
+  classDef mifidAct fill:#ffe6e6,stroke:#b83b3b,stroke-width:1px,color:#4a1212;
+  classDef emirSource fill:#ddf6e2,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef emirSubm fill:#e5f3e8,stroke:#2f7a47,stroke-width:1px,color:#1a4a2a;
+  classDef emirAct fill:#fff3df,stroke:#b07b2f,stroke-width:1px,color:#4a340f;
   classDef ctrl fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
 
-  class MIFID,EMIR,ASIC,CAT,SFTR,LTR,LP,APA lane;
-  class MF_S1,MF_S2,MF_S3,EM_S1,EM_S2,EM_S3,AS_S1,AS_S2,CAT_S1,CAT_S2,SF_S1,SF_S2,LT_S1,LT_S2,LP_S1,LP_S2,AP_S1,AP_S2 source;
-  class MF_SUB,EM_SUB,AS_SUB,CAT_SUB,SF_SUB,LT_SUB,LP_SUB,AP_SUB subm;
-  class MF_ACT,EM_ACT,AS_ACT,CAT_ACT,SF_ACT,LT_ACT,LP_ACT,AP_ACT act;
+  class MIFID mifidLane;
+  class EMIR emirLane;
+  class ASIC,CAT,SFTR,LTR,LP,APA lane;
+  class MF_S1,MF_S2,MF_S3 mifidSource;
+  class MF_SUB mifidSubm;
+  class MF_ACT mifidAct;
+  class EM_S1,EM_S2,EM_S3 emirSource;
+  class EM_SUB emirSubm;
+  class EM_ACT emirAct;
+  class AS_S1,AS_S2,CAT_S1,CAT_S2,SF_S1,SF_S2,LT_S1,LT_S2,LP_S1,LP_S2,AP_S1,AP_S2 source;
+  class AS_SUB,CAT_SUB,SF_SUB,LT_SUB,LP_SUB,AP_SUB subm;
+  class AS_ACT,CAT_ACT,SF_ACT,LT_ACT,LP_ACT,AP_ACT act;
   class C1,C2,C3 ctrl;
