@@ -34,7 +34,12 @@ flowchart TB
   NOTE["Inventory source:<br/>Trade Reporting Data Source Inventory (final Confluence export)"]
 
   %% Edges translated from XML
-  SW1 --> REGEXT
+  S1 --> REGEXT
+  S2 --> REGEXT
+  S3 --> REGEXT
+  S4 --> REGEXT
+  S5 --> REGEXT
+  S6 --> REGEXT
   REGEXT --> REPORT
   REPORT -- "(Report Delivery)" --> SUB
   SUB --> BRONZE

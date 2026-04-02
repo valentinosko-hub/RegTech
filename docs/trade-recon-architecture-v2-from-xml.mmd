@@ -29,7 +29,12 @@ flowchart TB
   legend["Legend:\nBlue = internal SQL/Synapse\nGreen = Databricks data platform\nPurple = submission channels/vendors"]
   note["Inventory source:\nTrade Reporting Data Source Inventory (final Confluence export)"]
 
-  SW1 --> regext
+  s1 --> regext
+  s2 --> regext
+  s3 --> regext
+  s4 --> regext
+  s5 --> regext
+  s6 --> regext
   regext --> report
   report -->|Report Delivery| submission
   submission --> bronze
