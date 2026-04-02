@@ -1,33 +1,33 @@
 flowchart TB
   subgraph SW1["Source Systems"]
     direction LR
-    s1["Synapse (SYNAPSE-DWH-PROD)"]
-    s2["SQL Server (AZR-WE-BI-21)\nRegReportDB"]
-    s3["SQL Server (AZR-WE-BI-21)\nDealing DB"]
-    s4["SQL Server (AZR-W-REAL-DB-2)\nHedge (ExecutionLog)"]
-    s5["Databricks (main.general)\nVision / SFTR"]
-    s6["Synapse (Dealing_staging)\nLP Tables (Trades / Positions / EOD)"]
+    s1["Synapse (SYNAPSE-DWH-PROD)\nsql_dp_prod_we.DWH_dbo\nDim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+    s2["SQL Server (AZR-WE-BI-21)\nRegReportDB\nSource + reporting tables (MiFID/EMIR/ASIC/CAT)"]
+    s3["SQL Server (AZR-WE-BI-21)\nDealing / DUCO staging\nInternal LP reconciliation datasets"]
+    s4["SQL Server (AZR-W-REAL-DB-2-BIDBUser)\netoro.Hedge.ExecutionLog"]
+    s5["Databricks (main.general)\nVision SFTR snapshots\ngold_vision_etoro"]
+    s6["Synapse (Dealing_staging)\nLP_* provider tables\nSaxo / UBS / IG / Marex / Goldman"]
   end
 
-  regext["Upstream / RegExt Layer\nSQL Server (AZR-WE-BI-21)"]
-  report["Regulatory Reporting (Golden Source)\nSQL Server (AZR-WE-BI-21 - RegReportDB)\nOutput: Audit Tables (Expected State)"]
-  submission["Submission Layer\nCappitech / APA (TradeEcho / LSEG) / TR (Regis / DTCC)\nReport Delivery"]
+  regext["Upstream / RegExt Layer\nAZR-WE-BI-21 RegReportDB ext_*\nSSIS + stored procedure transformations"]
+  report["Regulatory Reporting (Golden Source)\nRegReportDB audit baselines (Expected)\nMIFID2_* / EMIR*_Report / ASIC2_* / Reg_US_*"]
+  submission["Submission Channels\nCappitech (TR/ARM), S3 (CAT), TradeEcho (APA)\nDTCC direct (SFTR), CME/CFTC via FIPS (LTR)"]
 
   subgraph DB["Databricks Platform"]
     direction LR
-    bronze["Bronze Layer (main.regtech_stg)\nSFTP (REGIS / DTCC) / EventHub (APA) / Files (SFTR)"]
-    silver["Silver Layer (main.regtech)\nESMA / FCA Enrichment"]
-    gold["Gold Layer (main.regtech / dealing)\nCurated / Replication\nRegulatory replication (CAT / ASIC SCD)"]
+    bronze["Bronze (main.regtech_stg / main.regtech)\nREGIS S030/S091/S092/S106/S107 + TradeEcho responses\nSFTR/LTR file runs + transfer logs"]
+    silver["Silver (main.regtech)\nStandardisation + ESMA/FCA enrichment"]
+    gold["Gold (main.regtech + main.dealing)\nExpected / Submitted / Actual recon-ready views"]
   end
 
-  lp["LP Data (Execution Reality)\nSynapse (Dealing_staging)\n- Trades\n- Positions (EOD)\n- Exposure"]
-  tr["TR Responses (Actual State)\nDatabricks (main.regtech)\n- Regis-TR\n- DTCC\n- LSEG\n- TradeEcho"]
+  lp["LP Execution Reality\nmain.dealing DUCO views + Dealing_staging LP feeds\nTrades / Positions (EOD) / Exposure"]
+  tr["Regulatory Responses (Actual State)\nmain.regtech bronze_* response datasets\nLive: REGIS + TradeEcho | Partial: DTCC/TRAX/UNAVISTA"]
 
-  recon["Reconciliation Engine (Databricks)\n3-Way Matching: Expected / Actual / Execution\nMatching keys: UTI / TradeID / LEI\nValidation: Completeness / Field accuracy / Lifecycle"]
-  out["Outputs / Monitoring\nPower BI Dashboards / Exceptions / Audit Logs"]
+  recon["Reconciliation Engine (Databricks)\n3-way match: Expected / Submitted / Actual (+Execution)\nKeys: UTI / TradeID / LEI / order chain\nChecks: Completeness / Field / Lifecycle / Timeliness"]
+  out["Outputs / Monitoring\nPower BI + exceptions + audit logs\nSeverity: Critical / Warning / Advisory"]
 
-  legend["Legend:\nBlue = Internal Systems\nGreen = Databricks\nPurple = Vendors"]
-  note["Detailed table-level mapping available in:\nTrade Reporting Data Source Inventory"]
+  legend["Legend:\nBlue = internal SQL/Synapse\nGreen = Databricks data platform\nPurple = submission channels/vendors"]
+  note["Inventory source:\nTrade Reporting Data Source Inventory (final Confluence export)"]
 
   SW1 --> regext
   regext --> report
