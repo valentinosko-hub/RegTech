@@ -1,140 +1,100 @@
-# RegTech Recon Engine Diagram (Business Architecture)
+# RegTech Recon Engine Diagram (Business Flow by Regulation)
 
 ```mermaid
 flowchart TD
-  subgraph PURPOSE["Business Purpose"]
+  subgraph HEADER["Business Flow by Regulation and Data Sources"]
     direction LR
-    P1["Regulatory completeness\nAll reportable activity is covered"]
-    P2["Regulatory correctness\nReported data matches business reality"]
-    P3["Regulatory accountability\nClear ownership and evidence trail"]
+    H1["Goal\nShow each regulation's source-to-reporting flow"]
+    H2["Control lens\nExpected -> Submitted -> Actual"]
   end
 
-  subgraph REG["Regulation Coverage"]
+  subgraph SOURCEDOMAINS["Common Source Domains"]
     direction LR
-    R1["MiFID (EU/UK)"]
-    R2["EMIR (EU/UK)"]
-    R3["ASIC"]
-    R4["CAT (US)"]
-    R5["SFTR"]
-    R6["LTR"]
-    R7["APA"]
+    SD1["Trading events\norders, trades, executions"]
+    SD2["Positions and exposure\nEOD holdings, valuation, collateral"]
+    SD3["Client and account data\nKYC and ownership"]
+    SD4["Instrument/reference data\nISIN, UPI, FIRDS/FITRS"]
+    SD5["External counterparties\nLP and venue data"]
   end
 
-  subgraph MODELS["Reporting Models (Business View)"]
-    direction TB
-    M1["TR/ARM-based reporting\n(MiFID / EMIR / ASIC)\neToro reporting entity"]
-    M2["CAT event-driven reporting\nOrder lifecycle model"]
-    M3["SFTR direct-to-TR reporting\nLifecycle + collateral model"]
-    M4["LTR position reporting\nManual/transitional operating model"]
-    M5["LP delegated reporting\nLP submits, eToro retains responsibility"]
-    M6["APA real-time publication\nNear real-time trade publication"]
+  subgraph FLOW1["MiFID / EMIR / ASIC - TR/ARM-based"]
+    direction LR
+    F1S["Sources\nSD1 + SD2 + SD3 + SD4"] --> F1E["Expected\nRegReportDB regulatory reports"] --> F1U["Submitted\nCappitech -> TRAX/Regis/DTCC"] --> F1A["Actual\nTR/ARM responses\n(REGIS live, DTCC/TRAX partial)"]
   end
 
-  subgraph SOURCES["Data Source Domains"]
+  subgraph FLOW2["CAT (US) - Event-driven"]
     direction LR
-    S1["Internal trading activity\nTrades, orders, executions"]
-    S2["Positions and exposure\nEOD holdings and valuations"]
-    S3["Client and account data\nKYC, ownership, classifications"]
-    S4["Instrument and reference data\nISIN/UPI, FIRDS/FITRS, metadata"]
-    S5["External counterparties\nLiquidity providers and venues"]
-    S6["Submission and response evidence\nVendor files, TR/APA/CAT feedback"]
-    S7["Operational control data\nAudit logs, run status, acknowledgements"]
+    F2S["Sources\nOrders + executions + customer data"] --> F2E["Expected\nReg_US_* reporting datasets"] --> F2U["Submitted\nS3 vendor exchange -> FINRA CAT"] --> F2A["Actual\nCAT feedback files (SharePoint)"]
   end
 
-  subgraph STAKE["Business Ownership and Consumers"]
+  subgraph FLOW3["SFTR - Direct to DTCC"]
     direction LR
-    O1["RegTech\nControl framework owner"]
-    O2["Compliance / Risk\nOversight and remediation"]
-    O3["Operations\nDaily exception handling"]
-    O4["Data / BI\nSource quality and lineage support"]
-    O5["eToro USA\nCAT feedback ownership"]
+    F3S["Sources\nVision snapshots + positions + collateral"] --> F3E["Expected\nDerived SFTR lifecycle events"] --> F3U["Submitted\nDirect DTCC XML (no vendor)"] --> F3A["Actual\nDTCC acknowledgements/rejections"]
+  end
+
+  subgraph FLOW4["LTR - Manual / Transitional"]
+    direction LR
+    F4S["Sources\nFutures holdings + customer ownership"] --> F4E["Expected\nLTR + 102A datasets"] --> F4U["Submitted\nFIPS VM -> CME/CFTC"] --> F4A["Actual (limited)\nAcknowledgements + transfer logs"]
+  end
+
+  subgraph FLOW5["LP Delegated - Two-stage reconciliation"]
+    direction LR
+    F5S["Sources\nInternal DUCO + LP provider files"] --> F5E["Expected stage\nInternal vs LP alignment"] --> F5U["Submitted stage\nLP reports to REGIS/UNAVISTA/DTCC"] --> F5A["Actual\nTR responses\n(REGIS full, others partial)"]
+  end
+
+  subgraph FLOW6["APA (MiFID) - Real-time publication"]
+    direction LR
+    F6S["Sources\nTrading event stream"] --> F6E["Expected events\nTrade events prepared for APA"] --> F6U["Submitted\nEventHub -> TradeEcho"] --> F6A["Actual\nTradeEcho SFTP responses"]
   end
 
   subgraph OUT["Business Outcomes"]
     direction LR
-    B1["Expected vs Submitted vs Actual\nclear control narrative"]
-    B2["Exception visibility by severity\nCritical / Warning / Advisory"]
-    B3["Regulatory evidence pack\nAudit-ready traceability"]
-    B4["Prioritised risk backlog\nCoverage gaps and operating risks"]
+    O1["Coverage clarity by regulation"]
+    O2["Break visibility\nby severity and model"]
+    O3["Evidence trail\nfor compliance and audit"]
   end
 
-  subgraph GAPS["Current Business Risks (from final inventory)"]
-    direction TB
-    G1["Partial ingestion coverage\nDTCC/TRAX/UNAVISTA pending in some flows"]
-    G2["LTR limited actual-state model\nacknowledgement-based validation"]
-    G3["Manual sources still present\nGoogle Sheets governance risk"]
-    G4["Split ownership across SQL and Databricks\nlineage/accountability complexity"]
+  subgraph GAPS["Known Gaps"]
+    direction LR
+    G1["Partial ingestion\nDTCC/TRAX/UNAVISTA pending"]
+    G2["LTR lacks full actual-state lifecycle feedback"]
+    G3["Manual sources remain governance risk"]
   end
 
-  P1 --> B1
-  P2 --> B2
-  P3 --> B3
+  SD1 --> F1S
+  SD1 --> F2S
+  SD1 --> F6S
+  SD2 --> F1S
+  SD2 --> F3S
+  SD2 --> F4S
+  SD3 --> F1S
+  SD3 --> F2S
+  SD3 --> F4S
+  SD4 --> F1S
+  SD4 --> F3S
+  SD5 --> F5S
 
-  R1 --> M1
-  R2 --> M1
-  R3 --> M1
-  R4 --> M2
-  R5 --> M3
-  R6 --> M4
-  R7 --> M6
+  F1A --> O1
+  F2A --> O1
+  F3A --> O1
+  F4A --> O1
+  F5A --> O1
+  F6A --> O1
+  O1 --> O2 --> O3
 
-  M1 --> S1
-  M1 --> S2
-  M1 --> S3
-  M1 --> S4
-  M1 --> S6
+  G1 -.-> O2
+  G2 -.-> O2
+  G3 -.-> O2
 
-  M2 --> S1
-  M2 --> S3
-  M2 --> S6
+  classDef head fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef source fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef flow fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
+  classDef out fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef gap fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
 
-  M3 --> S2
-  M3 --> S4
-  M3 --> S6
-
-  M4 --> S2
-  M4 --> S3
-  M4 --> S7
-
-  M5 --> S1
-  M5 --> S5
-  M5 --> S6
-
-  M6 --> S1
-  M6 --> S6
-
-  S1 --> B1
-  S2 --> B1
-  S3 --> B1
-  S4 --> B1
-  S5 --> B2
-  S6 --> B3
-  S7 --> B3
-
-  O1 --> B1
-  O2 --> B2
-  O3 --> B2
-  O4 --> B3
-  O5 --> B1
-
-  G1 -.-> B4
-  G2 -.-> B4
-  G3 -.-> B4
-  G4 -.-> B4
-
-  classDef purpose fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
-  classDef reg fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
-  classDef model fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
-  classDef source fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
-  classDef owner fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
-  classDef outcome fill:#fff7d6,stroke:#9b8700,stroke-width:1px,color:#3d3400;
-  classDef risk fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
-
-  class P1,P2,P3 purpose;
-  class R1,R2,R3,R4,R5,R6,R7 reg;
-  class M1,M2,M3,M4,M5,M6 model;
-  class S1,S2,S3,S4,S5,S6,S7 source;
-  class O1,O2,O3,O4,O5 owner;
-  class B1,B2,B3,B4 outcome;
-  class G1,G2,G3,G4 risk;
+  class H1,H2 head;
+  class SD1,SD2,SD3,SD4,SD5 source;
+  class F1S,F1E,F1U,F1A,F2S,F2E,F2U,F2A,F3S,F3E,F3U,F3A,F4S,F4E,F4U,F4A,F5S,F5E,F5U,F5A,F6S,F6E,F6U,F6A flow;
+  class O1,O2,O3 out;
+  class G1,G2,G3 gap;
 ```
