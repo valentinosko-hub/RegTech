@@ -1,78 +1,102 @@
-flowchart LR
-  %% Executive summary view
-  subgraph KPI["Regulatory Recon Engine - Executive View"]
+flowchart TD
+  subgraph KPI["Regulatory Recon Engine - Executive View (Final Inventory)"]
     direction LR
     K1["10-20 External SFTPs"]
-    K2["Daily Automated Runs"]
-    K3["3 Quality Checks"]
+    K2["Daily automated runs"]
+    K3["3 quality checks\nCompleteness / Correctness / Timeliness"]
   end
 
-  subgraph SRC["Data Sources"]
-    direction TB
-    EXT["External inputs\nNCAs / TRs / vendors / LP feeds\nFIRDS/FITRS + market data"]
-    INT["Internal inputs\nTrades / Positions / Clients / Instruments"]
-  end
-
-  subgraph ING["Ingestion + Normalisation"]
-    direction TB
-    PIPE["ADF + Auto Loader\nScheduled Databricks Jobs"]
-    NORM["Dedicated Delta Lake normalisation layer\nUnified schema across reports"]
-  end
-
-  subgraph VAL["Validation + Reconciliation"]
-    direction TB
-    CHECKS["Per-report controls\nCompleteness / Correctness / Timeliness"]
-    RECON["Recon engine\nDetect mismatches and rule breaches"]
-  end
-
-  subgraph OPS["Operations + Outputs"]
-    direction TB
-    UI["Failure remediation dashboard\nCritical / Warning / Advisory"]
-    OUT["Audit logs + reporting outputs\nDelta tables / Power BI / notifications"]
-  end
-
-  subgraph CTRL["Cross-Cutting Controls"]
+  subgraph LAYER["Presentation Structure"]
     direction LR
-    SEC["Security & governance\nUnity Catalog / RBAC / Key Vault / network controls"]
-    TRACE["Traceability\nPer-event logging, user attribution, resolution history"]
+    L1["Layer 1\nData Sources"]
+    L2["Layer 2\nIngestion"]
+    L3["Layer 3\nNormalisation + Recon"]
+    L4["Layer 4\nOutputs"]
+    L1 --> L2 --> L3 --> L4
+  end
+
+  subgraph MODELS["Inventory Coverage by Reporting Model"]
+    direction LR
+    M1["TR-based\nMiFID / EMIR / ASIC\nExpected: RegReportDB\nSubmitted: Cappitech\nActual: REGIS ingest live,\nDTCC/TRAX pending"]
+    M2["CAT (US)\nExpected: Reg_US datasets\nSubmitted: S3\nActual: FINRA CAT feedback"]
+    M3["SFTR\nVision snapshot to lifecycle events\nDirect DTCC (no vendor)\nExpected / Submitted / Actual"]
+    M4["LTR (transitional)\nExpected: position datasets\nSubmitted: CME/CFTC via FIPS VM\nActual: acknowledgements only"]
+    M5["LP delegated\nInternal DUCO vs LP data,\nthen LP vs TR response\nREGIS full, UNAVISTA/DTCC partial"]
+    M6["APA real-time\nTrading Event Hub to TradeEcho\nActual: TradeEcho SFTP responses"]
+  end
+
+  subgraph CORE["Shared Databricks Recon Backbone"]
+    direction LR
+    BR["Bronze ingestion\nSFTP / Event Hub / SharePoint / transfer logs"]
+    SI["Silver harmonisation"]
+    GO["Gold expected-submitted-actual views"]
+    RE["Recon and validation engine"]
+    AU["Audit and remediation trace"]
+    BR --> SI --> GO --> RE --> AU
+  end
+
+  subgraph OUT["Operations and Reporting"]
+    direction LR
+    UI["Failure UI\nCritical / Warning / Advisory"]
+    DASH["React dashboard on App Service"]
+    REP["Delta tables / Power BI / alerts"]
+    UI --> DASH --> REP
+  end
+
+  subgraph CTRL["Controls and Risks"]
+    direction LR
+    SEC["Unity Catalog / RBAC / Key Vault / private networking"]
+    RISK["Known gaps\nManual sheets risk\nSplit SQL-DBX ownership\nPartial ingestion coverage"]
   end
 
   subgraph ROAD["Roadmap"]
     direction LR
     R1["Self-reporting"]
     R2["Manual fix from UI"]
-    R3["Custom alerts & checks"]
+    R3["Custom alerts and checks"]
     R4["NCA auto-reporting"]
   end
 
-  K1 --> EXT
-  K2 --> PIPE
-  K3 --> CHECKS
+  K1 --> M1
+  K1 --> M3
+  K1 --> M5
+  K2 --> CORE
+  K3 --> RE
 
-  EXT --> PIPE
-  INT --> PIPE
-  PIPE --> NORM --> CHECKS --> RECON --> UI --> OUT
+  M1 --> BR
+  M2 --> BR
+  M3 --> BR
+  M4 --> BR
+  M5 --> BR
+  M6 --> BR
 
-  SEC -.-> PIPE
-  SEC -.-> UI
-  TRACE -.-> UI
-  TRACE -.-> OUT
+  LAYER --> CORE
+  RE --> UI
+  AU --> UI
 
-  UI -.-> R1
-  UI -.-> R2
-  UI -.-> R3
-  UI -.-> R4
+  SEC -.-> CORE
+  SEC -.-> DASH
+  RISK -.-> CORE
+
+  DASH -.-> R1
+  DASH -.-> R2
+  DASH -.-> R3
+  DASH -.-> R4
 
   classDef kpi fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
-  classDef src fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef layer fill:#f0f7ff,stroke:#3f6ca8,stroke-width:1px,color:#123457;
+  classDef model fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
   classDef core fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
-  classDef ops fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef out fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
   classDef ctrl fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
   classDef road fill:#fff7d6,stroke:#9b8700,stroke-width:1px,color:#3d3400;
+  classDef risks fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
 
   class K1,K2,K3 kpi;
-  class EXT,INT src;
-  class PIPE,NORM,CHECKS,RECON core;
-  class UI,OUT ops;
-  class SEC,TRACE ctrl;
+  class L1,L2,L3,L4 layer;
+  class M1,M2,M3,M4,M5,M6 model;
+  class BR,SI,GO,RE,AU core;
+  class UI,DASH,REP out;
+  class SEC ctrl;
+  class RISK risks;
   class R1,R2,R3,R4 road;
