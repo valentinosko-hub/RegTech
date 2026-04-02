@@ -17,6 +17,7 @@
 - **XML-converted technical view**
   - [Trade recon architecture v2 (from draw.io XML)](docs/trade-recon-architecture-v2-from-xml.md)
   - [Editable Mermaid source (`.mmd`)](docs/trade-recon-architecture-v2-from-xml.mmd)
+  - [Openable draw.io XML (`.xml`)](docs/trade-recon-architecture-v2-from-mermaid.xml)
 
 ### Edit options
 
