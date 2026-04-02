@@ -7,7 +7,7 @@ flowchart TB
     direction LR
     S1["Synapse (SYNAPSE-DWH-PROD)<br/>sql_dp_prod_we.DWH_dbo<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
     S2["SQL Server (AZR-WE-BI-21)<br/>RegReportDB<br/>Source + reporting tables (MiFID/EMIR/ASIC/CAT)"]
-    S3["SQL Server (AZR-WE-BI-21)<br/>Dealing / DUCO staging<br/>Internal LP reconciliation datasets"]
+    S3["Synapse (SYNAPSE-DWH-PROD)<br/>Dealing_dbo / DUCO staging<br/>Internal LP reconciliation datasets"]
     S4["SQL Server (AZR-W-REAL-DB-2-BIDBUser)<br/>etoro.Hedge.ExecutionLog"]
     S5["Databricks (main.general)<br/>Vision SFTR snapshots<br/>gold_vision_etoro"]
     S6["Synapse (Dealing_staging)<br/>LP_* provider tables<br/>Saxo / UBS / IG / Marex / Goldman"]
@@ -25,7 +25,7 @@ flowchart TB
     GOLD["Gold (main.regtech + main.dealing)<br/>Expected / Submitted / Actual recon-ready views"]
   end
 
-  LP["LP Execution Reality<br/>main.dealing DUCO views + Dealing_staging LP feeds<br/>Trades / Positions (EOD) / Exposure"]
+  LP["LP Execution Reality<br/>Synapse Dealing_dbo DUCO views + Dealing_staging LP feeds<br/>Trades / Positions (EOD) / Exposure"]
   TR["Regulatory Responses (Actual State)<br/>main.regtech bronze_* response datasets<br/>Live: REGIS + TradeEcho | Partial: DTCC/TRAX/UNAVISTA"]
   RECON["Reconciliation Engine (Databricks)<br/>3-way match: Expected / Submitted / Actual (+Execution)<br/>Keys: UTI / TradeID / LEI / order chain<br/>Checks: Completeness / Field / Lifecycle / Timeliness"]
   OUT["Outputs / Monitoring<br/>Power BI + exceptions + audit logs<br/>Severity: Critical / Warning / Advisory"]

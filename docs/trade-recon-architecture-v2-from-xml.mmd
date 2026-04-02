@@ -3,7 +3,7 @@ flowchart TB
     direction LR
     s1["Synapse (SYNAPSE-DWH-PROD)\nsql_dp_prod_we.DWH_dbo\nDim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
     s2["SQL Server (AZR-WE-BI-21)\nRegReportDB\nSource + reporting tables (MiFID/EMIR/ASIC/CAT)"]
-    s3["SQL Server (AZR-WE-BI-21)\nDealing / DUCO staging\nInternal LP reconciliation datasets"]
+    s3["Synapse (SYNAPSE-DWH-PROD)\nDealing_dbo / DUCO staging\nInternal LP reconciliation datasets"]
     s4["SQL Server (AZR-W-REAL-DB-2-BIDBUser)\netoro.Hedge.ExecutionLog"]
     s5["Databricks (main.general)\nVision SFTR snapshots\ngold_vision_etoro"]
     s6["Synapse (Dealing_staging)\nLP_* provider tables\nSaxo / UBS / IG / Marex / Goldman"]
