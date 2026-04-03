@@ -109,7 +109,7 @@ Use each model section as:
 2. **Transformations / expected baseline** (golden source expectation)
 3. **Submitted / actual channels** (what was sent vs what was acknowledged/returned)
 
-## 4.1 MiFID (EU/UK) - TR/ARM-based
+## 4.1 MiFID (EU/UK) - ARM-based
 
 ### Core internal sources
 
@@ -132,12 +132,12 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech files to TR/ARM endpoints (e.g., TRAX/REGIS/DTCC path by flow)
-- Actual: TR/ARM response files (where ingested), represented in Databricks response layers
+- Submitted: Cappitech files to ARM endpoints (e.g., TRAX path by flow)
+- Actual: ARM response files (where ingested), represented in Databricks response layers
 
 ---
 
-## 4.2 EMIR (EU/UK) - TR/ARM-based
+## 4.2 EMIR (EU/UK) - TR-based
 
 ### Core internal sources
 
@@ -163,12 +163,12 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech -> Regis-TR / DTCC (by flow)
+- Submitted: Cappitech -> Regis-TR (by flow)
 - Actual: TR responses, with REGIS represented as live in current ingestion and DTCC coverage depending on flow
 
 ---
 
-## 4.3 ASIC - TR/ARM-based
+## 4.3 ASIC - TR-based
 
 ### Core internal sources
 
@@ -197,8 +197,8 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech vendor files
-- Actual: ARM/TR response files by model path
+- Submitted: Cappitech vendor files -> DTCC (by flow)
+- Actual: TR response files by model path
 
 ---
 
