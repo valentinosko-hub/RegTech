@@ -1,4 +1,5 @@
 flowchart LR
+  T["EMIR (EU/UK) - Data Source Flow"]
   subgraph SRC["EMIR (EU/UK) - Data Sources"]
     direction TB
     A["Synapse DWH<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
@@ -12,6 +13,7 @@ flowchart LR
   S["Submitted state<br/>Cappitech -> Regis-TR / DTCC"]
   R["Actual responses<br/>REGIS (live), DTCC (partial/pending by flow)"]
   X["Recon output<br/>Expected vs Submitted vs Actual (+ completeness control)"]
+  T --> A
   A --> CTRL
   A --> U
   B --> U
@@ -20,3 +22,13 @@ flowchart LR
   U --> E --> S --> R --> X
   E --> CTRL
   CTRL --> X
+
+  classDef title fill:#243447,stroke:#0f1a24,color:#ffffff,fontWeight:bold,fontSize:14px;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900,fontWeight:bold;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f,fontWeight:bold;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47,fontWeight:bold;
+
+  class T title;
+  class E expected;
+  class S submitted;
+  class R actual;

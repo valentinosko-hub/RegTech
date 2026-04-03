@@ -1,4 +1,5 @@
 flowchart LR
+  T["MiFID (EU/UK) - Data Sources and Reporting States"]
   I1["Operational / BI completeness control source<br/>Synapse DWH_dbo<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
   I2["Hedge execution<br/>AZR-W-REAL-DB-2-BIDBUser<br/>etoro.Hedge.ExecutionLog"]
   I3["RegReportDB MiFID source tables<br/>FIRDS_* / FCA_* / MIFID2_*"]
@@ -8,7 +9,23 @@ flowchart LR
   I7["Actual state<br/>TRAX + TR response files<br/>(main.regtech bronze_*)"]
   I8["Completeness control check<br/>Operational/BI vs MiFID expected reports"]
 
+  T --> I2
+  T --> I3
   I2 --> I4
   I3 --> I4 --> I5 --> I6 --> I7
   I1 --> I8
   I5 --> I8
+
+  classDef title fill:#1f3558,stroke:#0f223d,color:#ffffff,fontStyle:bold;
+  classDef source fill:#e8f3ff,stroke:#5b8cc9,color:#0e2a47;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900,fontStyle:bold;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f,fontStyle:bold;
+  classDef actual fill:#d9e8fb,stroke:#3d85c6,color:#12365e,fontStyle:bold;
+  classDef control fill:#eaf7ea,stroke:#6aa84f,color:#12391f;
+
+  class T title;
+  class I1,I2,I3,I4 source;
+  class I5 expected;
+  class I6 submitted;
+  class I7 actual;
+  class I8 control;

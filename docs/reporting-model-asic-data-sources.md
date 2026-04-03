@@ -2,7 +2,8 @@
 
 ```mermaid
 flowchart LR
-  OBI["Operational / BI comparison source<br/>Synapse DWH snapshots (completeness control only)"]
+  TITLE["ASIC Reporting Model<br/>Data Sources and State Flow"]
+  SRC1["Operational / BI control source<br/>Synapse DWH (SYNAPSE-DWH-PROD)<br/>Used for completeness comparison vs expected reports"]
   SRC2["SQL Server RegReportDB<br/>AZR-WE-BI-21<br/>ASIC2 source + ext_* tables"]
   SRC3["Hedge execution<br/>AZR-W-REAL-DB-2-BIDBUser<br/>ExecutionLog"]
   SRC4["Reference enrichment<br/>ANNA DSB (AZR-WE-BI-20.RTS)<br/>Reg_Instruments_SCD / Liquidity accounts"]
@@ -12,13 +13,25 @@ flowchart LR
   ACT["Actual state<br/>TR/ARM response files (REGIS/TRAX/DTCC path)"]
   DBX["Databricks recon path<br/>bronze -> silver -> gold"]
   REC["Reconciliation<br/>Expected vs Submitted vs Actual"]
-  CMP["Completeness control<br/>Operational/BI vs expected reporting baseline"]
 
+  TITLE --> SRC1
+  TITLE --> SRC2
+  TITLE --> SRC3
+  TITLE --> SRC4
+
+  SRC1 --> REC
   SRC2 --> EXP
   SRC3 --> EXP
   SRC4 --> EXP
   EXP --> SUB --> ACT --> DBX --> REC
-  OBI --> CMP
-  EXP --> CMP
-```
 
+  classDef title fill:#d8ecff,stroke:#2f6fab,stroke-width:2px,color:#0e2a47,font-weight:bold;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f;
+  classDef actual fill:#cfe2f3,stroke:#3d85c6,color:#0e2a47;
+
+  class TITLE title;
+  class EXP expected;
+  class SUB submitted;
+  class ACT actual;
+```

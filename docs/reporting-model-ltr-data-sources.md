@@ -1,16 +1,29 @@
-# LTR Data Sources and Flow
+# LTR Reporting Model - Data Source Flow
 
 ```mermaid
 flowchart LR
-  S1["main.dealing.gold_sql_dp_prod_we_dealing_dbo_dealing_marex_recon_eodholdings_futures"]
-  S2["main.bi_output_stg.customer_radar_view_dim_customer"]
-  E["Expected state<br/>LTR + 102A datasets"]
-  U["Submitted state<br/>FIPS VM (OpenSSH FIPS) -> CME/CFTC SFTP"]
-  A["Actual state (limited)<br/>Acknowledgements + transfer tracking<br/>main.regtech_stg.bronze_ltr_*"]
-  R["Recon model<br/>Expected vs Submitted + audit/transfer validation"]
+  title["LTR (Manual/Transitional) - Data Sources and Flow"]
+  S1["main.dealing<br/>...dealing_marex_recon_eodholdings_futures"]
+  S2["main.bi_output_stg<br/>customer_radar_view_dim_customer"]
+  T["LTR aggregation + thresholds<br/>(CFTC 17.04b / 15.03)"]
+  E["Expected state<br/>LTR position file + 102A payload"]
+  U["Submitted state<br/>FIPS VM -> CME/CFTC SFTP"]
+  A["Actual state (limited)<br/>acknowledgements + transfer tracking"]
+  B["Databricks tracking<br/>bronze_ltr_file_runs<br/>bronze_ltr_transfers<br/>bronze_ltr_responses"]
+  R["Recon model<br/>Expected vs Submitted + audit validation"]
 
-  S1 --> E
-  S2 --> E
-  E --> U --> A --> R
+  S1 --> T
+  S2 --> T
+  T --> E --> U --> A
+  A --> B --> R
+
+  classDef title fill:#0b3d5c,stroke:#07283c,color:#ffffff,fontWeight:bold,fontSize:16px;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47;
+
+  class title title;
+  class E expected;
+  class U submitted;
+  class A actual;
 ```
-

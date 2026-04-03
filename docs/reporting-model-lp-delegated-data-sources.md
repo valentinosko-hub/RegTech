@@ -1,16 +1,22 @@
-# LP Delegated Reporting - Data Source Flow
+# LP Delegated Reporting Model - Data Source Flow
 
 ```mermaid
 flowchart LR
-  S1["Internal execution truth<br/>Synapse main.dealing DUCO views<br/>Dealing_Duco_EODRecon / ActivityRecon"]
-  S2["LP source data<br/>Synapse Dealing_staging LP_* tables<br/>Saxo / UBS / IG / Marex / Goldman"]
-  ST1["Stage 1 alignment<br/>Internal vs LP validation"]
-  ST2["Stage 2 delegated reporting<br/>LP submits to REGIS / UNAVISTA / DTCC"]
-  A["Actual state<br/>TR response files<br/>REGIS ingested / UNAVISTA & DTCC partial"]
-  R["Recon controls<br/>Alignment + TR feedback comparison"]
-
-  S1 --> ST1
-  S2 --> ST1
-  ST1 --> ST2 --> A --> R
+  TITLE["LP Delegated Reporting - Data Source Flow"]
+  A["Internal DUCO execution data<br/>Synapse: Dealing_Duco_EODRecon / ActivityRecon"] --> B["Derived internal LP recon tables<br/>Dealing_IGReconTrades / Dealing_IGReconEODHolding"]
+  C["LP provider source data<br/>SYNAPSE-DWH-PROD.sql_dp_prod_we.Dealing_staging<br/>LP_EdnF_* / LP_GS_* / LP_UBS_* / LP_IG_* / LP_SAXO_*"] --> B
+  B --> D["Submitted state<br/>LP delegated submission<br/>REGIS / UNAVISTA / DTCC"]
+  D --> E["Actual state<br/>TR response files<br/>REGIS ingested; UNAVISTA / DTCC pending"]
+  E --> F["Reconciliation output<br/>Stage 1: Internal vs LP<br/>Stage 2: LP submitted vs TR actual"]
+  TITLE --> A
+  classDef title fill:#0f3d4c,stroke:#0f3d4c,color:#ffffff,fontStyle:bold;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47;
+  classDef recon fill:#d5e8d4,stroke:#6aa84f,color:#12391f;
+  class TITLE title;
+  class A,B,C expected;
+  class D submitted;
+  class E actual;
+  class F recon;
 ```
-

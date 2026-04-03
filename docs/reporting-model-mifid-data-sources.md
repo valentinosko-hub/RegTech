@@ -2,16 +2,34 @@
 
 ```mermaid
 flowchart LR
-  OBI["Operational / BI layer (comparison control)<br/>Synapse DWH_dbo + Hedge ExecutionLog<br/>Used to validate reporting completeness (not report generation)"]
-  SRC["RegReportDB MiFID source + ext tables<br/>MIFID2_* / MIFID2_ext_* / Reg_Ext_*"]
-  REF["Reference data sources<br/>FIRDS/FCA files + ANNA DSB RTS UPI_*"]
-  EXP["Expected (Golden Source)<br/>RegReportDB MIFID2 report tables"]
-  SUB["Submitted state<br/>Cappitech files -> TRAX / ARM / TR endpoints"]
-  ACT["Actual state<br/>TR/ARM response files (REGIS/TRAX/DTCC by availability)"]
-  REC["Reconciliation control<br/>Expected vs Submitted vs Actual<br/>+ Operational/BI completeness comparison"]
+  T["MiFID (EU/UK) - Data Sources and Reporting States"]
+  I1["Operational / BI completeness control source<br/>Synapse DWH_dbo<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+  I2["Hedge execution<br/>AZR-W-REAL-DB-2-BIDBUser<br/>etoro.Hedge.ExecutionLog"]
+  I3["RegReportDB MiFID source tables<br/>FIRDS_* / FCA_* / MIFID2_*"]
+  I4["MiFID ext_ transformations<br/>MIFID2_ext_* + Reg_Ext_*"]
+  I5["MiFID expected reports<br/>MIFID2_Report / MIFID2_Hedge_Report<br/>MIFID2_ETORO_Report / MIFID2_ME_Report"]
+  I6["Submitted state<br/>Cappitech files -> TRAX/Regis/DTCC"]
+  I7["Actual state<br/>TRAX + TR response files<br/>(main.regtech bronze_*)"]
+  I8["Completeness control check<br/>Operational/BI vs MiFID expected reports"]
 
-  SRC --> EXP --> SUB --> ACT --> REC
-  REF --> EXP
-  OBI -->|Completeness comparison control| REC
+  T --> I2
+  T --> I3
+  I2 --> I4
+  I3 --> I4 --> I5 --> I6 --> I7
+  I1 --> I8
+  I5 --> I8
+
+  classDef title fill:#1f3558,stroke:#0f223d,color:#ffffff,fontStyle:bold;
+  classDef source fill:#e8f3ff,stroke:#5b8cc9,color:#0e2a47;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900,fontStyle:bold;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f,fontStyle:bold;
+  classDef actual fill:#d9e8fb,stroke:#3d85c6,color:#12365e,fontStyle:bold;
+  classDef control fill:#eaf7ea,stroke:#6aa84f,color:#12391f;
+
+  class T title;
+  class I1,I2,I3,I4 source;
+  class I5 expected;
+  class I6 submitted;
+  class I7 actual;
+  class I8 control;
 ```
-

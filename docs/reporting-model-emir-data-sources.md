@@ -1,20 +1,38 @@
-# EMIR (EU/UK) Reporting Model - Data Sources
+# EMIR (EU/UK) Data Source Flow
 
 ```mermaid
 flowchart LR
-  B1["Operational / BI completeness baseline<br/>Synapse DWH snapshot views"]
-  S1["Hedge execution logs<br/>AZR-W-REAL-DB-2-BIDBUser / etoro.Hedge.ExecutionLog"]
-  S2["RegReportDB source + ext tables<br/>EMIR2_* / EMIR2_ext_* / EMIR_Refit_UPI"]
-  S3["Reference data<br/>ANNA DSB UPI (AZR-WE-BI-20.RTS) + Reg_Instruments_SCD"]
+  T["EMIR (EU/UK) - Data Source Flow"]
+  subgraph SRC["EMIR (EU/UK) - Data Sources"]
+    direction TB
+    A["Synapse DWH<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+    B["SQL Server RegReportDB<br/>EMIR2_* source tables + shared refs"]
+    C["Hedge Execution<br/>AZR-W-REAL-DB-2-BIDBUser / etoro.Hedge.ExecutionLog"]
+    D["ANNA DSB UPI refs<br/>AZR-WE-BI-20.RTS (UPI_*)"]
+  end
+  CTRL["Operational / BI completeness control<br/>Synapse source-of-truth compared to EMIR expected reports"]
+  U["EMIR upstream ext_ transforms<br/>EMIR2_ext_* + shared Reg_Ext_*"]
+  E["Expected dataset<br/>EMIR2_Refit_Report* / collateral reports"]
+  S["Submitted state<br/>Cappitech -> Regis-TR / DTCC"]
+  R["Actual responses<br/>REGIS (live), DTCC (partial/pending by flow)"]
+  X["Recon output<br/>Expected vs Submitted vs Actual (+ completeness control)"]
+  T --> A
+  A --> CTRL
+  A --> U
+  B --> U
+  C --> U
+  D --> U
+  U --> E --> S --> R --> X
+  E --> CTRL
+  CTRL --> X
 
-  EXP["Expected (Golden Source)<br/>EMIR2_Refit_Report* / EMIR3_* report tables"]
-  SUB["Submitted state<br/>Cappitech -> Regis-TR / DTCC"]
-  ACT["Actual state<br/>TR response files (REGIS live, DTCC partial by flow)"]
+  classDef title fill:#243447,stroke:#0f1a24,color:#ffffff,fontWeight:bold,fontSize:14px;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900,fontWeight:bold;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f,fontWeight:bold;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47,fontWeight:bold;
 
-  S1 --> EXP
-  S2 --> EXP
-  S3 --> EXP
-  EXP --> SUB --> ACT
-  B1 -. Completeness check .-> EXP
+  class T title;
+  class E expected;
+  class S submitted;
+  class R actual;
 ```
-
