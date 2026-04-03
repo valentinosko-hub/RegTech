@@ -30,6 +30,10 @@
   - LP Delegated: [view](regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.mmd)
   - APA: [view](regtech-automation-project/diagrams/reporting-model-apa-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-apa-data-sources.mmd)
 
+## Project Documentation (Confluence-style)
+
+- [Trade Reporting Reconciliation Architecture (updated)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Architecture_Updated.md)
+
 ### Edit options
 
 - Open either `.mmd` file in https://mermaid.live for visual editing and export.
