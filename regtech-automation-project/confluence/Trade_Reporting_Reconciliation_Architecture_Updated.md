@@ -1,14 +1,14 @@
-# Trade Reporting Reconciliation Architecture (Updated)
+# Trade Reporting Reconciliation Architecture (Updated Detailed Version)
 
 Last updated: 2026-03-18
 
-This document consolidates the latest architecture and data-source updates reflected in repository diagrams under:
+This document consolidates architecture and data-source details from the final data source inventory and the latest repository diagrams under:
 
 - `regtech-automation-project/diagrams/`
 
 ---
 
-## 1) Scope
+## 1) Scope and reporting models
 
 Regulations and reporting models covered:
 
@@ -23,70 +23,286 @@ Regulations and reporting models covered:
 
 ---
 
-## 2) Core control principle
+## 2) Control framework and state model
 
-The reconciliation framework validates independent states:
+The reconciliation framework compares independent views of the same regulatory obligation:
 
-- **Expected** (golden source reporting baseline)
-- **Submitted** (vendor/submission channel payload)
-- **Actual** (regulator/TR/APA feedback)
+- **Expected**: regulatory baseline produced by internal reporting logic
+- **Submitted**: what was actually sent via vendor/channel
+- **Actual**: regulator/TR/APA feedback or response evidence
 
-For LP delegated reporting, a two-stage control is modeled:
+For LP delegated reporting, control is explicitly split into two stages:
 
-1. Internal vs LP alignment (stage 1)
-2. LP submitted vs TR actual (stage 2)
+1. **Stage 1**: Internal vs LP alignment (execution/position consistency)
+2. **Stage 2**: LP submitted vs TR actual validation
 
----
-
-## 3) Source systems and platforms
-
-Primary source and transformation systems:
-
-- Synapse DWH (`SYNAPSE-DWH-PROD`, `sql_dp_prod_we`)
-- SQL Server RegReportDB (`AZR-WE-BI-21`)
-- Hedge execution SQL (`AZR-W-REAL-DB-2-BIDBUser`, `etoro.Hedge.ExecutionLog`)
-- Databricks (`main.general`, `main.regtech_stg`, `main.regtech`, `main.dealing`)
-- External submission/feedback channels:
-  - Cappitech (TR/ARM model submission)
-  - S3 (CAT submission exchange)
-  - TradeEcho / LSEG (APA)
-  - DTCC (SFTR direct)
-  - CME/CFTC via FIPS VM (LTR)
+For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **completeness comparison source**, not as a direct reporting-table generation step.
 
 ---
 
-## 4) Direct reporting clarification (MiFID/EMIR/ASIC)
+## 3) Cross-cutting data-source inventory (platform view)
 
-Operational/BI source layers are represented as **completeness comparison controls** and not as direct report-table generation inputs.
+### 3.1 Internal source and transformation platforms
 
-In diagrams, this is explicitly shown in MiFID/EMIR/ASIC model flows.
+- **Synapse DWH**
+  - Server: `SYNAPSE-DWH-PROD`
+  - Database: `sql_dp_prod_we`
+  - Common schema/tables used across models:
+    - `DWH_dbo.Dim_Position`
+    - `DWH_dbo.Dim_Instrument`
+    - `DWH_dbo.Fact_SnapshotCustomer`
+
+- **SQL Server RegReportDB**
+  - Server: `AZR-WE-BI-21`
+  - Database: `RegReportDB`
+  - Role: source tables, `ext_*` transformations, expected reporting baselines
+
+- **Hedge execution SQL**
+  - Server: `AZR-W-REAL-DB-2-BIDBUser`
+  - Database: `etoro`
+  - Schema/table: `Hedge.ExecutionLog`
+
+- **Databricks**
+  - Key catalogs: `main.general`, `main.bi_db`, `main.regtech_stg`, `main.regtech`, `main.dealing`
+  - Role: ingestion (bronze), harmonization (silver), recon-ready views (gold), response tracking
+
+### 3.2 External submission and feedback channels
+
+- Cappitech (TR/ARM submission path)
+- S3 (CAT submission exchange)
+- TradeEcho/LSEG (APA)
+- DTCC (SFTR direct and TR responses by model)
+- CME/CFTC via FIPS VM (LTR submission path)
+- SharePoint (CAT feedback files, eToro USA)
 
 ---
 
-## 5) APA completeness control (newly added)
+## 4) Detailed data sources by reporting model
 
-For APA model completeness checks, the baseline includes filtered comparisons against:
+## 4.1 MiFID (EU/UK) - TR/ARM-based
+
+### Core internal sources
+
+- Synapse DWH completeness-control baseline:
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`
+- Hedge execution:
+  - `etoro.Hedge.ExecutionLog`
+- RegReportDB source and reference domains:
+  - `FIRDS_*`, `FCA_*`, `MIFID2_*`, shared enrichment references
+
+### Transformations / expected baseline
+
+- Upstream transforms:
+  - `MIFID2_ext_*`, shared `Reg_Ext_*`
+- Expected reports:
+  - `MIFID2_Report`
+  - `MIFID2_Hedge_Report`
+  - `MIFID2_ETORO_Report`
+  - `MIFID2_ME_Report`
+
+### Submitted / actual channels
+
+- Submitted: Cappitech files to TR/ARM endpoints (e.g., TRAX/REGIS/DTCC path by flow)
+- Actual: TR/ARM response files (where ingested), represented in Databricks response layers
+
+---
+
+## 4.2 EMIR (EU/UK) - TR/ARM-based
+
+### Core internal sources
+
+- Synapse DWH completeness-control baseline
+- Hedge execution (`Hedge.ExecutionLog`)
+- RegReportDB EMIR source tables:
+  - `EMIR2_Customer`
+  - `EMIR2_InstrumentMetaData`
+  - related EMIR source domains
+- UPI/reference enrichment:
+  - ANNA DSB (`AZR-WE-BI-20`, `RTS`, `UPI_*` tables)
+
+### Transformations / expected baseline
+
+- Upstream transforms:
+  - `EMIR2_ext_*`
+  - selected shared `Reg_Ext_*`
+- Expected reports:
+  - `EMIR2_Refit_Report`
+  - `EMIR2_Refit_Report_Daily`
+  - `EMIR2_Report_Refit_Collateral`
+  - `EMIR3_*` report family (EU/UK variants)
+
+### Submitted / actual channels
+
+- Submitted: Cappitech -> Regis-TR / DTCC (by flow)
+- Actual: TR responses, with REGIS represented as live in current ingestion and DTCC coverage depending on flow
+
+---
+
+## 4.3 ASIC - TR/ARM-based
+
+### Core internal sources
+
+- Synapse DWH completeness-control baseline
+- Hedge execution (`Hedge.ExecutionLog`)
+- RegReportDB ASIC source domains:
+  - `ASIC2_Customer_PositionReport`
+  - `ASIC2_Daily_Prices`
+  - `ASIC2_InstrumentMetaData`
+  - `ASIC2_Positions*`
+
+### Transformations / expected baseline
+
+- Upstream transforms:
+  - `ASIC2_ext_Position`
+  - `ASIC2_ext_Customer`
+  - `ASIC2_Reg_Ext_DailyMaxPrices`
+  - `ASIC2_ext_DWH_V_Liabilities`
+  - `ASIC2_ext_OpenPositions_PositionsReport`
+- Expected reports:
+  - `ASIC2_Transactions`
+  - `ASIC2_Transactions_Hedge`
+  - `ASIC2_Positions_AGG`
+  - `ASIC2_Positions_AGG_Hedge`
+  - `ASIC2_Collateral`
+
+### Submitted / actual channels
+
+- Submitted: Cappitech vendor files
+- Actual: ARM/TR response files by model path
+
+---
+
+## 4.4 CAT (US) - event-driven
+
+### Core internal sources
+
+- Databricks operational/log tables (`main.general`, `main.bi_db`) for order lifecycle:
+  - order open/close history
+  - execution plans
+  - executed orders
+- Upstream US transforms:
+  - SQL Server `Reg_Ext_US_*`
+  - Databricks `main.regtech_stg.reg_ext_us_*` and related histories
+
+### Expected / submitted / actual
+
+- Expected baseline:
+  - SQL Server `Reg_US_*` (e.g., `Reg_US_COrders`, `Reg_US_NOrders`, etc.)
+  - mirrored in `main.regtech.gold_regreportdb_prod_dbo_reg_us_*`
+- Submitted:
+  - S3 vendor exchange to FINRA CAT
+- Actual:
+  - CAT feedback files via eToro USA SharePoint path
+
+---
+
+## 4.5 SFTR - direct to DTCC
+
+### Core internal sources
+
+- Databricks `main.general` vision snapshots:
+  - `main.general.gold_vision_etoro`
+  - `main.general.gold_visionet_r002_eod_trades_et`
+
+### Expected / submitted / actual
+
+- Expected:
+  - lifecycle derivation dataset in `main.regtech_stg.bronze_sftr_report`
+- Submitted:
+  - direct SFTR XML to DTCC (no Cappitech vendor)
+- Actual:
+  - DTCC acknowledgements/rejections/validation feedback ingested via SFTP
+
+---
+
+## 4.6 LTR - manual/transitional
+
+### Core internal sources
+
+- Position baseline:
+  - `main.dealing.gold_sql_dp_prod_we_dealing_dbo_dealing_marex_recon_eodholdings_futures`
+- Customer ownership:
+  - `main.bi_output_stg.customer_radar_view_dim_customer`
+- Threshold logic:
+  - CFTC threshold controls and aggregation logic
+
+### Submitted / actual model
+
+- Submitted:
+  - LTR and 102A payloads via FIPS-enabled VM to CME/CFTC
+- Actual (limited):
+  - acknowledgement and transfer tracking, not full lifecycle state
+
+### LTR tracking tables (Databricks, `main.regtech_stg`)
+
+- `bronze_ltr_file_runs`
+- `bronze_ltr_transfers`
+- `bronze_ltr_cftc_thresholds`
+- `bronze_ltr_ocr_102a_runs`
+- `bronze_ltr_instrument_map`
+- `bronze_ltr_responses`
+
+---
+
+## 4.7 LP delegated reporting
+
+### Stage 1: internal vs LP alignment sources
+
+- Internal DUCO views/tables:
+  - `main.dealing.gold_sql_dp_prod_we_dealing_dbo_v_dealing_duco_eodrecon`
+  - `main.dealing.gold_sql_dp_prod_we_dealing_dbo_dealing_duco_activityrecon`
+- Synapse dealing reconciliation tables (examples):
+  - `Dealing_IGReconTrades`
+  - `Dealing_IGReconEODHolding`
+
+### Stage 2: LP submitted vs TR actual sources
+
+- LP provider tables in `Dealing_staging` (examples):
+  - `LP_EdnF_*`
+  - `LP_GS_*`
+  - `LP_UBS_*`
+  - `LP_IG_*`
+  - `LP_SAXO_*`
+- TR feedback paths:
+  - REGIS (live ingestion)
+  - UNAVISTA / DTCC (coverage depends on ingestion state by flow)
+
+---
+
+## 4.8 APA (MiFID) - real-time publication
+
+### Core event sources
+
+- Trading event stream (event-driven origin)
+- Internal processing services -> APA Event Hub
+- TradeEcho publication path
+
+### Actual-state source
+
+- TradeEcho SFTP confirmations in:
+  - `main.regtech.bronze_tradeecho_responses`
+
+### Completeness control baseline (added)
+
+For completeness checks in APA flows, filtered comparison is performed against:
 
 - `RegReportDB_Prod:MiFID.MIFID2_Report`
 - `RegReportDB_Prod:MiFID.MIFID2_Hedge_Report`
 
-This is now reflected in the APA model diagram.
+---
+
+## 5) Current ingestion and coverage notes
+
+- REGIS and TradeEcho response ingestion represented as active/live
+- DTCC/TRAX/UNAVISTA represented as partial/pending by model flow
+- LTR remains acknowledgement/transfer-led rather than full actual-state lifecycle
+- Some shared reference assets include migration and data-quality caveats (e.g., partial migration of certain reference tables)
 
 ---
 
-## 6) Ingestion/coverage notes
+## 6) Diagram index
 
-Current coverage and constraints represented in diagrams:
-
-- REGIS and TradeEcho response ingestion shown as active/live
-- DTCC/TRAX/UNAVISTA coverage shown as partial/pending depending on flow
-- LTR actual-state remains limited (acknowledgement/transfer tracking model)
-
----
-
-## 7) Diagram index
-
-### 7.1 Cross-model views
+### 6.1 Cross-model views
 
 - Business flow by regulation:
   - `regtech-automation-project/diagrams/regtech-recon-business-architecture.md`
@@ -98,7 +314,7 @@ Current coverage and constraints represented in diagrams:
   - `regtech-automation-project/diagrams/trade-recon-architecture-v2-from-xml.md`
   - draw.io XML: `regtech-automation-project/diagrams/trade-recon-architecture-v2-from-mermaid.xml`
 
-### 7.2 Per-reporting-model data-source diagrams
+### 6.2 Per-reporting-model data-source diagrams
 
 - Index: `regtech-automation-project/diagrams/reporting-model-data-source-flows.md`
 - MiFID: `regtech-automation-project/diagrams/reporting-model-mifid-data-sources.md`
