@@ -3,32 +3,36 @@
 ## Architecture Diagram
 
 - **Business view (regulation-by-regulation source flows)**
-  - [Recon engine regulation/source flow architecture (Mermaid)](docs/regtech-recon-business-architecture.md)
-  - [Editable Mermaid source (`.mmd`)](docs/regtech-recon-business-architecture.mmd)
+  - [Recon engine regulation/source flow architecture (Mermaid)](regtech-automation-project/diagrams/regtech-recon-business-architecture.md)
+  - [Editable Mermaid source (`.mmd`)](regtech-automation-project/diagrams/regtech-recon-business-architecture.mmd)
 
 - **Executive summary**
-  - [Recon engine executive diagram (Mermaid)](docs/regtech-recon-engine-exec-diagram.md)
-  - [Editable Mermaid source (`.mmd`)](docs/regtech-recon-engine-exec-diagram.mmd)
+  - [Recon engine executive diagram (Mermaid)](regtech-automation-project/diagrams/regtech-recon-engine-exec-diagram.md)
+  - [Editable Mermaid source (`.mmd`)](regtech-automation-project/diagrams/regtech-recon-engine-exec-diagram.mmd)
 
 - **Detailed engineering**
-  - [Recon engine detailed project-aligned diagram (Mermaid)](docs/regtech-architecture-diagram.md)
-  - [Editable Mermaid source (`.mmd`)](docs/regtech-architecture-diagram.mmd)
+  - [Recon engine detailed project-aligned diagram (Mermaid)](regtech-automation-project/diagrams/regtech-architecture-diagram.md)
+  - [Editable Mermaid source (`.mmd`)](regtech-automation-project/diagrams/regtech-architecture-diagram.mmd)
 
 - **XML-converted technical view**
-  - [Trade recon architecture v2 (from draw.io XML)](docs/trade-recon-architecture-v2-from-xml.md)
-  - [Editable Mermaid source (`.mmd`)](docs/trade-recon-architecture-v2-from-xml.mmd)
-  - [Openable draw.io XML (`.xml`)](docs/trade-recon-architecture-v2-from-mermaid.xml)
+  - [Trade recon architecture v2 (from draw.io XML)](regtech-automation-project/diagrams/trade-recon-architecture-v2-from-xml.md)
+  - [Editable Mermaid source (`.mmd`)](regtech-automation-project/diagrams/trade-recon-architecture-v2-from-xml.mmd)
+  - [Openable draw.io XML (`.xml`)](regtech-automation-project/diagrams/trade-recon-architecture-v2-from-mermaid.xml)
 
 - **Per-reporting-model data-source diagrams**
-  - [Model index / navigation](docs/reporting-model-data-source-flows.md)
-  - MiFID: [view](docs/reporting-model-mifid-data-sources.md) / [edit](docs/reporting-model-mifid-data-sources.mmd)
-  - EMIR: [view](docs/reporting-model-emir-data-sources.md) / [edit](docs/reporting-model-emir-data-sources.mmd)
-  - ASIC: [view](docs/reporting-model-asic-data-sources.md) / [edit](docs/reporting-model-asic-data-sources.mmd)
-  - CAT: [view](docs/reporting-model-cat-data-sources.md) / [edit](docs/reporting-model-cat-data-sources.mmd)
-  - SFTR: [view](docs/reporting-model-sftr-data-sources.md) / [edit](docs/reporting-model-sftr-data-sources.mmd)
-  - LTR: [view](docs/reporting-model-ltr-data-sources.md) / [edit](docs/reporting-model-ltr-data-sources.mmd)
-  - LP Delegated: [view](docs/reporting-model-lp-delegated-data-sources.md) / [edit](docs/reporting-model-lp-delegated-data-sources.mmd)
-  - APA: [view](docs/reporting-model-apa-data-sources.md) / [edit](docs/reporting-model-apa-data-sources.mmd)
+  - [Model index / navigation](regtech-automation-project/diagrams/reporting-model-data-source-flows.md)
+  - MiFID: [view](regtech-automation-project/diagrams/reporting-model-mifid-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-mifid-data-sources.mmd)
+  - EMIR: [view](regtech-automation-project/diagrams/reporting-model-emir-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-emir-data-sources.mmd)
+  - ASIC: [view](regtech-automation-project/diagrams/reporting-model-asic-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-asic-data-sources.mmd)
+  - CAT: [view](regtech-automation-project/diagrams/reporting-model-cat-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-cat-data-sources.mmd)
+  - SFTR: [view](regtech-automation-project/diagrams/reporting-model-sftr-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-sftr-data-sources.mmd)
+  - LTR: [view](regtech-automation-project/diagrams/reporting-model-ltr-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-ltr-data-sources.mmd)
+  - LP Delegated: [view](regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.mmd)
+  - APA: [view](regtech-automation-project/diagrams/reporting-model-apa-data-sources.md) / [edit](regtech-automation-project/diagrams/reporting-model-apa-data-sources.mmd)
+
+## Project Documentation (Confluence-style)
+
+- [Trade Reporting Reconciliation Architecture (updated)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Architecture_Updated.md)
 
 ### Edit options
 

@@ -2,12 +2,14 @@ flowchart TB
   T["APA (MiFID) - Data Source Flow"]
   SRC["Trading events + internal event-processing services"]
   E["Expected event state<br/>Prepared APA publication events"]
+  COMP["Completeness control baseline<br/>RegReportDB_Prod:MiFID<br/>MIFID2_Report / MIFID2_Hedge_Report<br/>appropriate filters applied"]
   SUB["Submitted state<br/>APA Event Hub -> TradeEcho"]
   ACT["Actual state<br/>TradeEcho SFTP responses<br/>main.regtech.bronze_tradeecho_responses"]
-  R["Reconciliation view<br/>Expected vs Submitted vs Actual"]
+  R["Reconciliation view<br/>Expected vs Submitted vs Actual<br/>+ completeness check vs MiFID report tables"]
 
   T --> SRC
   SRC --> E --> SUB --> ACT --> R
+  COMP --> R
 
   classDef title fill:#dbe9ff,stroke:#2f6fab,color:#0e2a47,fontStyle:bold,fontSize:14;
   classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900;
@@ -19,4 +21,4 @@ flowchart TB
   class E expected;
   class SUB submitted;
   class ACT actual;
-  class SRC,R neutral;
+  class SRC,COMP,R neutral;

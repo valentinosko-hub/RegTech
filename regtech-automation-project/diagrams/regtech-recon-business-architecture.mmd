@@ -82,9 +82,11 @@ flowchart TB
     direction LR
     AP_S1["Trade events from trading systems"]
     AP_S2["Internal event-processing services"]
+    AP_CTRL["Completeness control baseline<br/>RegReportDB_Prod:MiFID<br/>MIFID2_Report / MIFID2_Hedge_Report<br/>appropriate filters applied"]
     AP_SUB["Submission channel<br/>APA Event Hub -> TradeEcho"]
     AP_ACT["Feedback / actual state<br/>TradeEcho SFTP confirmations"]
     AP_S1 --> AP_S2 --> AP_SUB --> AP_ACT
+    AP_CTRL --> AP_ACT
   end
 
   subgraph SHARED["Shared Business Controls"]
@@ -128,6 +130,7 @@ flowchart TB
   class EM_SUB emirSubm;
   class EM_ACT emirAct;
   class AS_S1,AS_S2,CAT_S1,CAT_S2,SF_S1,SF_S2,LT_S1,LT_S2,LP_S1,LP_S2,AP_S1,AP_S2 source;
+  class AP_CTRL ctrl;
   class AS_SUB,CAT_SUB,SF_SUB,LT_SUB,LP_SUB,AP_SUB subm;
   class AS_ACT,CAT_ACT,SF_ACT,LT_ACT,LP_ACT,AP_ACT act;
   class C1,C2,C3 ctrl;
