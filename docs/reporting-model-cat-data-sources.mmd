@@ -1,0 +1,14 @@
+flowchart TB
+  T["CAT (US) - Data Source Flow"]
+  S1["Operational/log event tables<br/>Databricks main.general + main.bi_db<br/>order, route, execution histories"]
+  S2["US customer reference<br/>Reg_Ext_US_* (SQL + main.regtech_stg)"]
+  E["Expected state<br/>Reg_US_* datasets in RegReportDB<br/>mirrored in main.regtech gold_*"]
+  U["Submitted state<br/>S3 vendor exchange -> FINRA CAT"]
+  A["Actual state<br/>CAT feedback files<br/>SharePoint (eToro USA)"]
+  R["Recon control<br/>event-chain completeness and sequencing"]
+
+  T --> S1
+  T --> S2
+  S1 --> E
+  S2 --> E
+  E --> U --> A --> R

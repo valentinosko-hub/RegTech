@@ -1,0 +1,6 @@
+flowchart LR
+  A["Internal DUCO execution data<br/>Synapse: Dealing_Duco_EODRecon / ActivityRecon"] --> B["Derived internal LP recon tables<br/>Dealing_IGReconTrades / Dealing_IGReconEODHolding"]
+  C["LP provider source data<br/>SYNAPSE-DWH-PROD.sql_dp_prod_we.Dealing_staging<br/>LP_EdnF_* / LP_GS_* / LP_UBS_* / LP_IG_* / LP_SAXO_*"] --> B
+  B --> D["LP delegated submission<br/>REGIS / UNAVISTA / DTCC"]
+  D --> E["TR response files (Actual)<br/>REGIS ingested; UNAVISTA / DTCC pending"]
+  E --> F["Reconciliation output<br/>Stage 1: Internal vs LP<br/>Stage 2: LP submitted vs TR actual"]

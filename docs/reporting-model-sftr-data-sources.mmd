@@ -1,0 +1,8 @@
+flowchart LR
+  S1["Vision EOD snapshot\nDatabricks main.general\ngold_vision_etoro"]
+  S2["SFTR derivation dataset\nDatabricks main.regtech_stg\nbronze_sftr_report"]
+  S3["Submission channel\nDirect DTCC SFTP (no vendor)"]
+  S4["DTCC response files\nAcknowledgements / Rejections / Validation"]
+  S5["Recon layer\nExpected vs Submitted vs Actual"]
+
+  S1 --> S2 --> S3 --> S4 --> S5

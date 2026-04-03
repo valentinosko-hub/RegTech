@@ -1,0 +1,5 @@
+flowchart LR
+  SRC["Trading events + internal event-processing services"]
+  SUB["Submission<br/>APA Event Hub -> TradeEcho"]
+  ACT["Actual state<br/>TradeEcho SFTP responses<br/>main.regtech.bronze_tradeecho_responses"]
+  SRC --> SUB --> ACT
