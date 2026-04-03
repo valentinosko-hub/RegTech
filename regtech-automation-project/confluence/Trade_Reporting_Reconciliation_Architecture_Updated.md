@@ -163,7 +163,7 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech -> Regis-TR / DTCC (by flow)
+- Submitted: Cappitech -> Regis-TR (by flow)
 - Actual: TR responses, with REGIS represented as live in current ingestion and DTCC coverage depending on flow
 
 ---
