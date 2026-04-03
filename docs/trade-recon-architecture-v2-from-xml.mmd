@@ -20,10 +20,11 @@ flowchart TB
     gold["Gold (main.regtech + main.dealing)\nExpected / Submitted / Actual recon-ready views"]
   end
 
-  lp["LP Execution Reality\nmain.dealing DUCO views + Dealing_staging LP feeds\nTrades / Positions (EOD) / Exposure"]
+  lp["LP Stage 1: Internal vs LP alignment\nSynapse DUCO views + Dealing_staging LP feeds\nExecution and position consistency checks"]
+  lpsub["LP Stage 2: Delegated submission state\nLP-reported submissions to REGIS / UNAVISTA / DTCC"]
   tr["Regulatory Responses (Actual State)\nmain.regtech bronze_* response datasets\nLive: REGIS + TradeEcho | Partial: DTCC/TRAX/UNAVISTA"]
 
-  recon["Reconciliation Engine (Databricks)\n3-way match: Expected / Submitted / Actual (+Execution)\nKeys: UTI / TradeID / LEI / order chain\nChecks: Completeness / Field / Lifecycle / Timeliness"]
+  recon["Reconciliation Engine (Databricks)\n3-way match: Expected / Submitted / Actual (+LP Stage-1 alignment)\nKeys: UTI / TradeID / LEI / order chain\nChecks: Completeness / Field / Lifecycle / Timeliness"]
   out["Outputs / Monitoring\nPower BI + exceptions + audit logs\nSeverity: Critical / Warning / Advisory"]
 
   legend["Legend:\nBlue = internal SQL/Synapse\nGreen = Databricks data platform\nPurple = submission channels/vendors"]
@@ -40,7 +41,9 @@ flowchart TB
   submission --> bronze
   bronze --> silver --> gold
   gold -->|Expected| recon
-  lp -->|Execution| recon
+  lp -->|Internal vs LP| recon
+  lp -->|Stage 2 handoff| lpsub
+  lpsub -->|Submitted (LP delegated)| recon
   tr -->|Actual| recon
   recon --> out
   report -->|Expected (SQL)| recon
