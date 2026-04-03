@@ -15,9 +15,9 @@ This document consolidates architecture and data-source details from the final d
 
 Regulations and reporting models covered:
 
-- MiFID (EU/UK) - TR/ARM-based
-- EMIR (EU/UK) - TR/ARM-based
-- ASIC - TR/ARM-based
+- MiFID (EU/UK) - ARM-based
+- EMIR (EU/UK) - TR-based
+- ASIC - TR-based
 - CAT (US) - event-driven
 - SFTR - direct to DTCC
 - LTR - manual/transitional
