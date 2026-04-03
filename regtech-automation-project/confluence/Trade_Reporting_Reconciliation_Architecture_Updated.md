@@ -15,9 +15,9 @@ This document consolidates architecture and data-source details from the final d
 
 Regulations and reporting models covered:
 
-- MiFID (EU/UK) - TR/ARM-based
-- EMIR (EU/UK) - TR/ARM-based
-- ASIC - TR/ARM-based
+- MiFID (EU/UK) - ARM-Based
+- EMIR (EU/UK) - TR-Based
+- ASIC - TR-Based
 - CAT (US) - event-driven
 - SFTR - direct to DTCC
 - LTR - manual/transitional
@@ -28,9 +28,9 @@ Regulations and reporting models covered:
 
 | Model | Regulation | Operating pattern | Submitted channel | Actual-state source |
 |---|---|---|---|---|
-| MiFID | MiFID (EU/UK) | TR/ARM-based | Cappitech -> TR/ARM endpoints | TR/ARM response files |
-| EMIR | EMIR (EU/UK) | TR/ARM-based | Cappitech -> Regis-TR/DTCC | TR response files |
-| ASIC | ASIC | TR/ARM-based | Cappitech -> ARM/TR path | ARM/TR response files |
+| MiFID | MiFID (EU/UK) | ARM-based | Cappitech -> TRAX (ARM path) | TRAX ARM response files |
+| EMIR | EMIR (EU/UK) | TR-based | Cappitech -> Regis-TR/DTCC | TR response files |
+| ASIC | ASIC | TR-based | Cappitech -> Regis-TR/DTCC | TR response files |
 | CAT | CAT (US) | Event-driven | S3 exchange -> FINRA CAT | CAT feedback files (SharePoint) |
 | SFTR | SFTR | Direct-to-TR | Direct DTCC XML/SFTP | DTCC acknowledgements/rejections |
 | LTR | LTR | Manual/transitional | FIPS VM -> CME/CFTC | Acknowledgement + transfer tracking |
@@ -87,7 +87,7 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 
 ### 3.2 External submission and feedback channels
 
-- Cappitech (TR/ARM submission path)
+- Cappitech (submission path split by model: TRAX for MiFID ARM; REGIS/DTCC for TR models)
 - S3 (CAT submission exchange)
 - TradeEcho/LSEG (APA)
 - DTCC (SFTR direct and TR responses by model)
@@ -109,7 +109,7 @@ Use each model section as:
 2. **Transformations / expected baseline** (golden source expectation)
 3. **Submitted / actual channels** (what was sent vs what was acknowledged/returned)
 
-## 4.1 MiFID (EU/UK) - TR/ARM-based
+## 4.1 MiFID (EU/UK) - ARM-Based
 
 ### Core internal sources
 
@@ -132,12 +132,12 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech files to TR/ARM endpoints (e.g., TRAX/REGIS/DTCC path by flow)
-- Actual: TR/ARM response files (where ingested), represented in Databricks response layers
+- Submitted: Cappitech files to TRAX ARM endpoints (MiFID EU/UK flows)
+- Actual: ARM response files from TRAX (where ingested), represented in Databricks response layers
 
 ---
 
-## 4.2 EMIR (EU/UK) - TR/ARM-based
+## 4.2 EMIR (EU/UK) - TR-Based
 
 ### Core internal sources
 
@@ -168,7 +168,7 @@ Use each model section as:
 
 ---
 
-## 4.3 ASIC - TR/ARM-based
+## 4.3 ASIC - TR-Based
 
 ### Core internal sources
 
@@ -198,7 +198,7 @@ Use each model section as:
 ### Submitted / actual channels
 
 - Submitted: Cappitech vendor files
-- Actual: ARM/TR response files by model path
+- Actual: TR response files by model path
 
 ---
 

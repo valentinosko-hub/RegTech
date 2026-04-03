@@ -4,20 +4,20 @@
 flowchart TB
   TITLE["Regulation-by-Regulation Data Source Flow"]
 
-  subgraph MIFID["MiFID (EU/UK) - TR/ARM-Based"]
+  subgraph MIFID["MiFID (EU/UK) - ARM-Based"]
     direction LR
     MF_S1["Trading + execution activity"]
     MF_S2["Client and account data"]
     MF_S3["Instrument and reference data"]
-    MF_SUB["Submission channel<br/>Cappitech -> TRAX/REGIS/DTCC"]
-    MF_ACT["Feedback / actual state<br/>TR or ARM response files"]
+    MF_SUB["Submission channel<br/>Cappitech -> TRAX (MiFID ARM)"]
+    MF_ACT["Feedback / actual state<br/>ARM response files (TRAX)"]
     MF_S1 --> MF_SUB
     MF_S2 --> MF_SUB
     MF_S3 --> MF_SUB
     MF_SUB --> MF_ACT
   end
 
-  subgraph EMIR["EMIR (EU/UK) - TR/ARM-Based"]
+  subgraph EMIR["EMIR (EU/UK) - TR-Based"]
     direction LR
     EM_S1["Trades + lifecycle events"]
     EM_S2["Collateral and valuation data"]
@@ -30,12 +30,12 @@ flowchart TB
     EM_SUB --> EM_ACT
   end
 
-  subgraph ASIC["ASIC - TR/ARM-Based"]
+  subgraph ASIC["ASIC - TR-Based"]
     direction LR
     AS_S1["Trades, positions, collateral"]
     AS_S2["Customer and instrument enrichment"]
     AS_SUB["Submission channel<br/>Cappitech vendor path"]
-    AS_ACT["Feedback / actual state<br/>ARM/TR response files"]
+    AS_ACT["Feedback / actual state<br/>TR response files"]
     AS_S1 --> AS_SUB
     AS_S2 --> AS_SUB
     AS_SUB --> AS_ACT

@@ -20,10 +20,10 @@ flowchart TD
 
   subgraph MODELS["Final Data Source Inventory - Reporting Models"]
     direction TB
-    subgraph TR["TR/ARM-Based (MiFID / EMIR / ASIC)"]
+    subgraph TR["Split reporting model with separate channels"]
       TR_EXP["Expected state<br/>Synapse + Hedge + RegReportDB reports"]
-      TR_SUB["Submitted state<br/>Cappitech submission files<br/>bronze_cappitech_* planned"]
-      TR_ACT["Actual state<br/>Regis/TRAX/DTCC responses<br/>Regis ingested, DTCC/TRAX pending"]
+      TR_SUB["Submitted state<br/>MiFID: Cappitech -> TRAX (ARM)<br/>EMIR/ASIC: Cappitech -> REGIS/DTCC (TR)<br/>bronze_cappitech_* planned"]
+      TR_ACT["Actual state<br/>MiFID: TRAX ARM responses<br/>EMIR/ASIC: REGIS/DTCC TR responses<br/>REGIS ingested; DTCC/TRAX pending by flow"]
       TR_EXP --> TR_SUB --> TR_ACT
     end
 

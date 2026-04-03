@@ -20,7 +20,7 @@ flowchart TD
 
   subgraph MODELS["Inventory Coverage by Reporting Model"]
     direction LR
-    M1["TR/ARM-based<br/>MiFID / EMIR / ASIC<br/>Expected: RegReportDB<br/>Submitted: Cappitech<br/>Actual: REGIS ingest live,<br/>DTCC/TRAX pending"]
+    M1["Split model<br/>MiFID ARM-based | EMIR/ASIC TR-based<br/>Expected: RegReportDB<br/>Submitted: Cappitech<br/>Actual: TRAX (MiFID ARM) and REGIS (EMIR/ASIC TR) ingest live,<br/>DTCC pending by flow"]
     M2["CAT (US)<br/>Expected: Reg_US datasets<br/>Submitted: S3<br/>Actual: FINRA CAT feedback"]
     M3["SFTR<br/>Vision snapshot to lifecycle events<br/>Direct DTCC (no vendor)<br/>Expected / Submitted / Actual"]
     M4["LTR (transitional)<br/>Expected: position datasets<br/>Submitted: CME/CFTC via FIPS VM<br/>Actual: acknowledgements only"]
