@@ -1,0 +1,32 @@
+# CAT (US) Reporting Model - Data Source Flow
+
+```mermaid
+flowchart TB
+  T["CAT (US) - Data Source Flow"]
+  S1["Operational/log event tables<br/>Databricks main.general + main.bi_db<br/>order, route, execution histories"]
+  S2["US customer reference<br/>Reg_Ext_US_* (SQL + main.regtech_stg)"]
+  E["Expected state<br/>Reg_US_* datasets in RegReportDB<br/>mirrored in main.regtech gold_*"]
+  U["Submitted state<br/>S3 vendor exchange -> FINRA CAT"]
+  A["Actual state<br/>CAT feedback files<br/>SharePoint (eToro USA)"]
+  R["Recon control<br/>event-chain completeness and sequencing"]
+
+  T --> S1
+  T --> S2
+  S1 --> E
+  S2 --> E
+  E --> U --> A --> R
+
+  classDef title fill:#e6f0ff,stroke:#2f6fab,stroke-width:2px,color:#0e2a47,font-weight:bold;
+  classDef source fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef expected fill:#fff2cc,stroke:#d6b656,stroke-width:1px,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,stroke-width:1px,color:#2f1a5f;
+  classDef actual fill:#cfe2f3,stroke:#3d85c6,stroke-width:1px,color:#0e2a47;
+  classDef recon fill:#f8cecc,stroke:#b8544a,stroke-width:1px,color:#4a1212;
+
+  class T title;
+  class S1,S2 source;
+  class E expected;
+  class U submitted;
+  class A actual;
+  class R recon;
+```

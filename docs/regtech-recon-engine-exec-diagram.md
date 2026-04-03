@@ -1,0 +1,106 @@
+# RegTech Recon Engine Diagram (Executive Summary, Final Inventory)
+
+```mermaid
+flowchart TD
+  subgraph KPI["Regulatory Recon Engine - Executive View (Final Inventory)"]
+    direction LR
+    K1["10-20 External SFTPs"]
+    K2["Daily automated runs"]
+    K3["3 quality checks<br/>Completeness / Correctness / Timeliness"]
+  end
+
+  subgraph LAYER["Presentation Structure"]
+    direction LR
+    L1["Layer 1<br/>Data Sources"]
+    L2["Layer 2<br/>Ingestion"]
+    L3["Layer 3<br/>Normalisation + Recon"]
+    L4["Layer 4<br/>Outputs"]
+    L1 --> L2 --> L3 --> L4
+  end
+
+  subgraph MODELS["Inventory Coverage by Reporting Model"]
+    direction LR
+    M1["TR/ARM-based<br/>MiFID / EMIR / ASIC<br/>Expected: RegReportDB<br/>Submitted: Cappitech<br/>Actual: REGIS ingest live,<br/>DTCC/TRAX pending"]
+    M2["CAT (US)<br/>Expected: Reg_US datasets<br/>Submitted: S3<br/>Actual: FINRA CAT feedback"]
+    M3["SFTR<br/>Vision snapshot to lifecycle events<br/>Direct DTCC (no vendor)<br/>Expected / Submitted / Actual"]
+    M4["LTR (transitional)<br/>Expected: position datasets<br/>Submitted: CME/CFTC via FIPS VM<br/>Actual: acknowledgements only"]
+    M5["LP delegated<br/>Internal DUCO vs LP data,<br/>then LP vs TR response<br/>REGIS full, UNAVISTA/DTCC partial"]
+    M6["APA real-time<br/>Trading Event Hub to TradeEcho<br/>Actual: TradeEcho SFTP responses"]
+  end
+
+  subgraph CORE["Shared Databricks Recon Backbone"]
+    direction LR
+    BR["Bronze ingestion<br/>SFTP / Event Hub / SharePoint / transfer logs"]
+    SI["Silver harmonisation"]
+    GO["Gold expected-submitted-actual views"]
+    RE["Recon and validation engine"]
+    AU["Audit and remediation trace"]
+    BR --> SI --> GO --> RE --> AU
+  end
+
+  subgraph OUT["Operations and Reporting"]
+    direction LR
+    UI["Failure UI<br/>Critical / Warning / Advisory"]
+    DASH["React dashboard on App Service"]
+    REP["Delta tables / Power BI / alerts"]
+    UI --> DASH --> REP
+  end
+
+  subgraph CTRL["Controls and Risks"]
+    direction LR
+    SEC["Unity Catalog / RBAC / Key Vault / private networking"]
+    RISK["Known gaps<br/>Manual sheets risk<br/>Split SQL-DBX ownership<br/>Partial ingestion coverage"]
+  end
+
+  subgraph ROAD["Roadmap"]
+    direction LR
+    R1["Self-reporting"]
+    R2["Manual fix from UI"]
+    R3["Custom alerts and checks"]
+    R4["NCA auto-reporting"]
+  end
+
+  K1 --> M1
+  K1 --> M3
+  K1 --> M5
+  K2 --> CORE
+  K3 --> RE
+
+  M1 --> BR
+  M2 --> BR
+  M3 --> BR
+  M4 --> BR
+  M5 --> BR
+  M6 --> BR
+
+  LAYER --> CORE
+  RE --> UI
+  AU --> UI
+
+  SEC -.-> CORE
+  SEC -.-> DASH
+  RISK -.-> CORE
+
+  DASH -.-> R1
+  DASH -.-> R2
+  DASH -.-> R3
+  DASH -.-> R4
+
+  classDef kpi fill:#d8ecff,stroke:#2f6fab,stroke-width:1px,color:#0e2a47;
+  classDef layer fill:#f0f7ff,stroke:#3f6ca8,stroke-width:1px,color:#123457;
+  classDef model fill:#def7df,stroke:#2f8f4f,stroke-width:1px,color:#12391f;
+  classDef core fill:#efe5ff,stroke:#6f42c1,stroke-width:1px,color:#2f1a5f;
+  classDef out fill:#e8f9f3,stroke:#1d8a66,stroke-width:1px,color:#0f3c2e;
+  classDef ctrl fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
+  classDef road fill:#fff7d6,stroke:#9b8700,stroke-width:1px,color:#3d3400;
+  classDef risks fill:#fff0f0,stroke:#a33,stroke-width:1px,color:#4a1212;
+
+  class K1,K2,K3 kpi;
+  class L1,L2,L3,L4 layer;
+  class M1,M2,M3,M4,M5,M6 model;
+  class BR,SI,GO,RE,AU core;
+  class UI,DASH,REP out;
+  class SEC ctrl;
+  class RISK risks;
+  class R1,R2,R3,R4 road;
+```

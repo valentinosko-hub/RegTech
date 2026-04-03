@@ -1,0 +1,18 @@
+flowchart LR
+  TITLE["LP Delegated Reporting - Data Source Flow"]
+  A["Internal DUCO execution data<br/>Synapse: Dealing_Duco_EODRecon / ActivityRecon"] --> B["Derived internal LP recon tables<br/>Dealing_IGReconTrades / Dealing_IGReconEODHolding"]
+  C["LP provider source data<br/>SYNAPSE-DWH-PROD.sql_dp_prod_we.Dealing_staging<br/>LP_EdnF_* / LP_GS_* / LP_UBS_* / LP_IG_* / LP_SAXO_*"] --> B
+  B --> D["Submitted state<br/>LP delegated submission<br/>REGIS / UNAVISTA / DTCC"]
+  D --> E["Actual state<br/>TR response files<br/>REGIS ingested; UNAVISTA / DTCC pending"]
+  E --> F["Reconciliation output<br/>Stage 1: Internal vs LP<br/>Stage 2: LP submitted vs TR actual"]
+  TITLE --> A
+  classDef title fill:#0f3d4c,stroke:#0f3d4c,color:#ffffff,fontStyle:bold;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47;
+  classDef recon fill:#d5e8d4,stroke:#6aa84f,color:#12391f;
+  class TITLE title;
+  class A,B,C expected;
+  class D submitted;
+  class E actual;
+  class F recon;

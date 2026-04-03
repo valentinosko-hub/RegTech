@@ -1,0 +1,34 @@
+flowchart LR
+  T["EMIR (EU/UK) - Data Source Flow"]
+  subgraph SRC["EMIR (EU/UK) - Data Sources"]
+    direction TB
+    A["Synapse DWH<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+    B["SQL Server RegReportDB<br/>EMIR2_* source tables + shared refs"]
+    C["Hedge Execution<br/>AZR-W-REAL-DB-2-BIDBUser / etoro.Hedge.ExecutionLog"]
+    D["ANNA DSB UPI refs<br/>AZR-WE-BI-20.RTS (UPI_*)"]
+  end
+  CTRL["Operational / BI completeness control<br/>Synapse source-of-truth compared to EMIR expected reports"]
+  U["EMIR upstream ext_ transforms<br/>EMIR2_ext_* + shared Reg_Ext_*"]
+  E["Expected dataset<br/>EMIR2_Refit_Report* / collateral reports"]
+  S["Submitted state<br/>Cappitech -> Regis-TR / DTCC"]
+  R["Actual responses<br/>REGIS (live), DTCC (partial/pending by flow)"]
+  X["Recon output<br/>Expected vs Submitted vs Actual (+ completeness control)"]
+  T --> A
+  A --> CTRL
+  A --> U
+  B --> U
+  C --> U
+  D --> U
+  U --> E --> S --> R --> X
+  E --> CTRL
+  CTRL --> X
+
+  classDef title fill:#243447,stroke:#0f1a24,color:#ffffff,fontWeight:bold,fontSize:14px;
+  classDef expected fill:#fff2cc,stroke:#d6b656,color:#4a3900,fontWeight:bold;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,color:#2f1a5f,fontWeight:bold;
+  classDef actual fill:#dae8fc,stroke:#6c8ebf,color:#0e2a47,fontWeight:bold;
+
+  class T title;
+  class E expected;
+  class S submitted;
+  class R actual;

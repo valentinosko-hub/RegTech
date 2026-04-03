@@ -1,0 +1,26 @@
+# SFTR Reporting Model - Data Source Flow
+
+```mermaid
+flowchart LR
+  T["SFTR - Data Source Flow"]
+  S1["Vision EOD snapshot<br/>Databricks main.general<br/>gold_vision_etoro"]
+  S2["SFTR derivation dataset<br/>Databricks main.regtech_stg<br/>bronze_sftr_report"]
+  S3["Submission channel<br/>Direct DTCC SFTP (no vendor)"]
+  S4["DTCC response files<br/>Acknowledgements / Rejections / Validation"]
+  S5["Recon layer<br/>Expected vs Submitted vs Actual"]
+
+  T --> S1
+  S1 --> S2 --> S3 --> S4 --> S5
+
+  classDef title fill:#e6f0ff,stroke:#2f6fab,stroke-width:2px,color:#0e2a47,font-weight:bold;
+  classDef expected fill:#fff2cc,stroke:#d6b656,stroke-width:1px,color:#4a3900;
+  classDef submitted fill:#e6e0f8,stroke:#7f70bf,stroke-width:1px,color:#2f1a5f;
+  classDef actual fill:#cfe2f3,stroke:#3d85c6,stroke-width:1px,color:#0e2a47;
+  classDef neutral fill:#f4f4f4,stroke:#666,stroke-width:1px,color:#222;
+
+  class T title;
+  class S2,S5 expected;
+  class S3 submitted;
+  class S4 actual;
+  class S1 neutral;
+```
