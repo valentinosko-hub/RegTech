@@ -28,9 +28,9 @@ Regulations and reporting models covered:
 
 | Model | Regulation | Operating pattern | Submitted channel | Actual-state source |
 |---|---|---|---|---|
-| MiFID | MiFID (EU/UK) | TR/ARM-based | Cappitech -> TR/ARM endpoints | TR/ARM response files |
-| EMIR | EMIR (EU/UK) | TR/ARM-based | Cappitech -> Regis-TR/DTCC | TR response files |
-| ASIC | ASIC | TR/ARM-based | Cappitech -> ARM/TR path | ARM/TR response files |
+| MiFID | MiFID (EU/UK) | ARM-based | Cappitech -> TRAX endpoints | ARM response files |
+| EMIR | EMIR (EU/UK) | TR-based | Cappitech -> Regis-TR | TR response files |
+| ASIC | ASIC | TR-based | Cappitech -> DTCC | TR response files |
 | CAT | CAT (US) | Event-driven | S3 exchange -> FINRA CAT | CAT feedback files (SharePoint) |
 | SFTR | SFTR | Direct-to-TR | Direct DTCC XML/SFTP | DTCC acknowledgements/rejections |
 | LTR | LTR | Manual/transitional | FIPS VM -> CME/CFTC | Acknowledgement + transfer tracking |
