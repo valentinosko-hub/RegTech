@@ -9,8 +9,8 @@ flowchart TB
     MF_S1["Trading + execution activity"]
     MF_S2["Client and account data"]
     MF_S3["Instrument and reference data"]
-    MF_SUB["Submission channel\nCappitech -> TRAX/REGIS/DTCC"]
-    MF_ACT["Feedback / actual state\nTR or ARM response files"]
+    MF_SUB["Submission channel<br/>Cappitech -> TRAX/REGIS/DTCC"]
+    MF_ACT["Feedback / actual state<br/>TR or ARM response files"]
     MF_S1 --> MF_SUB
     MF_S2 --> MF_SUB
     MF_S3 --> MF_SUB
@@ -22,8 +22,8 @@ flowchart TB
     EM_S1["Trades + lifecycle events"]
     EM_S2["Collateral and valuation data"]
     EM_S3["Counterparty + UTI references"]
-    EM_SUB["Submission channel\nCappitech -> REGIS/DTCC"]
-    EM_ACT["Feedback / actual state\nTR reconciliations, rejections, warnings"]
+    EM_SUB["Submission channel<br/>Cappitech -> REGIS/DTCC"]
+    EM_ACT["Feedback / actual state<br/>TR reconciliations, rejections, warnings"]
     EM_S1 --> EM_SUB
     EM_S2 --> EM_SUB
     EM_S3 --> EM_SUB
@@ -34,8 +34,8 @@ flowchart TB
     direction LR
     AS_S1["Trades, positions, collateral"]
     AS_S2["Customer and instrument enrichment"]
-    AS_SUB["Submission channel\nCappitech vendor path"]
-    AS_ACT["Feedback / actual state\nARM/TR response files"]
+    AS_SUB["Submission channel<br/>Cappitech vendor path"]
+    AS_ACT["Feedback / actual state<br/>ARM/TR response files"]
     AS_S1 --> AS_SUB
     AS_S2 --> AS_SUB
     AS_SUB --> AS_ACT
@@ -43,10 +43,10 @@ flowchart TB
 
   subgraph CAT["CAT (US) - Event-Based"]
     direction LR
-    CAT_S1["Order lifecycle events\ncreate, route, modify, cancel, execute"]
+    CAT_S1["Order lifecycle events<br/>create, route, modify, cancel, execute"]
     CAT_S2["Customer and account mappings"]
-    CAT_SUB["Submission channel\nS3 vendor exchange -> FINRA CAT"]
-    CAT_ACT["Feedback / actual state\nCAT portal files (SharePoint)"]
+    CAT_SUB["Submission channel<br/>S3 vendor exchange -> FINRA CAT"]
+    CAT_ACT["Feedback / actual state<br/>CAT portal files (SharePoint)"]
     CAT_S1 --> CAT_SUB
     CAT_S2 --> CAT_SUB
     CAT_SUB --> CAT_ACT
@@ -56,8 +56,8 @@ flowchart TB
     direction LR
     SF_S1["Vision EOD snapshots"]
     SF_S2["Derived lifecycle + collateral events"]
-    SF_SUB["Submission channel\nDirect DTCC SFTP (no vendor)"]
-    SF_ACT["Feedback / actual state\nDTCC acknowledgements/rejections"]
+    SF_SUB["Submission channel<br/>Direct DTCC SFTP (no vendor)"]
+    SF_ACT["Feedback / actual state<br/>DTCC acknowledgements/rejections"]
     SF_S1 --> SF_S2 --> SF_SUB --> SF_ACT
   end
 
@@ -65,8 +65,8 @@ flowchart TB
     direction LR
     LT_S1["Futures EOD holdings + ownership data"]
     LT_S2["Threshold and aggregation controls"]
-    LT_SUB["Submission channel\nFIPS VM -> CME/CFTC"]
-    LT_ACT["Feedback / actual state\nAcknowledgements + transfer logs (limited)"]
+    LT_SUB["Submission channel<br/>FIPS VM -> CME/CFTC"]
+    LT_ACT["Feedback / actual state<br/>Acknowledgements + transfer logs (limited)"]
     LT_S1 --> LT_S2 --> LT_SUB --> LT_ACT
   end
 
@@ -74,8 +74,8 @@ flowchart TB
     direction LR
     LP_S1["Internal DUCO execution data"]
     LP_S2["LP-provided trade and position files"]
-    LP_SUB["Submission channel\nLP reports to REGIS/UNAVISTA/DTCC"]
-    LP_ACT["Feedback / actual state\nTR responses (REGIS full, others partial)"]
+    LP_SUB["Submission channel<br/>LP reports to REGIS/UNAVISTA/DTCC"]
+    LP_ACT["Feedback / actual state<br/>TR responses (REGIS full, others partial)"]
     LP_S1 --> LP_SUB
     LP_S2 --> LP_SUB
     LP_SUB --> LP_ACT
@@ -85,15 +85,15 @@ flowchart TB
     direction LR
     AP_S1["Trade events from trading systems"]
     AP_S2["Internal event-processing services"]
-    AP_SUB["Submission channel\nAPA Event Hub -> TradeEcho"]
-    AP_ACT["Feedback / actual state\nTradeEcho SFTP confirmations"]
+    AP_SUB["Submission channel<br/>APA Event Hub -> TradeEcho"]
+    AP_ACT["Feedback / actual state<br/>TradeEcho SFTP confirmations"]
     AP_S1 --> AP_S2 --> AP_SUB --> AP_ACT
   end
 
   subgraph SHARED["Shared Business Controls"]
     direction LR
     C1["Expected vs Submitted vs Actual control view"]
-    C2["Severity model\nCritical / Warning / Advisory"]
+    C2["Severity model<br/>Critical / Warning / Advisory"]
     C3["Audit evidence and traceability"]
   end
 

@@ -3,31 +3,31 @@ flowchart TD
     direction LR
     K1["10-20 External SFTPs"]
     K2["Daily automated runs"]
-    K3["3 quality checks\nCompleteness / Correctness / Timeliness"]
+    K3["3 quality checks<br/>Completeness / Correctness / Timeliness"]
   end
 
   subgraph LAYER["Presentation Structure"]
     direction LR
-    L1["Layer 1\nData Sources"]
-    L2["Layer 2\nIngestion"]
-    L3["Layer 3\nNormalisation + Recon"]
-    L4["Layer 4\nOutputs"]
+    L1["Layer 1<br/>Data Sources"]
+    L2["Layer 2<br/>Ingestion"]
+    L3["Layer 3<br/>Normalisation + Recon"]
+    L4["Layer 4<br/>Outputs"]
     L1 --> L2 --> L3 --> L4
   end
 
   subgraph MODELS["Inventory Coverage by Reporting Model"]
     direction LR
-    M1["TR/ARM-based\nMiFID / EMIR / ASIC\nExpected: RegReportDB\nSubmitted: Cappitech\nActual: REGIS ingest live,\nDTCC/TRAX pending"]
-    M2["CAT (US)\nExpected: Reg_US datasets\nSubmitted: S3\nActual: FINRA CAT feedback"]
-    M3["SFTR\nVision snapshot to lifecycle events\nDirect DTCC (no vendor)\nExpected / Submitted / Actual"]
-    M4["LTR (transitional)\nExpected: position datasets\nSubmitted: CME/CFTC via FIPS VM\nActual: acknowledgements only"]
-    M5["LP delegated\nInternal DUCO vs LP data,\nthen LP vs TR response\nREGIS full, UNAVISTA/DTCC partial"]
-    M6["APA real-time\nTrading Event Hub to TradeEcho\nActual: TradeEcho SFTP responses"]
+    M1["TR/ARM-based<br/>MiFID / EMIR / ASIC<br/>Expected: RegReportDB<br/>Submitted: Cappitech<br/>Actual: REGIS ingest live,<br/>DTCC/TRAX pending"]
+    M2["CAT (US)<br/>Expected: Reg_US datasets<br/>Submitted: S3<br/>Actual: FINRA CAT feedback"]
+    M3["SFTR<br/>Vision snapshot to lifecycle events<br/>Direct DTCC (no vendor)<br/>Expected / Submitted / Actual"]
+    M4["LTR (transitional)<br/>Expected: position datasets<br/>Submitted: CME/CFTC via FIPS VM<br/>Actual: acknowledgements only"]
+    M5["LP delegated<br/>Internal DUCO vs LP data,<br/>then LP vs TR response<br/>REGIS full, UNAVISTA/DTCC partial"]
+    M6["APA real-time<br/>Trading Event Hub to TradeEcho<br/>Actual: TradeEcho SFTP responses"]
   end
 
   subgraph CORE["Shared Databricks Recon Backbone"]
     direction LR
-    BR["Bronze ingestion\nSFTP / Event Hub / SharePoint / transfer logs"]
+    BR["Bronze ingestion<br/>SFTP / Event Hub / SharePoint / transfer logs"]
     SI["Silver harmonisation"]
     GO["Gold expected-submitted-actual views"]
     RE["Recon and validation engine"]
@@ -37,7 +37,7 @@ flowchart TD
 
   subgraph OUT["Operations and Reporting"]
     direction LR
-    UI["Failure UI\nCritical / Warning / Advisory"]
+    UI["Failure UI<br/>Critical / Warning / Advisory"]
     DASH["React dashboard on App Service"]
     REP["Delta tables / Power BI / alerts"]
     UI --> DASH --> REP
@@ -46,7 +46,7 @@ flowchart TD
   subgraph CTRL["Controls and Risks"]
     direction LR
     SEC["Unity Catalog / RBAC / Key Vault / private networking"]
-    RISK["Known gaps\nManual sheets risk\nSplit SQL-DBX ownership\nPartial ingestion coverage"]
+    RISK["Known gaps<br/>Manual sheets risk<br/>Split SQL-DBX ownership<br/>Partial ingestion coverage"]
   end
 
   subgraph ROAD["Roadmap"]

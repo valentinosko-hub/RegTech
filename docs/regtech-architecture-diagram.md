@@ -21,56 +21,56 @@ flowchart TD
   subgraph MODELS["Final Data Source Inventory - Reporting Models"]
     direction TB
     subgraph TR["TR/ARM-Based (MiFID / EMIR / ASIC)"]
-      TR_EXP["Expected state\nSynapse + Hedge + RegReportDB reports"]
-      TR_SUB["Submitted state\nCappitech submission files\nbronze_cappitech_* planned"]
-      TR_ACT["Actual state\nRegis/TRAX/DTCC responses\nRegis ingested, DTCC/TRAX pending"]
+      TR_EXP["Expected state<br/>Synapse + Hedge + RegReportDB reports"]
+      TR_SUB["Submitted state<br/>Cappitech submission files<br/>bronze_cappitech_* planned"]
+      TR_ACT["Actual state<br/>Regis/TRAX/DTCC responses<br/>Regis ingested, DTCC/TRAX pending"]
       TR_EXP --> TR_SUB --> TR_ACT
     end
 
     subgraph CAT["CAT (US) Event-Driven"]
-      CAT_EXP["Expected state\nReg_US_* datasets (SQL + main.regtech gold mirrors)"]
-      CAT_SUB["Submitted state\nS3 vendor exchange"]
-      CAT_ACT["Actual state\nFINRA CAT feedback files via SharePoint"]
+      CAT_EXP["Expected state<br/>Reg_US_* datasets (SQL + main.regtech gold mirrors)"]
+      CAT_SUB["Submitted state<br/>S3 vendor exchange"]
+      CAT_ACT["Actual state<br/>FINRA CAT feedback files via SharePoint"]
       CAT_EXP --> CAT_SUB --> CAT_ACT
     end
 
     subgraph SFTR["SFTR Direct to DTCC"]
-      SFTR_EXP["Expected state\nVision EOD -> lifecycle derivation\nmain.regtech_stg.bronze_sftr_report"]
-      SFTR_SUB["Submitted state\nDaily SFTR XML direct to DTCC (no vendor)"]
-      SFTR_ACT["Actual state\nDTCC acknowledgements/rejections via SFTP"]
+      SFTR_EXP["Expected state<br/>Vision EOD -> lifecycle derivation<br/>main.regtech_stg.bronze_sftr_report"]
+      SFTR_SUB["Submitted state<br/>Daily SFTR XML direct to DTCC (no vendor)"]
+      SFTR_ACT["Actual state<br/>DTCC acknowledgements/rejections via SFTP"]
       SFTR_EXP --> SFTR_SUB --> SFTR_ACT
     end
 
     subgraph LTR["LTR Manual / Transitional"]
-      LTR_EXP["Expected state\nmain.dealing futures holdings + customer ownership"]
-      LTR_SUB["Submitted state\nFIPS VM transfer to CME/CFTC\nLTR + 102A payloads"]
-      LTR_ACT["Limited actual state\nacknowledgements + transfer logs\nbronze_ltr_* tracking tables"]
+      LTR_EXP["Expected state<br/>main.dealing futures holdings + customer ownership"]
+      LTR_SUB["Submitted state<br/>FIPS VM transfer to CME/CFTC<br/>LTR + 102A payloads"]
+      LTR_ACT["Limited actual state<br/>acknowledgements + transfer logs<br/>bronze_ltr_* tracking tables"]
       LTR_EXP --> LTR_SUB --> LTR_ACT
     end
 
     subgraph LP["LP Delegated Reporting"]
-      LP_EXP["Stage 1 expected\nInternal DUCO execution vs LP source data"]
-      LP_SUB["Stage 2 submitted/regulatory path\nLP reports to REGIS / UNAVISTA / DTCC"]
-      LP_ACT["Actual state\nREGIS full coverage, UNAVISTA/DTCC partial\ningestion pending for non-REGIS"]
+      LP_EXP["Stage 1 expected<br/>Internal DUCO execution vs LP source data"]
+      LP_SUB["Stage 2 submitted/regulatory path<br/>LP reports to REGIS / UNAVISTA / DTCC"]
+      LP_ACT["Actual state<br/>REGIS full coverage, UNAVISTA/DTCC partial<br/>ingestion pending for non-REGIS"]
       LP_EXP --> LP_SUB --> LP_ACT
     end
 
     subgraph APA["APA Real-Time (MiFID)"]
-      APA_EXP["Expected events\nTrading Event Hub -> internal services -> APA Event Hub"]
-      APA_SUB["Submitted state\nTradeEcho publication stream (Event Hub path)"]
-      APA_ACT["Actual state\nTradeEcho SFTP responses\nmain.regtech.bronze_tradeecho_responses"]
+      APA_EXP["Expected events<br/>Trading Event Hub -> internal services -> APA Event Hub"]
+      APA_SUB["Submitted state<br/>TradeEcho publication stream (Event Hub path)"]
+      APA_ACT["Actual state<br/>TradeEcho SFTP responses<br/>main.regtech.bronze_tradeecho_responses"]
       APA_EXP --> APA_SUB --> APA_ACT
     end
   end
 
   subgraph DBX["Databricks Normalisation + Reconciliation Layer"]
     direction LR
-    BR["Bronze ingestion\nSFTP / EventHub / SharePoint / transfer logs"]
-    SI["Silver harmonisation\nReport-specific standardisation and enrichment"]
-    GO["Gold views\nExpected vs Submitted vs Actual by report type"]
-    RECON["Recon engine\ntrade, event, lifecycle, position matching"]
-    VALID["Validation packs\nfield-level, sequencing, threshold, transfer checks"]
-    AUD["Audit + semantic context\ntimestamp, user attribution, remediation trace"]
+    BR["Bronze ingestion<br/>SFTP / EventHub / SharePoint / transfer logs"]
+    SI["Silver harmonisation<br/>Report-specific standardisation and enrichment"]
+    GO["Gold views<br/>Expected vs Submitted vs Actual by report type"]
+    RECON["Recon engine<br/>trade, event, lifecycle, position matching"]
+    VALID["Validation packs<br/>field-level, sequencing, threshold, transfer checks"]
+    AUD["Audit + semantic context<br/>timestamp, user attribution, remediation trace"]
     BR --> SI --> GO --> RECON --> VALID --> AUD
   end
 
@@ -84,7 +84,7 @@ flowchart TD
     C["Critical"]
     W["Warning"]
     A["Advisory"]
-    PANEL["Failure context panel\nstep-by-step fix guide\nseverity filters\nresolution audit log"]
+    PANEL["Failure context panel<br/>step-by-step fix guide<br/>severity filters<br/>resolution audit log"]
     C --> PANEL
     W --> PANEL
     A --> PANEL
@@ -94,7 +94,7 @@ flowchart TD
     direction LR
     DASH["React dashboard on Azure App Service"]
     PBI["Power BI views and compliance exports"]
-    ALERT["Alerts\nEmail / Slack / Teams"]
+    ALERT["Alerts<br/>Email / Slack / Teams"]
     DELTA["Delta results and audit tables"]
     DASH --> ALERT
     DASH --> PBI

@@ -2,11 +2,23 @@
 
 ```mermaid
 flowchart LR
-  A1["Operational source of truth<br/>Synapse DWH + Hedge execution logs"] --> A2["RegReportDB source tables (ASIC)<br/>ASIC2_Positions / ASIC2_InstrumentMetaData / ASIC2_Daily_Prices"]
-  A2 --> A3["Upstream ext_ transforms (RegReportDB)<br/>ASIC2_ext_Position / ASIC2_ext_Customer / liabilities / open positions"]
-  A3 --> A4["Expected reporting baseline<br/>ASIC2_Transactions / ASIC2_Positions_AGG / ASIC2_Collateral"]
-  A4 --> A5["Submitted state<br/>Cappitech vendor files -> ARM/TR endpoints"]
-  A5 --> A6["Actual state responses<br/>TRAX / TR response files (where ingested)"]
-  A6 --> A7["Databricks reconcile path<br/>Bronze -> Silver -> Gold -> Recon Engine"]
+  OBI["Operational / BI comparison source<br/>Synapse DWH snapshots (completeness control only)"]
+  SRC2["SQL Server RegReportDB<br/>AZR-WE-BI-21<br/>ASIC2 source + ext_* tables"]
+  SRC3["Hedge execution<br/>AZR-W-REAL-DB-2-BIDBUser<br/>ExecutionLog"]
+  SRC4["Reference enrichment<br/>ANNA DSB (AZR-WE-BI-20.RTS)<br/>Reg_Instruments_SCD / Liquidity accounts"]
+
+  EXP["Expected state<br/>ASIC2_Transactions / ASIC2_Transactions_Hedge<br/>ASIC2_Positions_AGG / ASIC2_Collateral"]
+  SUB["Submitted state<br/>Cappitech vendor submission files"]
+  ACT["Actual state<br/>TR/ARM response files (REGIS/TRAX/DTCC path)"]
+  DBX["Databricks recon path<br/>bronze -> silver -> gold"]
+  REC["Reconciliation<br/>Expected vs Submitted vs Actual"]
+  CMP["Completeness control<br/>Operational/BI vs expected reporting baseline"]
+
+  SRC2 --> EXP
+  SRC3 --> EXP
+  SRC4 --> EXP
+  EXP --> SUB --> ACT --> DBX --> REC
+  OBI --> CMP
+  EXP --> CMP
 ```
 

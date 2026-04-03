@@ -1,34 +1,34 @@
 flowchart TB
   subgraph SW1["Source Systems"]
     direction LR
-    s1["Synapse (SYNAPSE-DWH-PROD)\nsql_dp_prod_we.DWH_dbo\nDim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
-    s2["SQL Server (AZR-WE-BI-21)\nRegReportDB\nSource + reporting tables (MiFID/EMIR/ASIC/CAT)"]
-    s3["Synapse (SYNAPSE-DWH-PROD)\nDealing_dbo / DUCO staging\nInternal LP reconciliation datasets"]
-    s4["SQL Server (AZR-W-REAL-DB-2-BIDBUser)\netoro.Hedge.ExecutionLog"]
-    s5["Databricks (main.general)\nVision SFTR snapshots\ngold_vision_etoro"]
-    s6["Synapse (Dealing_staging)\nLP_* provider tables\nSaxo / UBS / IG / Marex / Goldman"]
+    s1["Synapse (SYNAPSE-DWH-PROD)<br/>sql_dp_prod_we.DWH_dbo<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+    s2["SQL Server (AZR-WE-BI-21)<br/>RegReportDB<br/>Source + reporting tables (MiFID/EMIR/ASIC/CAT)"]
+    s3["Synapse (SYNAPSE-DWH-PROD)<br/>Dealing_dbo / DUCO staging<br/>Internal LP reconciliation datasets"]
+    s4["SQL Server (AZR-W-REAL-DB-2-BIDBUser)<br/>etoro.Hedge.ExecutionLog"]
+    s5["Databricks (main.general)<br/>Vision SFTR snapshots<br/>gold_vision_etoro"]
+    s6["Synapse (Dealing_staging)<br/>LP_* provider tables<br/>Saxo / UBS / IG / Marex / Goldman"]
   end
 
-  regext["Upstream / RegExt Layer\nAZR-WE-BI-21 RegReportDB ext_*\nSSIS + stored procedure transformations"]
-  report["Regulatory Reporting (Golden Source)\nRegReportDB audit baselines (Expected)\nMIFID2_* / EMIR*_Report / ASIC2_* / Reg_US_*"]
-  submission["Submission Channels\nCappitech (TR/ARM), S3 (CAT), TradeEcho (APA)\nDTCC direct (SFTR), CME/CFTC via FIPS (LTR)"]
+  regext["Upstream / RegExt Layer<br/>AZR-WE-BI-21 RegReportDB ext_*<br/>SSIS + stored procedure transformations"]
+  report["Regulatory Reporting (Golden Source)<br/>RegReportDB audit baselines (Expected)<br/>MIFID2_* / EMIR*_Report / ASIC2_* / Reg_US_*"]
+  submission["Submission Channels<br/>Cappitech (TR/ARM), S3 (CAT), TradeEcho (APA)<br/>DTCC direct (SFTR), CME/CFTC via FIPS (LTR)"]
 
   subgraph DB["Databricks Platform"]
     direction LR
-    bronze["Bronze (main.regtech_stg / main.regtech)\nREGIS S030/S091/S092/S106/S107 + TradeEcho responses\nSFTR/LTR file runs + transfer logs"]
-    silver["Silver (main.regtech)\nStandardisation + ESMA/FCA enrichment"]
-    gold["Gold (main.regtech + main.dealing)\nExpected / Submitted / Actual recon-ready views"]
+    bronze["Bronze (main.regtech_stg / main.regtech)<br/>REGIS S030/S091/S092/S106/S107 + TradeEcho responses<br/>SFTR/LTR file runs + transfer logs"]
+    silver["Silver (main.regtech)<br/>Standardisation + ESMA/FCA enrichment"]
+    gold["Gold (main.regtech + main.dealing)<br/>Expected / Submitted / Actual recon-ready views"]
   end
 
-  lp["LP Stage 1: Internal vs LP alignment\nSynapse DUCO views + Dealing_staging LP feeds\nExecution and position consistency checks"]
-  lpsub["LP Stage 2: Delegated submission state\nLP-reported submissions to REGIS / UNAVISTA / DTCC"]
-  tr["Regulatory Responses (Actual State)\nmain.regtech bronze_* response datasets\nLive: REGIS + TradeEcho | Partial: DTCC/TRAX/UNAVISTA"]
+  lp["LP Stage 1: Internal vs LP alignment<br/>Synapse DUCO views + Dealing_staging LP feeds<br/>Execution and position consistency checks"]
+  lpsub["LP Stage 2: Delegated submission state<br/>LP-reported submissions to REGIS / UNAVISTA / DTCC"]
+  tr["Regulatory Responses (Actual State)<br/>main.regtech bronze_* response datasets<br/>Live: REGIS + TradeEcho | Partial: DTCC/TRAX/UNAVISTA"]
 
-  recon["Reconciliation Engine (Databricks)\n3-way match: Expected / Submitted / Actual (+LP Stage-1 alignment)\nKeys: UTI / TradeID / LEI / order chain\nChecks: Completeness / Field / Lifecycle / Timeliness"]
-  out["Outputs / Monitoring\nPower BI + exceptions + audit logs\nSeverity: Critical / Warning / Advisory"]
+  recon["Reconciliation Engine (Databricks)<br/>3-way match: Expected / Submitted / Actual (+LP Stage-1 alignment)<br/>Keys: UTI / TradeID / LEI / order chain<br/>Checks: Completeness / Field / Lifecycle / Timeliness"]
+  out["Outputs / Monitoring<br/>Power BI + exceptions + audit logs<br/>Severity: Critical / Warning / Advisory"]
 
-  legend["Legend:\nBlue = internal SQL/Synapse\nGreen = Databricks data platform\nPurple = submission channels/vendors"]
-  note["Inventory source:\nTrade Reporting Data Source Inventory (final Confluence export)"]
+  legend["Legend:<br/>Blue = internal SQL/Synapse<br/>Green = Databricks data platform<br/>Purple = submission channels/vendors"]
+  note["Inventory source:<br/>Trade Reporting Data Source Inventory (final Confluence export)"]
 
   s1 --> regext
   s2 --> regext

@@ -1,18 +1,22 @@
 flowchart LR
   subgraph SRC["EMIR (EU/UK) - Data Sources"]
     direction TB
-    A["Synapse DWH\nDim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
-    B["SQL Server RegReportDB\nEMIR2_* source tables + shared refs"]
-    C["Hedge Execution\nAZR-W-REAL-DB-2-BIDBUser / etoro.Hedge.ExecutionLog"]
-    D["ANNA DSB UPI refs\nAZR-WE-BI-20.RTS (UPI_*)"]
+    A["Synapse DWH<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+    B["SQL Server RegReportDB<br/>EMIR2_* source tables + shared refs"]
+    C["Hedge Execution<br/>AZR-W-REAL-DB-2-BIDBUser / etoro.Hedge.ExecutionLog"]
+    D["ANNA DSB UPI refs<br/>AZR-WE-BI-20.RTS (UPI_*)"]
   end
-  U["EMIR upstream ext_ transforms\nEMIR2_ext_* + shared Reg_Ext_*"]
-  E["Expected dataset\nEMIR2_Refit_Report* / collateral reports"]
-  S["Submitted state\nCappitech -> Regis-TR / DTCC"]
-  R["Actual responses\nREGIS (live), DTCC (partial/pending by flow)"]
-  X["Recon output\nExpected vs Submitted vs Actual"]
+  CTRL["Operational / BI completeness control<br/>Synapse source-of-truth compared to EMIR expected reports"]
+  U["EMIR upstream ext_ transforms<br/>EMIR2_ext_* + shared Reg_Ext_*"]
+  E["Expected dataset<br/>EMIR2_Refit_Report* / collateral reports"]
+  S["Submitted state<br/>Cappitech -> Regis-TR / DTCC"]
+  R["Actual responses<br/>REGIS (live), DTCC (partial/pending by flow)"]
+  X["Recon output<br/>Expected vs Submitted vs Actual (+ completeness control)"]
+  A --> CTRL
   A --> U
   B --> U
   C --> U
   D --> U
   U --> E --> S --> R --> X
+  E --> CTRL
+  CTRL --> X

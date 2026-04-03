@@ -1,13 +1,13 @@
 flowchart LR
   title["LTR (Manual/Transitional) - Data Sources and Flow"]
-  S1["main.dealing\n...dealing_marex_recon_eodholdings_futures"]
-  S2["main.bi_output_stg\ncustomer_radar_view_dim_customer"]
-  T["LTR aggregation + thresholds\n(CFTC 17.04b / 15.03)"]
-  E["Expected state\nLTR position file + 102A payload"]
-  U["Submitted state\nFIPS VM -> CME/CFTC SFTP"]
-  A["Actual state (limited)\nacknowledgements + transfer tracking"]
-  B["Databricks tracking\nbronze_ltr_file_runs\nbronze_ltr_transfers\nbronze_ltr_responses"]
-  R["Recon model\nExpected vs Submitted + audit validation"]
+  S1["main.dealing<br/>...dealing_marex_recon_eodholdings_futures"]
+  S2["main.bi_output_stg<br/>customer_radar_view_dim_customer"]
+  T["LTR aggregation + thresholds<br/>(CFTC 17.04b / 15.03)"]
+  E["Expected state<br/>LTR position file + 102A payload"]
+  U["Submitted state<br/>FIPS VM -> CME/CFTC SFTP"]
+  A["Actual state (limited)<br/>acknowledgements + transfer tracking"]
+  B["Databricks tracking<br/>bronze_ltr_file_runs<br/>bronze_ltr_transfers<br/>bronze_ltr_responses"]
+  R["Recon model<br/>Expected vs Submitted + audit validation"]
 
   S1 --> T
   S2 --> T

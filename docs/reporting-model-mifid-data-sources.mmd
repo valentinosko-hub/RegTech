@@ -1,12 +1,14 @@
 flowchart LR
-  I1["Synapse DWH_dbo\nDim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
-  I2["Hedge execution\nAZR-W-REAL-DB-2-BIDBUser\netoro.Hedge.ExecutionLog"]
-  I3["RegReportDB MiFID source tables\nFIRDS_* / FCA_* / MIFID2_*"]
-  I4["MiFID ext_ transformations\nMIFID2_ext_* + Reg_Ext_*"]
-  I5["MiFID expected reports\nMIFID2_Report / MIFID2_Hedge_Report\nMIFID2_ETORO_Report / MIFID2_ME_Report"]
-  I6["Submitted state\nCappitech files -> TRAX/Regis/DTCC"]
-  I7["Actual state\nTRAX + TR response files\n(main.regtech bronze_*)"]
+  I1["Operational / BI completeness control source<br/>Synapse DWH_dbo<br/>Dim_Position / Dim_Instrument / Fact_SnapshotCustomer"]
+  I2["Hedge execution<br/>AZR-W-REAL-DB-2-BIDBUser<br/>etoro.Hedge.ExecutionLog"]
+  I3["RegReportDB MiFID source tables<br/>FIRDS_* / FCA_* / MIFID2_*"]
+  I4["MiFID ext_ transformations<br/>MIFID2_ext_* + Reg_Ext_*"]
+  I5["MiFID expected reports<br/>MIFID2_Report / MIFID2_Hedge_Report<br/>MIFID2_ETORO_Report / MIFID2_ME_Report"]
+  I6["Submitted state<br/>Cappitech files -> TRAX/Regis/DTCC"]
+  I7["Actual state<br/>TRAX + TR response files<br/>(main.regtech bronze_*)"]
+  I8["Completeness control check<br/>Operational/BI vs MiFID expected reports"]
 
-  I1 --> I4
   I2 --> I4
   I3 --> I4 --> I5 --> I6 --> I7
+  I1 --> I8
+  I5 --> I8
