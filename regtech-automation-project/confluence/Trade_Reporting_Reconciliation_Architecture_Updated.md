@@ -6,6 +6,9 @@ This document consolidates architecture and data-source details from the final d
 
 - `regtech-automation-project/diagrams/`
 
+> **INFO**  
+> This page is the repository equivalent of a Confluence architecture page, maintained alongside the working diagrams.
+
 ---
 
 ## 1) Scope and reporting models
@@ -20,6 +23,19 @@ Regulations and reporting models covered:
 - LTR - manual/transitional
 - LP delegated reporting
 - APA (MiFID) real-time publication
+
+### 1.1 Quick model summary
+
+| Model | Regulation | Operating pattern | Submitted channel | Actual-state source |
+|---|---|---|---|---|
+| MiFID | MiFID (EU/UK) | TR/ARM-based | Cappitech -> TR/ARM endpoints | TR/ARM response files |
+| EMIR | EMIR (EU/UK) | TR/ARM-based | Cappitech -> Regis-TR/DTCC | TR response files |
+| ASIC | ASIC | TR/ARM-based | Cappitech -> ARM/TR path | ARM/TR response files |
+| CAT | CAT (US) | Event-driven | S3 exchange -> FINRA CAT | CAT feedback files (SharePoint) |
+| SFTR | SFTR | Direct-to-TR | Direct DTCC XML/SFTP | DTCC acknowledgements/rejections |
+| LTR | LTR | Manual/transitional | FIPS VM -> CME/CFTC | Acknowledgement + transfer tracking |
+| LP delegated | LP delegated | Two-stage control | LP submits to REGIS/UNAVISTA/DTCC | TR responses by LP mapping |
+| APA | APA (MiFID) | Real-time publication | APA Event Hub -> TradeEcho | TradeEcho SFTP confirmations |
 
 ---
 
@@ -37,6 +53,9 @@ For LP delegated reporting, control is explicitly split into two stages:
 2. **Stage 2**: LP submitted vs TR actual validation
 
 For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **completeness comparison source**, not as a direct reporting-table generation step.
+
+> **DECISION**  
+> Operational / BI is treated as an independent comparison baseline for completeness controls in direct-reporting models (MiFID/EMIR/ASIC). It is not the table-creation pipeline for regulatory outputs.
 
 ---
 
@@ -75,9 +94,20 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 - CME/CFTC via FIPS VM (LTR submission path)
 - SharePoint (CAT feedback files, eToro USA)
 
+> **WARNING**  
+> External systems (TRAX, Regis-TR, DTCC, FINRA CAT, TradeEcho, CME/CFTC) are submission/feedback endpoints, not table-level source systems under internal ownership.
+
 ---
 
 ## 4) Detailed data sources by reporting model
+
+### 4.0 Read guide (applies to every model)
+
+Use each model section as:
+
+1. **Core internal sources** (system-of-record inputs)
+2. **Transformations / expected baseline** (golden source expectation)
+3. **Submitted / actual channels** (what was sent vs what was acknowledged/returned)
 
 ## 4.1 MiFID (EU/UK) - TR/ARM-based
 
@@ -289,6 +319,9 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - `RegReportDB_Prod:MiFID.MIFID2_Report`
 - `RegReportDB_Prod:MiFID.MIFID2_Hedge_Report`
 
+> **INFO**  
+> APA completeness checks rely on filtered alignment between APA event outcomes and MiFID reporting baselines above.
+
 ---
 
 ## 5) Current ingestion and coverage notes
@@ -297,6 +330,9 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - DTCC/TRAX/UNAVISTA represented as partial/pending by model flow
 - LTR remains acknowledgement/transfer-led rather than full actual-state lifecycle
 - Some shared reference assets include migration and data-quality caveats (e.g., partial migration of certain reference tables)
+
+> **WARNING**  
+> Coverage status can differ by model and endpoint; maintain model-level assumptions explicitly in reconciliations and operational runbooks.
 
 ---
 
