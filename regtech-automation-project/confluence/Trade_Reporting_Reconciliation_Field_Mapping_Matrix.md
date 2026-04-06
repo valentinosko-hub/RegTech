@@ -30,7 +30,7 @@ Both are needed; this matrix is the control-design artifact.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Notional` | Trade notional in reporting currency | `...` | `...` | `Cappitech payload notional` | `TRAX response notional/ack` | UTI + TradeID | Exact or product-tolerance | T+1 | Critical/Warning | Ops + Data | Draft | Example |
 
-## 4) Wave 1 and Wave 2 populated matrix (MiFID + EMIR + ASIC + SFTR)
+## 4) Wave 1, Wave 2, and Wave 3 populated matrix (all in-scope models)
 
 This section is a concrete first delivery for manager review.  
 It is designed as implementation-ready content with explicit "SME validation required" status where physical column names may differ by feed version.
@@ -103,7 +103,75 @@ It is designed as implementation-ready content with explicit "SME validation req
 | SFTR | SFTR EU | Lifecycle | `SFTR_Report.ReuseIndicator` | Internal collateral reuse source | DTCC XML reuse indicator | DTCC reuse validation/status | UTI + collateral set | Exact enum mapping | T+1 | Warning | Reg Ops + Collateral Ops | Ready for SME validation | Enum normalization required |
 | SFTR | SFTR EU | Position | `SFTR_Report.OutstandingQuantity` | Position snapshot source (`gold_vision*`) | DTCC XML outstanding quantity | DTCC quantity validation/echo | UTI + instrument + date | Numeric tolerance class Q1 | T+1 | Warning/Critical | Reg Ops + Position Control | Draft rule - calibrate | Snapshot-to-lifecycle consistency |
 
-## 4.5 Wave 1 and Wave 2 delivery status summary
+### 4.5 CAT (US, event-based via S3 to FINRA CAT)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CAT | CAT US | Event | `Reg_US_COrders.OrderID` | US order lifecycle source (`main.general`/`main.bi_db`) | S3-delivered CAT order ID | FINRA feedback order ID | OrderID | Exact match | T+1 | Critical | US Ops + Data Eng | Ready for SME validation | Primary CAT identity |
+| CAT | CAT US | Event | `Reg_US_COrders.EventType` | Internal event classification (`MENO/MEOR/MEOA/MEOF/MENOS`) | Submitted CAT event type | FINRA event-type status | OrderID + event seq | Exact enum + sequence controls | T+1 | Critical | US Ops | Ready for SME validation | Sequence breaks are critical |
+| CAT | CAT US | Event | `Reg_US_COrders.EventTimestamp` | Internal event timestamp | Submitted event timestamp | FINRA accepted event timestamp | OrderID + event type | Exact timestamp (UTC normalization) | T+1 | Critical | US Ops + Trading Tech | Ready for SME validation | Timezone normalization required |
+| CAT | CAT US | Event | `Reg_US_COrders.Symbol` | Internal instrument source | Submitted symbol | FINRA symbol validation | OrderID + event seq | Exact symbol match | T+1 | Warning | US Ops | Ready for SME validation | Symbol normalization (suffix rules) |
+| CAT | CAT US | Event | `Reg_US_COrders.Side` | Internal side indicator | Submitted side | FINRA side validation | OrderID + event seq | Exact enum mapping (`B/S`) | T+1 | Critical | US Ops | Ready for SME validation | Side-code translation table |
+| CAT | CAT US | Event | `Reg_US_COrders.Quantity` | Internal order quantity | Submitted quantity | FINRA quantity validation | OrderID + event seq | Numeric tolerance class Q1 (normally exact) | T+1 | Warning | US Ops | Draft rule - calibrate | Amend/cancel quantity behavior |
+| CAT | CAT US | Event | `Reg_US_COrders.Price` | Internal order price | Submitted price | FINRA price validation | OrderID + event seq | Numeric tolerance class P1 | T+1 | Warning | US Ops + Trading Tech | Draft rule - calibrate | Price precision/tick handling |
+| CAT | CAT US | Event | `Reg_US_COrders.RouteDestination` | Internal routing destination | Submitted route destination | FINRA route validation | OrderID + event seq | Exact match against venue map | T+1 | Warning | US Ops + Reference Data | Ready for SME validation | Destination mapping dependency |
+| CAT | CAT US | Event | `Reg_US_COrders.AccountID` | Internal account mapping | Submitted account ID | FINRA account validation status | OrderID + account | Exact + format control | T+1 | Critical | US Ops + Compliance | Ready for SME validation | PII masking policy must be respected |
+| CAT | CAT US | Event | `Reg_US_COrders.ClientOrderID` | Internal client order reference | Submitted client order ID | FINRA client order reference | OrderID + client order ID | Exact match | T+1 | Warning | US Ops | Ready for SME validation | Join key for lifecycle stitching |
+| CAT | CAT US | Event | `Reg_US_COrders.FirmROEID` | Internal reporting entity mapping | Submitted firm/ROE identifier | FINRA reporter validation | OrderID + reporter | Exact match | T+1 | Critical | US Ops + Compliance | Ready for SME validation | Regulatory party attribution |
+| CAT | CAT US | Event | `Reg_US_COrders.FeedbackStatus` | Derived from CAT feedback ingest | Submitted event reference | FINRA feedback status code | OrderID + event seq | Status mapping matrix (accept/reject/corrected) | T+1 | Critical | US Ops | Ready for SME validation | Linked to rejection workflow |
+
+### 4.6 APA (EU, real-time publication via TradeEcho)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| APA | APA EU | Publication event | `APA_Report.PublicationID` | Internal APA event key | APA Event Hub publication ID | TradeEcho confirmation publication ID | PublicationID | Exact match | Near real-time | Critical | Reg Ops + Data Eng | Ready for SME validation | Primary APA identity |
+| APA | APA EU | Publication event | `APA_Report.TradeID` | Internal trade reference (`client_trade_evh`) | Submitted trade ID | TradeEcho trade ID/echo | TradeID | Exact match | Near real-time | Critical | Reg Ops | Ready for SME validation | Bridge to MiFID baseline |
+| APA | APA EU | Publication event | `APA_Report.ExecutionTimestamp` | Internal execution timestamp | Submitted execution timestamp | TradeEcho execution timestamp echo | TradeID | Exact (UTC normalization) | Near real-time | Critical | Reg Ops + Trading Tech | Ready for SME validation | Event-time normalization |
+| APA | APA EU | Publication event | `APA_Report.PublicationTimestamp` | Event Hub publish timestamp | Submitted publication timestamp | TradeEcho confirmation timestamp | PublicationID | Max delay threshold class T1 | Near real-time | Critical | Reg Ops | Draft rule - calibrate | Delay threshold approval needed |
+| APA | APA EU | Publication event | `APA_Report.InstrumentID` | Instrument source/reference mapping | Submitted instrument ID | TradeEcho instrument validation | TradeID + instrument | Exact match | Near real-time | Critical | Reg Data Management | Ready for SME validation | Instrument master dependency |
+| APA | APA EU | Publication event | `APA_Report.Price` | Internal trade economics source | Submitted price | TradeEcho price echo/validation | TradeID + instrument | Numeric tolerance class P1 | Near real-time | Warning | Reg Ops + Trading Tech | Draft rule - calibrate | Precision policy needed |
+| APA | APA EU | Publication event | `APA_Report.Quantity` | Internal quantity source | Submitted quantity | TradeEcho quantity echo | TradeID + instrument | Numeric tolerance class Q1 | Near real-time | Warning | Reg Ops | Draft rule - calibrate | Quantity precision standard |
+| APA | APA EU | Publication event | `APA_Report.Notional` | Internal notional derivation | Submitted notional | TradeEcho notional validation | TradeID + currency | Numeric tolerance class N1 | Near real-time | Warning/Critical | Reg Ops + Finance Control | Draft rule - calibrate | Product-specific thresholds |
+| APA | APA EU | Publication event | `APA_Report.Currency` | Internal currency source | Submitted currency | TradeEcho currency validation | TradeID | Exact ISO-4217 | Near real-time | Critical | Reg Ops | Ready for SME validation | ISO uppercase enforcement |
+| APA | APA EU | Publication event | `APA_Report.Venue` | Internal venue mapping | Submitted venue/MIC | TradeEcho venue validation | TradeID + venue | Exact MIC code | Near real-time | Warning | Reg Ops + Reference Data | Ready for SME validation | Venue whitelist dependency |
+| APA | APA EU | Publication event | `APA_Report.DeferralFlag` | Internal deferral logic output | Submitted deferral indicator | TradeEcho deferral acceptance | PublicationID | Exact enum + eligibility checks | Near real-time | Critical | Compliance + Reg Ops | Ready for SME validation | Deferral policy dependency |
+| APA | APA EU | Publication event | `APA_Report.ResponseStatus` | Derived from TradeEcho response ingest | Submitted publication reference | TradeEcho response status code | PublicationID | Status mapping matrix | Near real-time | Critical | Reg Ops | Ready for SME validation | Drives exception workflow |
+
+### 4.7 LTR (US, EOD positions and 102A context via CME/CFTC)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| LTR | LTR US | Position | `LTR_Report.AccountID` | Customer ownership source (`customer_radar_view_dim_customer`) | Submitted account identifier | CME/CFTC ack account reference | AccountID + date | Exact match | T+1 ops window | Critical | Ops + Compliance Reporting | Ready for SME validation | Core account key |
+| LTR | LTR US | Position | `LTR_Report.BeneficialOwnerID` | Beneficial owner mapping source | Submitted owner identifier | Acknowledgement owner reference | AccountID + owner | Exact + format validation | T+1 ops window | Critical | Compliance | Ready for SME validation | 102A dependency |
+| LTR | LTR US | Position | `LTR_Report.ReportingEntity` | Internal reporting-entity mapping | Submitted reporting entity | Ack reporting entity | AccountID + date | Exact match | T+1 ops window | Critical | Compliance + Ops | Ready for SME validation | Legal entity attribution |
+| LTR | LTR US | Position | `LTR_Report.InstrumentSymbol` | Futures holdings source (`...eodholdings_futures`) | Submitted symbol | Ack symbol/reference | AccountID + symbol + date | Exact symbol match | T+1 ops window | Warning | Ops | Ready for SME validation | Symbol normalization rules |
+| LTR | LTR US | Position | `LTR_Report.PositionDate` | EOD snapshot date | Submitted position date | Ack position date | AccountID + symbol | Exact date | T+1 ops window | Critical | Ops | Ready for SME validation | Business-day calendar alignment |
+| LTR | LTR US | Position | `LTR_Report.PositionQuantity` | EOD holdings quantity | Submitted quantity | Ack/control total quantity | AccountID + symbol + date | Numeric tolerance class Q1 | T+1 ops window | Warning/Critical | Ops + Position Control | Draft rule - calibrate | Product-specific rounding |
+| LTR | LTR US | Position | `LTR_Report.LongShortIndicator` | Internal position sign logic | Submitted long/short indicator | Ack validation code | AccountID + symbol + date | Exact enum mapping | T+1 ops window | Warning | Ops | Ready for SME validation | Direction mapping controls |
+| LTR | LTR US | Control | `LTR_Report.ThresholdBreachFlag` | Threshold engine output (`bronze_ltr_cftc_thresholds`) | Submitted breach flag | Ack/control validation | AccountID + date | Exact boolean + threshold proof | T+1 ops window | Critical | Compliance + Ops | Ready for SME validation | Core regulatory criterion |
+| LTR | LTR US | Control | `LTR_Report.ReportableFlag` | Internal reportable-determination logic | Submitted reportable indicator | Ack status/reportable class | AccountID + symbol + date | Exact rule outcome | T+1 ops window | Critical | Compliance | Ready for SME validation | Linked to threshold governance |
+| LTR | LTR US | Owner data | `LTR_Report.Form102AReference` | 102A run outputs (`bronze_ltr_ocr_102a_runs`) | Submitted 102A reference | Transfer log + ack reference | AccountID + owner + date | Exact match | T+1 ops window | Critical | Compliance + Ops | Ready for SME validation | Personal-data controlled field |
+| LTR | LTR US | Control total | `LTR_Report.FileControlTotal` | Derived from expected report population | Submitted control total | Transfer/ack control total | FileRunID + date | Exact/allowed variance class CT1 | T+1 ops window | Critical | Ops + Finance Control | Draft rule - calibrate | File-level completeness control |
+| LTR | LTR US | Status | `LTR_Report.TransferStatus` | Derived from transfer logs (`bronze_ltr_transfers`) | Submission transfer reference | Ack/response status (`bronze_ltr_responses`) | FileRunID + transfer ID | Status mapping matrix | T+1 ops window | Critical | Ops | Ready for SME validation | No full TR-style lifecycle responses |
+
+### 4.8 LP delegated (two-stage: internal vs LP, then LP vs TR)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.InternalTradeID` | Internal DUCO source (`v_dealing_duco_eodrecon`) | LP file trade ID reference | TR response trade reference | InternalTradeID + LPTradeID | Stage 1 exact link, Stage 2 reference match | T+1 | Critical | Dealing Ops + Reg Ops | Ready for SME validation | Core cross-system key |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.LPTradeID` | LP staging tables (`LP_*`) | LP submitted trade ID | REGIS/UNAVISTA/DTCC response trade ID | LPTradeID | Exact match | T+1 | Critical | Dealing Ops | Ready for SME validation | LP-provided primary key |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.UTI` | Internal + LP UTI lineage | LP submitted UTI | TR response UTI | UTI + LPTradeID | Exact match | T+1 | Critical | Reg Ops + Dealing Ops | Ready for SME validation | May be null in some LP flows |
+| LP delegated | EMIR/ASIC delegated flows | Party | `LP_Recon.LPIdentifier` | LP source identifier mapping | Submitted LP identifier | TR reporter/counterparty identifier | LPIdentifier + date | Exact mapping set | T+1 | Warning | Dealing Ops | Ready for SME validation | Identifier normalization required |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.InstrumentID` | Internal instrument + LP instrument mapping | LP submitted instrument | TR instrument validation | LPTradeID + instrument | Exact/allowed mapping | T+1 | Warning | Reg Data Management + Dealing Ops | Ready for SME validation | Cross-venue mapping table |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.NotionalAmount` | Internal DUCO economics vs LP feed | LP submitted notional | TR response notional | LPTradeID + currency | Stage 1 tolerance N1, Stage 2 tolerance N1 | T+1 | Warning/Critical | Dealing Ops + Finance Control | Draft rule - calibrate | Two-stage tolerance application |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.Quantity` | Internal DUCO quantity vs LP feed | LP submitted quantity | TR response quantity | LPTradeID + instrument + date | Stage 1 tolerance Q1, Stage 2 tolerance Q1 | T+1 | Warning/Critical | Dealing Ops + Position Control | Draft rule - calibrate | Position roll alignment |
+| LP delegated | EMIR/ASIC delegated flows | Trade | `LP_Recon.Price` | Internal DUCO price vs LP feed | LP submitted price | TR response price | LPTradeID + instrument | Stage 1 tolerance P1, Stage 2 tolerance P1 | T+1 | Warning | Dealing Ops + Trading Tech | Draft rule - calibrate | Precision policy required |
+| LP delegated | EMIR/ASIC delegated flows | Lifecycle | `LP_Recon.ActionType` | Internal lifecycle state vs LP action | LP submitted action | TR response action/status | LPTradeID + event date | Exact enum + transition matrix | T+1 | Critical | Reg Ops + Dealing Ops | Ready for SME validation | NEW/MODI/TERM sequencing |
+| LP delegated | EMIR/ASIC delegated flows | Lifecycle | `LP_Recon.EventDate` | Internal event date vs LP event date | LP submitted event date | TR accepted event date | LPTradeID + action | Exact date (UTC/day normalization) | T+1 | Critical | Dealing Ops | Ready for SME validation | Date consistency across stages |
+| LP delegated | EMIR/ASIC delegated flows | Submission | `LP_Recon.SubmissionReference` | LP submission log reference | LP file/control reference | TR ack submission reference | LPTradeID + submission ref | Exact match | T+1 | Critical | Reg Ops | Ready for SME validation | Required for auditability |
+| LP delegated | EMIR/ASIC delegated flows | Status | `LP_Recon.ResponseStatus` | Derived from LP/TR ingestion | LP submitted reference | TR response status (REGIS/UNAVISTA/DTCC) | LPTradeID + submission ref | Status mapping matrix + aging rules | T+1 | Critical | Reg Ops | Ready for SME validation | Partial coverage for non-REGIS flows |
+
+## 4.9 Wave 1, Wave 2, and Wave 3 delivery status summary
 
 | Model | Target rows | Populated rows | Status | Next action |
 |---|---:|---:|---|---|
@@ -111,7 +179,11 @@ It is designed as implementation-ready content with explicit "SME validation req
 | EMIR | 12 | 12 | Populated (validation pending) | Confirm REGIS/DTCC response code mapping and nullable behaviors |
 | ASIC | 12 | 12 | Populated (validation pending) | Confirm DTCC response fields and lifecycle code set |
 | SFTR | 12 | 12 | Populated (validation pending) | Confirm DTCC XML element mapping and ack schema version |
-| Total Wave 1 + Wave 2 | 48 | 48 | Populated | Move to response-code matrix and rule calibration |
+| CAT | 12 | 12 | Populated (validation pending) | Confirm FINRA feedback schema and event rejection classes |
+| APA | 12 | 12 | Populated (validation pending) | Confirm TradeEcho response fields and latency threshold policy |
+| LTR | 12 | 12 | Populated (validation pending) | Confirm CME/CFTC acknowledgement schema and 102A references |
+| LP delegated | 12 | 12 | Populated (validation pending) | Confirm UNAVISTA/DTCC partial-ingestion handling rules |
+| Total Wave 1 + Wave 2 + Wave 3 | 96 | 96 | Populated | Move to response-code matrix and tolerance calibration sign-off |
 
 ## 5) Model-by-model worksheet sections
 
@@ -177,4 +249,4 @@ Step 2B is considered complete when:
 
 1. MiFID + EMIR critical fields first (highest control visibility). Completed in Wave 1.
 2. ASIC + SFTR next (lifecycle-heavy models). Completed in Wave 2.
-3. CAT + APA + LTR + LP delegated in Wave 3 after response-code matrix is locked.
+3. CAT + APA + LTR + LP delegated completed in Wave 3 (validation pending).
