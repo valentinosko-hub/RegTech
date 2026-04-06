@@ -583,6 +583,39 @@ The stored procedure provided (`dbo.SP_ASIC2_TransactionsReport`) confirms concr
 - Exclusion controls applied during final dataset build:
   testing CIDs, excluded instruments, and excluded position IDs.
 
+### 3.5.10 Procedure-derived lineage (validated from `SP_ASIC2_TransactionsReport_Hedge`)
+
+The stored procedure provided (`dbo.SP_ASIC2_TransactionsReport_Hedge`) confirms concrete dependencies for
+`dbo.ASIC2_Transactions_Hedge` (hedge mirror output built from ASIC transaction opens).
+
+#### Target table written by procedure
+- `dbo.ASIC2_Transactions_Hedge` (delete-by-date loop + insert from base ASIC transactions)
+
+#### Direct base objects referenced
+- `dbo.ASIC2_Transactions` (single upstream source for hedge records)
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+
+#### Procedure staging chain (temporary tables)
+- No temporary staging tables are used in this procedure.
+- Transform is a direct `INSERT ... SELECT` from `ASIC2_Transactions` with field overrides.
+
+#### Key derived output fields validated by procedure logic
+- Scope restricted to same-day open transactions only:
+  - `ReportDate = @StartDate`
+  - `OpenORClose = 'O'`
+- Hedge-side transformation logic:
+  - `Hedge_Client = 'H'`
+  - `RegChange = ''`
+  - `IsBuy` inverted (`0 -> 1`, `1 -> 0`)
+  - `UTI` rewritten via `REPLACE(UTI, 'P', 'H')`
+  - `CDE_Direction_1_Buyer_identifier_Seller_identifier` flipped (`BYER <-> SLLR`)
+- Counterparty override for hedge output:
+  - `CDE_Counterparty_2 = '213800GIFQMSV7HROS23'`
+  - `CDE_Counterparty_2_identifier_type = 'TRUE'`
+  - `Counterparty_2_name` and `Country_of_counterparty_2` forced blank.
+- Instrument exclusion control applied on target table context:
+  - `regtech_excluded_instruments` where `table_name = '[ASIC2_Transactions_Hedge]'`.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
