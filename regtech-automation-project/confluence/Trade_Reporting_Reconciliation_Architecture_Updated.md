@@ -23,6 +23,8 @@ This document consolidates architecture and data-source details from the final d
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
 - Step 2 field-level mapping matrix:
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+- Step 2 operational completeness control:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
 - Step 2 Jira-ready story breakdown:
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 
@@ -73,6 +75,10 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 
 > **DECISION**  
 > Operational / BI is treated as an independent comparison baseline for completeness controls in direct-reporting models (MiFID/EMIR/ASIC). It is not the table-creation pipeline for regulatory outputs.
+
+The operational control implementation and runbook for this baseline comparison are documented in:
+
+- `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
 
 ---
 
@@ -347,6 +353,7 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - DTCC/TRAX/UNAVISTA represented as partial/pending by model flow
 - LTR remains acknowledgement/transfer-led rather than full actual-state lifecycle
 - Some shared reference assets include migration and data-quality caveats (e.g., partial migration of certain reference tables)
+- Step 2C daily three-way completeness control (Audit vs TraNa vs BI) is now documented with runbook and metric definitions
 
 > **WARNING**  
 > Coverage status can differ by model and endpoint; maintain model-level assumptions explicitly in reconciliations and operational runbooks.

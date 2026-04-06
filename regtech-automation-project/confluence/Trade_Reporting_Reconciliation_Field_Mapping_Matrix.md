@@ -24,6 +24,24 @@ This is the deliverable your manager asked for when saying "map data sources by 
 
 Both are needed; this matrix is the control-design artifact.
 
+## 2.1 Scope rule for response files and parsed tables
+
+Yes, response files and parsed response tables should be included in Step 2B whenever they are part of reconciliation evidence.
+
+Required mapping chain per field:
+
+1. **Source-of-truth origin** (Ops/BI/internal source table + transformation path),
+2. **Expected reporting field** (reporting table column),
+3. **Submitted evidence field** (payload/file field sent to vendor/regulator),
+4. **Actual evidence field** (response file field and, where applicable, parsed response table column).
+
+Practical rule:
+
+- If a response file is parsed into an internal bronze/silver/gold table, capture both:
+  - response file element name, and
+  - parsed table column used by controls.
+- If parsing is not yet available, map to the raw response field and mark parsed-table mapping as pending.
+
 ## 3) Global field-mapping template (canonical)
 
 | Model | Regulation | Reporting object | Reporting field (expected) | Canonical meaning | Source system/table.field (expected origin) | Transform/enrichment rule | Submitted evidence field (vendor payload/file) | Actual evidence field (response/repository) | Reconciliation key(s) | Match rule / tolerance | Timeliness rule | Severity if failed | Owner | Status | Notes |

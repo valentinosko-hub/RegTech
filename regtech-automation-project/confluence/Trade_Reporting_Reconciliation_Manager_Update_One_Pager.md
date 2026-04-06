@@ -53,6 +53,18 @@ Each row captures:
 - owner,
 - implementation status.
 
+### 2.3 Step 2C - Operational completeness control (daily run-time)
+
+Artifact:
+- `Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
+
+Status:
+- Operational control design documented for `dbo.usp_DailyCompleteness_Audit`.
+- Three-way reconciliation model documented: **Audit vs TraNa vs BI**.
+- Includes runbook, metric definitions, flow coverage list, exclusion/false-positive logic, and management reporting format.
+- Output evidence table defined:
+  - `dbo.DailyCompleteness_AuditLog`
+
 ## 3) What remains (validation and sign-off)
 
 Current state is "populated, validation pending." The following sign-offs are needed:
@@ -65,6 +77,9 @@ Current state is "populated, validation pending." The following sign-offs are ne
    - Approve numeric tolerance classes (N1/P1/Q1/V1/C1) by product family.
 4. **Ownership confirmation**
    - Confirm named accountable owners (not just role-level owners).
+5. **Step 2C threshold and escalation calibration**
+   - Approve regime-level thresholds for `Audit_vs_TraNa_Completeness` and `Audit_vs_BI_Completeness`,
+   - lock amber/red escalation policy and exception SLA.
 
 ## 4) Risks and dependencies
 
@@ -113,6 +128,8 @@ Next action requested:
   - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Table_Level_Appendix.md`
 - Step 2B field-level matrix:
   - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+- Step 2C operational completeness control:
+  - `Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
 - Step 2 Jira decomposition:
   - `Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 
