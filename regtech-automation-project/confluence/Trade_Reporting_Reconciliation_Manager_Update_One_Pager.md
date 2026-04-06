@@ -130,6 +130,8 @@ Next action requested:
   - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 - Step 2C operational completeness control:
   - `Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
+- Step 2C operational completeness appendix:
+  - `Trade_Reporting_Reconciliation_Completeness_Control_Operational_Appendix.md`
 - Step 2 Jira decomposition:
   - `Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 

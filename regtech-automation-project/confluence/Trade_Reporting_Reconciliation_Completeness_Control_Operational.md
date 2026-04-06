@@ -223,3 +223,9 @@ Operational workflow:
 2. Isolate regime/date/key mismatch,
 3. Use Step 2B mapping rows and Step 2A lineage appendix to trace root cause,
 4. Document resolution and control tuning.
+
+## 13) Detailed appendix
+
+For regulation-by-regulation implementation detail (tables, joins, and filters used per flow), see:
+
+- `Trade_Reporting_Reconciliation_Completeness_Control_Operational_Appendix.md`

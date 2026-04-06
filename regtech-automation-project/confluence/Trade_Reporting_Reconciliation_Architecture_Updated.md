@@ -25,6 +25,8 @@ This document consolidates architecture and data-source details from the final d
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 - Step 2 operational completeness control:
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
+- Step 2 operational completeness appendix (detailed per-regime filters/tables):
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational_Appendix.md`
 - Step 2 Jira-ready story breakdown:
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 
