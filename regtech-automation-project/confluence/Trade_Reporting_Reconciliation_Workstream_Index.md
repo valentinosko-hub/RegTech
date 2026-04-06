@@ -29,6 +29,8 @@ This page tracks repository artifacts by project phase and Jira workstream.
 
 - Master source inventory:
   - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+- Table-level source inventory appendix:
+  - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Table_Level_Appendix.md`
 - Field-level reconciliation mapping matrix:
   - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 - Jira story decomposition for Step 2 execution:

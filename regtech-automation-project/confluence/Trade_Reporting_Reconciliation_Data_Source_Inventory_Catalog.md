@@ -15,6 +15,9 @@ This artifact is structured to satisfy Step 2A acceptance criteria:
 - owners assigned,
 - sample file/table references captured.
 
+Detailed one-row-per-table coverage is documented in:
+- `Trade_Reporting_Reconciliation_Data_Source_Inventory_Table_Level_Appendix.md`
+
 ## 1.1 What this artifact is and is not
 
 This artifact **is**:
@@ -63,6 +66,12 @@ Each source row includes:
 | SRC-016 | External | APA | TradeEcho (LSEG) confirmations | Reg Ops | File | Near real-time/batch | SFTP `/Outgoing/SRR` -> DBX bronze | Active | `main.regtech.bronze_tradeecho_responses` | Actual-state evidence for APA |
 | SRC-017 | External | LTR | CME/CFTC transfer acknowledgements | Ops + Compliance | File/log | Daily | FIPS VM transfer logs + DBX bronze LTR tables | Active, limited feedback model | `bronze_ltr_transfers`, `bronze_ltr_responses` | No full TR-style lifecycle responses |
 
+## 3.1 Detailed table-level appendix
+
+For the exhaustive table/view/feed list by model and flow stage, see:
+
+- `Trade_Reporting_Reconciliation_Data_Source_Inventory_Table_Level_Appendix.md`
+
 ## 4) Field mapping matrix handoff
 
 Field-level mapping and reconciliation rules are maintained in:
@@ -90,3 +99,4 @@ That matrix captures:
 - [x] Owners assigned at source level (role-based; named owners can be added per squad)
 - [x] Sample file/table references included
 - [x] Scope boundary clarified: this page is catalog-only
+- [x] Detailed table-level appendix linked and maintained
