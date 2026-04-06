@@ -616,6 +616,49 @@ The stored procedure provided (`dbo.SP_ASIC2_TransactionsReport_Hedge`) confirms
 - Instrument exclusion control applied on target table context:
   - `regtech_excluded_instruments` where `table_name = '[ASIC2_Transactions_Hedge]'`.
 
+### 3.5.11 Procedure-derived lineage (validated from `SP_ASIC2_PositionReport`)
+
+The stored procedure provided (`dbo.SP_ASIC2_PositionReport`) confirms concrete dependencies for
+`dbo.ASIC2_Positions` (ASIC open-position valuation snapshot).
+
+#### Target table written by procedure
+- `dbo.ASIC2_Positions` (delete-by-date loop + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.ASIC2_ext_OpenPositions_PositionsReport`
+- `dbo.Reg_Instruments_ext`
+- `dbo.ASIC2_Customer_PositionReport`
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_CurrencyPriceMaxDateWithSplit`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables)
+- `#Positions` (open-position extraction with active-at-EOD filter)
+- `#Metadata` (instrument and currency normalization with ISIN and GBX/ISO flags)
+- `#Prices_EOD` (same-day close valuation prices with GBX scaling adjustment)
+
+#### Key derived output fields validated by procedure logic
+- Scope restricted to unsettled open positions active at report boundary:
+  - `IsSettled = 0`
+  - `OpenOccurred < @EndDate`
+  - `CloseOccurred > @EndDate OR CloseOccurred IS NULL`
+- Position snapshot output in `ASIC2_Positions`:
+  - `Deal = PositionID`
+  - `Type` flipped from buy-flag (`IsBuy=0 -> Buy`, `IsBuy=1 -> Sell`)
+- Valuation economics:
+  - `Open Price` from `InitForexRate`
+  - `Close Price` from `#Prices_EOD` using side-sensitive ask/bid
+  - `ValuationDateTime` from EOD pricing timestamp
+- Currency normalization behavior retained through metadata and EOD price prep:
+  - GBX prices divided by 100 in `#Prices_EOD`
+  - ISO currency checks anchored via `ISO_Currencies_Static`
+- Exclusion controls applied at final insert:
+  - `regtech_excluded_instruments` for `[ASIC2_Positions]`
+  - `regtech_excluded_position_ids` for `[ASIC2_Positions]`
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

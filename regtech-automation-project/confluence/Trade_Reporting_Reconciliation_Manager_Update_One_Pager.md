@@ -130,6 +130,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_EMIR2_Refit_Collateral`
 - `dbo.SP_ASIC2_TransactionsReport`
 - `dbo.SP_ASIC2_TransactionsReport_Hedge`
+- `dbo.SP_ASIC2_PositionReport`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -143,6 +144,7 @@ Impact:
   - EMIR EU REFIT collateral report procedure
   - ASIC transactions report procedure
   - ASIC hedge transactions report procedure
+  - ASIC position report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
@@ -181,3 +183,5 @@ Impact:
   - hedge transformation logic from base ASIC transactions (`ASIC2_Transactions` -> `ASIC2_Transactions_Hedge`)
   - hedge UTI transform (`P` -> `H`), side inversion, and direction flip (`BYER`/`SLLR`)
   - hedge counterparty overrides (`CDE_Counterparty_2 = 213800GIFQMSV7HROS23`, identifier type `TRUE`, blank name/country)
+  - position snapshot derivation from open-position state (`ASIC2_ext_OpenPositions_PositionsReport` -> `ASIC2_Positions`)
+  - valuation close-price mapping from EOD bid/ask (`Reg_Ext_CurrencyPriceMaxDateWithSplit` with GBX normalization)
