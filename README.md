@@ -37,6 +37,8 @@
 - [Phase 1 - Scope Definition](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Scope_Definition.md)
 - [Phase 1 - Reconciliation Objectives and Success Criteria](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Objectives_and_Success_Criteria.md)
 - [Step 2 - Data Source Inventory and Mapping Catalog](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md)
+- [Step 2B - Field Mapping Matrix (source -> reporting -> response)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md)
+- [Step 2 Jira Story Breakdown (ready to copy)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md)
 
 ### Edit options
 

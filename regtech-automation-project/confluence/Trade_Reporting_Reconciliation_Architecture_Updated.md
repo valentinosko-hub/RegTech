@@ -21,6 +21,10 @@ This document consolidates architecture and data-source details from the final d
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Objectives_and_Success_Criteria.md`
 - Step 2 inventory catalog:
   - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+- Step 2 field-level mapping matrix:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+- Step 2 Jira-ready story breakdown:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 
 ---
 

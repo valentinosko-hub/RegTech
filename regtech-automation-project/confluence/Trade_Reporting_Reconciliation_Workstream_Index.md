@@ -9,7 +9,7 @@ This page tracks repository artifacts by project phase and Jira workstream.
 | Phase | Net days | Notes | Repository artifact |
 |---|---:|---|---|
 | Regulatory regime mapping + scope definition | 0.25 | Already owned knowledge | `Trade_Reporting_Reconciliation_Phase1_Scope_Definition.md` |
-| Data source inventory + field mapping matrix | 2-3 | Heaviest lift | `Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md` |
+| Data source inventory + field mapping matrix | 2-3 | Heaviest lift | `Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md` + `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md` |
 | Data quality assessment | 1-1.5 | Document known gaps | Section in inventory catalog + architecture doc |
 | Tool/tech evaluation | 0.5-1 | Mostly documenting existing stack | `Trade_Reporting_Reconciliation_Architecture_Updated.md` |
 | Architecture + flow diagram design | 2-3 | Core deliverable, iterative | `../diagrams/*` |
@@ -29,6 +29,10 @@ This page tracks repository artifacts by project phase and Jira workstream.
 
 - Master source inventory:
   - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+- Field-level reconciliation mapping matrix:
+  - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+- Jira story decomposition for Step 2 execution:
+  - `Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
 - Per-reporting-model diagrams:
   - `../diagrams/reporting-model-data-source-flows.md`
 

@@ -1,4 +1,4 @@
-# Step 2 - Data Source Inventory and Mapping Catalog
+# Step 2A - Data Source Inventory Catalog (Source Register)
 
 Last updated: 2026-03-18  
 Workstream: Data source inventory + field mapping matrix (REG-3279 Step 2)  
@@ -8,10 +8,26 @@ Owner: Valentinos Konstantinou
 
 Provide a complete and auditable catalog of data sources used by regulatory reconciliation controls.
 
-This artifact is structured to satisfy Step 2 acceptance criteria:
+This document is intentionally the **source register** artifact (Step 2A), not the field-level reconciliation matrix.
+
+This artifact is structured to satisfy Step 2A acceptance criteria:
 - inventory table completed,
 - owners assigned,
 - sample file/table references captured.
+
+## 1.1 What this artifact is and is not
+
+This artifact **is**:
+- a catalog of systems/tables/files/feeds in scope,
+- an ownership and operational-metadata register,
+- a migration and coverage tracker.
+
+This artifact **is not**:
+- a field-by-field reconciliation rule matrix,
+- a source-to-report-to-response mapping at column level.
+
+Those are documented in:
+- `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 
 ## 2) Inventory schema
 
@@ -47,13 +63,19 @@ Each source row includes:
 | SRC-016 | External | APA | TradeEcho (LSEG) confirmations | Reg Ops | File | Near real-time/batch | SFTP `/Outgoing/SRR` -> DBX bronze | Active | `main.regtech.bronze_tradeecho_responses` | Actual-state evidence for APA |
 | SRC-017 | External | LTR | CME/CFTC transfer acknowledgements | Ops + Compliance | File/log | Daily | FIPS VM transfer logs + DBX bronze LTR tables | Active, limited feedback model | `bronze_ltr_transfers`, `bronze_ltr_responses` | No full TR-style lifecycle responses |
 
-## 4) Field mapping matrix scaffold (next Step 2 deliverable)
+## 4) Field mapping matrix handoff
 
-Use this template per regulation/model:
+Field-level mapping and reconciliation rules are maintained in:
 
-| Regulation | Reporting table/field | Canonical business meaning | Source table/field | Transform rule | Validation rule | Owner | Status |
-|---|---|---|---|---|---|---|---|
-| Example: MiFID | `MIFID2_Report.Notional` | Trade notional in reporting currency | `...` | `...` | `...` | Ops/Data | Draft |
+- `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+
+That matrix captures:
+- source field,
+- expected reporting field,
+- submitted evidence field,
+- actual response field,
+- transform and validation logic,
+- tolerance and exception treatment.
 
 ## 5) Data quality and migration notes
 
@@ -62,9 +84,9 @@ Use this template per regulation/model:
 - Manual sheet controls remain a residual governance risk until fully replaced.
 - LTR actual-state evidence remains acknowledgement/transfer driven rather than full lifecycle response driven.
 
-## 6) Acceptance criteria tracking
+## 6) Acceptance criteria tracking (Step 2A)
 
 - [x] Inventory table created and populated with current known sources
 - [x] Owners assigned at source level (role-based; named owners can be added per squad)
 - [x] Sample file/table references included
-- [ ] Field-level mapping matrix completed per model (next iteration)
+- [x] Scope boundary clarified: this page is catalog-only
