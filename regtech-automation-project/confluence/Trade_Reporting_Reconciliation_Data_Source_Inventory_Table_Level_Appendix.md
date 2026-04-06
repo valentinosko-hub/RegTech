@@ -165,6 +165,42 @@ To align with current project decisions:
 - `EMIR3_UK_Refit_Report_Daily`
 - `EMIR3_UK_Refit_Report_Collateral`
 
+### 3.5.1 Procedure-derived lineage (validated from `SP_EMIR3_UK_Refit_Report_Daily`)
+
+The stored procedure provided (`dbo.SP_EMIR3_UK_Refit_Report_Daily`) confirms concrete dependencies for
+`dbo.EMIR3_UK_Refit_Report_Daily`.
+
+#### Target table written by procedure
+- `dbo.EMIR3_UK_Refit_Report_Daily` (truncate + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_Position`
+- `dbo.EMIR2_Customer`
+- `dbo.Reg_Instruments_SCD`
+- `dbo.EMIR2_InstrumentMetaData`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_DailyMaxPrices`
+- `dbo.EMIR3_UK_Refit_Report` (previous-day state and directional backfill)
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_corporate_clients_details]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_refit_taxonomy]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+
+#### Procedure staging chain (temporary tables)
+- `#emir_UK_clients_details` (UK + REFIT-filtered client details)
+- `#EMIR2_Position` (position/trade extraction for eligible clients)
+- `#Metadata` (tradable instrument metadata and ISO/currency normalization)
+- `#EMIR2_InstrumentMetaData` (instrument metadata with overrides and ISIN cleanup)
+- `#pos_opendate` (min open date per CID/instrument)
+- `#pos_openprice` (aggregated open price per CID/instrument)
+- `#PricesEOD` (EOD bid/ask snapshot filtered by report date)
+- `#Valid_Pos` (aggregated net position and quantity)
+- `#all` (union of synthetic position records and trade records)
+- `#EMIR3_UK_Report_Prev` (previous report-day UTI/confirmation/execution pull)
+- `#EMIR3_UK_Refit_Report_Daily` (final shaped dataset before target insert)
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

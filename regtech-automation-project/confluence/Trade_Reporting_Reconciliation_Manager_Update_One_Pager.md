@@ -109,7 +109,27 @@ Next action requested:
   - `Trade_Reporting_Reconciliation_Workstream_Index.md`
 - Step 2A source register:
   - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+- Step 2A table-level appendix:
+  - `Trade_Reporting_Reconciliation_Data_Source_Inventory_Table_Level_Appendix.md`
 - Step 2B field-level matrix:
   - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 - Step 2 Jira decomposition:
   - `Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
+
+## 8) New evidence ingested (procedure-level)
+
+The following stored procedure has been ingested and used to tighten lineage/mapping:
+
+- `dbo.SP_EMIR3_UK_Refit_Report_Daily`
+
+Impact:
+- Step 2A now contains procedure-derived dependency lineage for EMIR UK REFIT daily.
+- Step 2B EMIR section now reflects procedure-validated field derivations for:
+  - `UTI`
+  - `Action_type`
+  - `Execution_timestamp`
+  - `Confirmation_timestamp`
+  - counterparty fields
+  - `UPI`
+  - product classification fields
+  - valuation/notional/price fields
