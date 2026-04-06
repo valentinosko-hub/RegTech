@@ -33,6 +33,10 @@
 ## Project Documentation (Confluence-style)
 
 - [Trade Reporting Reconciliation Architecture (updated)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Architecture_Updated.md)
+- [Trade Reporting Reconciliation Workstream Index (phase tracker)](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Workstream_Index.md)
+- [Phase 1 - Scope Definition](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Scope_Definition.md)
+- [Phase 1 - Reconciliation Objectives and Success Criteria](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Objectives_and_Success_Criteria.md)
+- [Step 2 - Data Source Inventory and Mapping Catalog](regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md)
 
 ### Edit options
 

@@ -11,6 +11,19 @@ This document consolidates architecture and data-source details from the final d
 
 ---
 
+## 0) Related requirements artifacts
+
+- Workstream index and phase tracker:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Workstream_Index.md`
+- Phase 1 scope definition:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Scope_Definition.md`
+- Phase 1 objectives and success criteria:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Objectives_and_Success_Criteria.md`
+- Step 2 inventory catalog:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+
+---
+
 ## 1) Scope and reporting models
 
 Regulations and reporting models covered:
