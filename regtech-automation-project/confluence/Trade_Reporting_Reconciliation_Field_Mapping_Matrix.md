@@ -30,7 +30,7 @@ Both are needed; this matrix is the control-design artifact.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Notional` | Trade notional in reporting currency | `...` | `...` | `Cappitech payload notional` | `TRAX response notional/ack` | UTI + TradeID | Exact or product-tolerance | T+1 | Critical/Warning | Ops + Data | Draft | Example |
 
-## 4) Wave 1 populated matrix (MiFID + EMIR critical fields)
+## 4) Wave 1 and Wave 2 populated matrix (MiFID + EMIR + ASIC + SFTR)
 
 This section is a concrete first delivery for manager review.  
 It is designed as implementation-ready content with explicit "SME validation required" status where physical column names may differ by feed version.
@@ -69,13 +69,49 @@ It is designed as implementation-ready content with explicit "SME validation req
 | EMIR | EMIR EU/UK | Valuation | `EMIR2_Report_Refit_Collateral.ValuationAmount` | Internal valuation source | Payload valuation amount | TR valuation response field | UTI + valuation date | Numeric tolerance class V1 | T+1 | Warning | Reg Ops + Finance Control | Draft rule - calibrate | End-of-day valuation timing |
 | EMIR | EMIR EU/UK | Collateral | `EMIR2_Report_Refit_Collateral.CollateralAmount` | Internal collateral source | Payload collateral amount | TR collateral response field | UTI + collateral set + date | Numeric tolerance class C1 | T+1 | Warning | Reg Ops + Collateral Ops | Draft rule - calibrate | Collateral rounding policy |
 
-## 4.3 Wave 1 delivery status summary
+### 4.3 ASIC (TR-based via DTCC)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ASIC | ASIC | Trade | `ASIC2_Transactions.TransactionID` | ASIC source/ext lineage (`ASIC2_*`, `ASIC2_ext_*`) | Cappitech ASIC payload transaction ID | DTCC/TR response transaction ID | TransactionID | Exact match | T+2 | Critical | Reg Ops + Data Eng | Ready for SME validation | Primary ASIC identity |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.UTI` | Internal UTI/transaction reference lineage | Payload UTI | DTCC/TR UTI | UTI | Exact match | T+2 | Critical | Reg Ops | Ready for SME validation | Jurisdiction-specific optionality by product |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.ActionType` | Lifecycle source classification | Payload action/event code | DTCC/TR action status | TransactionID + action date | Exact enum + transition matrix | T+2 | Critical | Reg Ops | Ready for SME validation | NEW/MODI/TERM/CORR handling |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.EventDate` | Internal lifecycle event date | Payload event date | DTCC/TR accepted event date | TransactionID + action | Exact date (UTC/day normalization) | T+2 | Critical | Reg Ops | Ready for SME validation | Timezone standardization required |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.Counterparty1LEI` | Counterparty mapping (`ASIC2_Customer*`) | Payload CP1 LEI | TR validation CP1 LEI | TransactionID | Exact regex + value match | T+2 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format control |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.Counterparty2LEI` | Counterparty mapping (`ASIC2_Customer*`) | Payload CP2 LEI | TR validation CP2 LEI | TransactionID | Exact regex + value match | T+2 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format control |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.NotionalAmount` | Internal economics source | Payload notional | DTCC/TR amount validation | TransactionID + currency | Numeric tolerance class N1 | T+2 | Warning/Critical | Reg Ops + Finance Control | Draft rule - calibrate | Product-specific tolerance |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.NotionalCurrency` | Internal currency source | Payload currency | DTCC/TR currency validation | TransactionID | Exact ISO-4217 | T+2 | Critical | Reg Ops | Ready for SME validation | ISO uppercase enforcement |
+| ASIC | ASIC | Trade | `ASIC2_Transactions.Price` | Internal execution economics | Payload price | DTCC/TR price validation | TransactionID + product | Numeric tolerance class P1 | T+2 | Warning | Reg Ops + Trading Tech | Draft rule - calibrate | Tick/precision normalization |
+| ASIC | ASIC | Position | `ASIC2_Positions_AGG.PositionQuantity` | Internal positions source (`ASIC2_Positions*`) | Submitted position quantity | DTCC/TR position quantity ack | Account + instrument + date | Numeric tolerance class Q1 | T+2 | Warning/Critical | Reg Ops + Position Control | Draft rule - calibrate | End-of-day position roll alignment |
+| ASIC | ASIC | Valuation | `ASIC2_Positions_AGG.ValuationAmount` | Internal valuation source | Submitted valuation amount | DTCC/TR valuation amount | Account + instrument + date | Numeric tolerance class V1 | T+2 | Warning | Reg Ops + Finance Control | Draft rule - calibrate | Rounding policy required |
+| ASIC | ASIC | Collateral | `ASIC2_Collateral.CollateralAmount` | Internal collateral source | Submitted collateral amount | DTCC/TR collateral response field | Counterparty + collateral set + date | Numeric tolerance class C1 | T+2 | Warning | Reg Ops + Collateral Ops | Draft rule - calibrate | Collateral eligibility mapping dependency |
+
+### 4.4 SFTR (Direct DTCC)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| SFTR | SFTR EU | Lifecycle | `SFTR_Report.UTI` | Vision-derived lifecycle output (`bronze_sftr_report`) | DTCC XML UTI | DTCC ack/reject UTI | UTI | Exact match | T+1 | Critical | Reg Ops + Data Eng | Ready for SME validation | Primary SFTR key |
+| SFTR | SFTR EU | Lifecycle | `SFTR_Report.ActionType` | Derived lifecycle action (`NEWT/MODI/VALU/ETRM`) | DTCC XML action | DTCC response action/status | UTI + action date | Exact enum + sequencing | T+1 | Critical | Reg Ops | Ready for SME validation | Sequence integrity control |
+| SFTR | SFTR EU | Lifecycle | `SFTR_Report.EventDate` | Lifecycle derivation date | DTCC XML event date | DTCC accepted event date | UTI + action | Exact date (UTC/day normalization) | T+1 | Critical | Reg Ops | Ready for SME validation | Calendar normalization |
+| SFTR | SFTR EU | Trade | `SFTR_Report.Counterparty1LEI` | Counterparty source mapping | DTCC XML CP1 LEI | DTCC LEI validation field | UTI | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI quality dependency |
+| SFTR | SFTR EU | Trade | `SFTR_Report.Counterparty2LEI` | Counterparty source mapping | DTCC XML CP2 LEI | DTCC LEI validation field | UTI | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI quality dependency |
+| SFTR | SFTR EU | Trade | `SFTR_Report.ISIN` | Instrument source + reference enrichment | DTCC XML ISIN | DTCC instrument validation | UTI + instrument | Exact match | T+1 | Critical | Reg Data Management | Ready for SME validation | Instrument master dependency |
+| SFTR | SFTR EU | Trade | `SFTR_Report.NotionalAmount` | Vision economics source | DTCC XML notional | DTCC amount validation/echo | UTI + currency | Numeric tolerance class N1 | T+1 | Warning/Critical | Reg Ops + Finance Control | Draft rule - calibrate | Product-specific tolerance |
+| SFTR | SFTR EU | Trade | `SFTR_Report.NotionalCurrency` | Internal currency source | DTCC XML currency | DTCC currency validation | UTI | Exact ISO-4217 | T+1 | Critical | Reg Ops | Ready for SME validation | ISO enforcement |
+| SFTR | SFTR EU | Valuation | `SFTR_Report.MarketValue` | Valuation derivation source | DTCC XML market value | DTCC valuation response field | UTI + valuation date | Numeric tolerance class V1 | T+1 | Warning | Reg Ops + Finance Control | Draft rule - calibrate | EOD valuation window |
+| SFTR | SFTR EU | Collateral | `SFTR_Report.CollateralAmount` | Collateral derivation source | DTCC XML collateral amount | DTCC collateral response field | UTI + collateral set + date | Numeric tolerance class C1 | T+1 | Warning | Reg Ops + Collateral Ops | Draft rule - calibrate | Collateral policy dependency |
+| SFTR | SFTR EU | Lifecycle | `SFTR_Report.ReuseIndicator` | Internal collateral reuse source | DTCC XML reuse indicator | DTCC reuse validation/status | UTI + collateral set | Exact enum mapping | T+1 | Warning | Reg Ops + Collateral Ops | Ready for SME validation | Enum normalization required |
+| SFTR | SFTR EU | Position | `SFTR_Report.OutstandingQuantity` | Position snapshot source (`gold_vision*`) | DTCC XML outstanding quantity | DTCC quantity validation/echo | UTI + instrument + date | Numeric tolerance class Q1 | T+1 | Warning/Critical | Reg Ops + Position Control | Draft rule - calibrate | Snapshot-to-lifecycle consistency |
+
+## 4.5 Wave 1 and Wave 2 delivery status summary
 
 | Model | Target rows | Populated rows | Status | Next action |
 |---|---:|---:|---|---|
 | MiFID | 12 | 12 | Populated (validation pending) | Confirm physical payload/response column names with Cappitech/TRAX team |
 | EMIR | 12 | 12 | Populated (validation pending) | Confirm REGIS/DTCC response code mapping and nullable behaviors |
-| Total Wave 1 | 24 | 24 | Populated | Move to response-code matrix and rule calibration |
+| ASIC | 12 | 12 | Populated (validation pending) | Confirm DTCC response fields and lifecycle code set |
+| SFTR | 12 | 12 | Populated (validation pending) | Confirm DTCC XML element mapping and ack schema version |
+| Total Wave 1 + Wave 2 | 48 | 48 | Populated | Move to response-code matrix and rule calibration |
 
 ## 5) Model-by-model worksheet sections
 
@@ -139,6 +175,6 @@ Step 2B is considered complete when:
 
 ## 7) Suggested delivery order (to reduce risk)
 
-1. MiFID + EMIR critical fields first (highest control visibility).
-2. ASIC + SFTR next (lifecycle-heavy models).
-3. CAT + APA + LTR + LP delegated after core template is stable.
+1. MiFID + EMIR critical fields first (highest control visibility). Completed in Wave 1.
+2. ASIC + SFTR next (lifecycle-heavy models). Completed in Wave 2.
+3. CAT + APA + LTR + LP delegated in Wave 3 after response-code matrix is locked.
