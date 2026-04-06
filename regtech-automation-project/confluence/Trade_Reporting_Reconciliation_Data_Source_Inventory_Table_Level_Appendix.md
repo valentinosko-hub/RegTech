@@ -1059,6 +1059,117 @@ MiFID UK hedge reporting inserts into `dbo.MIFID2_Hedge_Report` (`RegulationRepo
 - Exclusion controls:
   - instrument and position filters via Fivetran exclusion tables for `[MIFID2_Hedge_Report]`.
 
+### 3.5.19 Procedure-derived lineage (validated from `SP_EMIR2_Customer`)
+
+The stored procedure provided (`dbo.SP_EMIR2_Customer`) confirms concrete dependencies for
+EMIR customer population into `dbo.EMIR2_Customer`.
+
+#### Target table written by procedure
+- `dbo.EMIR2_Customer` (full refresh via truncate + insert)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_ext_Customer`
+
+#### Key derived output fields validated by procedure logic
+- Core identity and classification fields are carried from ext source:
+  - `CID`, `CountryID`, `LabelID`, `PlayerLevelID`, `PlayerStatusID`, `OriginCountryID`,
+    `Country`, `Lei`, `RegulationID`, `AccountTypeID`.
+- `FTD` default handling:
+  - `FTD = ISNULL(FirstTimeDepositSuccessDate, '20150426')`.
+- Procedure currently applies direct country/LEI mapping from ext source (legacy InternalAccounts
+  override path removed per change history).
+
+### 3.5.20 Procedure-derived lineage (validated from `SP_MIFID2_Customer`)
+
+The stored procedure provided (`dbo.SP_MIFID2_Customer`) confirms concrete dependencies for
+MiFID customer population into `dbo.MIFID2_Customer`.
+
+#### Target table written by procedure
+- `dbo.MIFID2_Customer` (full refresh via truncate + insert)
+
+#### Direct base objects referenced
+- `dbo.MIFID2_ext_Customer`
+- `dbo.MIFID2_Failed_TRAX`
+- `dbo.InternalAccounts`
+- `dbo.Reg_Ext_CustomerLatinName`
+- `[Dictionary].[Ext_Country]`
+- `[Dictionary].[Ext_TradeFund]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+
+#### Procedure staging chain (temporary tables)
+- `#no_concat` (country controls for CONCAT eligibility)
+- `#cust` (base + failed TRAX customer set with normalization)
+- `#latin`, `#notranslation`, `#names` (name transliteration workflow)
+
+#### Key derived output fields validated by procedure logic
+- Regulation normalization and scope flags:
+  - `RegulationID` normalization (`4/10 -> 4`),
+  - `IsUKReport` and `IsEUReport` derivation (EU includes `1/9/11`),
+  - TRAX routing fields `TraxEntity` / `TraxAccount`.
+- Identity derivation:
+  - `IDType`, `PIN_Type`, `PIN_LEI` from LEI/account-type/PIN branching,
+  - LEI-length checks and country-prefix PIN fallback.
+- Data quality and controls:
+  - language-based name transliteration path,
+  - not-allowed-CONCAT country flag,
+  - exclusion of test/reporting-excluded CIDs.
+
+### 3.5.21 Procedure-derived lineage (validated from `SP_MIFID2_RegChange_Customer`)
+
+The stored procedure provided (`dbo.SP_MIFID2_RegChange_Customer`) confirms concrete dependencies for
+MiFID regulation-change customer population into `dbo.MIFID2_RegChange_Customer`.
+
+#### Target table written by procedure
+- `dbo.MIFID2_RegChange_Customer` (full refresh via truncate + insert)
+
+#### Direct base objects referenced
+- `dbo.MIFID2_ext_RegChange_Customer`
+- `dbo.InternalAccounts`
+- `dbo.Reg_Ext_CustomerLatinName`
+- `[Dictionary].[Ext_Country]`
+- `[Dictionary].[Ext_TradeFund]`
+
+#### Procedure staging chain (temporary tables)
+- `#no_concat` (country controls for CONCAT eligibility)
+- `#cust` (reg-change customer set with normalization)
+- `#latin`, `#notranslation`, `#names` (name transliteration workflow)
+
+#### Key derived output fields validated by procedure logic
+- Regulation-change customer dimension fields mirror MiFID customer derivation pattern:
+  - `IDType`, `PIN_Type`, `PIN_LEI`, `IsUKReport`, `IsEUReport`,
+  - `TraxEntity` / `TraxAccount`,
+  - transliterated names and CONCAT controls.
+- EU scope in this procedure also includes regulation IDs `1/9/11`.
+
+### 3.5.22 Procedure-derived lineage (validated from `SP_RegInRegOutPopulation`)
+
+The stored procedure provided (`dbo.SP_RegInRegOutPopulation`) confirms concrete dependencies for
+shared migration-market-data enrichment into `dbo.Reg_RegulationInOutDailyData`.
+
+#### Target table written by procedure
+- `dbo.Reg_RegulationInOutDailyData` (append insert for migration-day population)
+
+#### Direct base objects referenced
+- `dbo.Reg_Ext_MigrationInOut_STG`
+- `dbo.Reg_CurrencyPrice_Ext`
+- `dbo.Reg_Ext_DailyMaxPrices`
+
+#### Procedure staging chain (temporary tables)
+- `#Prices_By_Time` (intraday price candidates for relevant instruments)
+- `#TRAN_Prices_Draft` (migration-event to price-time joins)
+- `#Prices_Last` (nearest-price fallback resolution)
+- `#Prices_EOD` (EOD fallback prices)
+
+#### Key derived output fields validated by procedure logic
+- Nearest-price enrichment logic:
+  - exact timestamp match first,
+  - fallback via nearest upper/lower occurred time,
+  - final fallback to EOD prices when intraday unavailable.
+- Populates migration pricing controls:
+  - `NEW_AskSpreaded`, `NEW_BidSpreaded`, `NEW_Ask`, `NEW_Bid`, `USDConversionRate`.
+- Output table acts as a shared upstream source for regulation in/out valuation and migration handling
+  consumed by downstream reporting procedures (notably ASIC and MiFID reg-change flows).
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
@@ -1300,7 +1411,37 @@ routing-order CAT population in `dbo.Reg_US_ROrders` under the current (pre-frac
   - `CAT_REJECTED_IND` sourced from external failure marker path,
   - error text composes OMS and EMS fail context where available.
 
-### 4.8 CAT transition note (fractional-native Apex API) - announced model change
+### 4.8 Procedure-derived lineage (validated from `SP_Reg_US_Customers`) - current CAT customer population model
+
+The stored procedure provided (`dbo.SP_Reg_US_Customers`) confirms concrete dependencies for
+daily CAT customer population in `dbo.Reg_US_Customers`.
+
+#### Target table written by procedure
+- `dbo.Reg_US_Customers` (delete-by-date loop + insert for report date)
+
+#### Direct base objects referenced
+- Customer source:
+  - `dbo.Reg_Ext_US_Customers`
+- Apex identity enrichment:
+  - `dbo.Reg_Ext_US_CustomerApexData`
+
+#### Procedure staging chain (temporary tables)
+- `#Ext_US_CustomerApexData` (CID -> ApexID/FDID mapping)
+- `#Ext_US_Customers` (base customer scope with test CID exclusion)
+
+#### Key derived output fields validated by procedure logic
+- Scope controls:
+  - report-date scoped replacement of `Reg_US_Customers`,
+  - explicit exclusion for test CID `9556887`.
+- Population shape:
+  - `ReportDate`, `CID`, `RegulationID`, `LabelID`, `PlayerLevelID`, `CountryID`, `AccountTypeID`
+    sourced from ext customer table.
+  - `ApexID`, `FDID` sourced via left join to Apex mapping table.
+- Operational controls:
+  - `UpdateDate` stamped via `getutcdate()`,
+  - left-join behavior preserves customer rows even when Apex mapping is missing.
+
+### 4.9 CAT transition note (fractional-native Apex API) - announced model change
 
 Based on the provided change notice (target end of March), CAT file processing is expected to move
 from the current roundup-dependent model to fractional-native flow:

@@ -138,9 +138,14 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_MIFID2_ETORO_Report`
 - `dbo.SP_MIFID2_HedgeEU_Report`
 - `dbo.SP_MIFID2_HedgeUK_Report`
+- `dbo.SP_MIFID2_Customer`
+- `dbo.SP_MIFID2_RegChange_Customer`
 - `dbo.SP_Reg_US_NOrders`
 - `dbo.SP_Reg_US_Fullfilment`
 - `dbo.SP_Reg_US_ROrders`
+- `dbo.SP_Reg_US_Customers`
+- `dbo.SP_EMIR2_Customer`
+- `dbo.SP_RegInRegOutPopulation`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -159,9 +164,13 @@ Impact:
   - ASIC aggregated hedge position report procedure
   - ASIC collateral report procedure
   - MiFID report procedure (EU/UK + reg-change + Seychelles + ME branches)
+  - MiFID customer and reg-change customer population procedures (upstream identity/routing dimensions)
+  - EMIR customer population procedure (upstream EMIR counterparty dimension)
+  - Shared regulation migration population procedure (`Reg_RegulationInOutDailyData`) used across model reg-in/reg-out logic
   - CAT new-order procedure (current old model) with explicit transition note to fractional-native target model
   - CAT fulfillment procedure (current old model) with transition note for removal of inventory-fulfillment path
   - CAT routing-order procedure (current old model) with transition note for removal of residual route path
+  - CAT customer population procedure (upstream US customer/Apex-FDID dimension)
 - Step 2B MiFID section now reflects procedure-validated field derivations for:
   - report routing (`RegulationReportID`: `1=EU`, `2=UK`)
   - occurred-under regulation lineage (`RegulationID` from `OrigRegulationID`)
@@ -202,6 +211,12 @@ Impact:
   - UK Hedge controls including `CommodityDerivativeIndicator`,
     `ExecutionWithinFirmType='ALG'`, `ExecutionWithinFirm='ETORODEALING01'`,
     `BackReportingIndicator=0`, and `EMSOrderID` propagation
+  - customer-population lineage controls from `SP_MIFID2_Customer` and `SP_MIFID2_RegChange_Customer`
+    (IDType/PIN_LEI generation, report-scope flags, TraxEntity/TraxAccount routing)
+- Step 2B upstream population controls now also reflect:
+  - `EMIR2_Customer` refresh and source lineage (`SP_EMIR2_Customer`)
+  - shared reg-in/reg-out market-data enrichment path via `SP_RegInRegOutPopulation`
+    (`Reg_RegulationInOutDailyData` with nearest-price fallback logic used in migration-day controls, especially ASIC reg-in/reg-out paths)
 - Step 2B CAT section now reflects procedure-validated and transition-aware controls for:
   - current `SP_Reg_US_NOrders` message construction (including ME-type branches `1/2/4/5`)
   - current `SP_Reg_US_Fullfilment` fulfillment construction (ME types `9/10` from NO lineage and EMS execution joins)
@@ -212,6 +227,7 @@ Impact:
   - external/internal failure controls used for acceptance reconciliation
   - fulfillment-specific controls (`SOURCE_ORDER_ID`, `CAT_CLIENT_ORDER_ID`, `CAT_FIRM_ORDER_ID`, `ACTION_VOLUME`, `ACTION_PRICE`, `CORRECTION_DATETIME`)
   - routing-specific controls (`CAT_ROUTED_ORDER_ID`, `CAT_DESTINATION`, `CAT_REJECTED_IND`, `EMSOrderID`, route volume source)
+  - customer-population controls from `SP_Reg_US_Customers` (US customer scope + Apex/FDID enrichment)
   - announced target policy controls for cutover:
     - remove `ME_Type 2/3/4/10`,
     - keep `ME_Type 1/6/9`,
