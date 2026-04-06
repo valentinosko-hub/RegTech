@@ -807,6 +807,88 @@ The stored procedure provided (`dbo.SP_ASIC2_CollateralReport`) confirms concret
   - `Collateral_timestamp = <StartDate>T23:59:59Z`
   - `UTI` blank, `Action_type` blank.
 
+### 3.5.15 Procedure-derived lineage (validated from `SP_MIFID2_Report`)
+
+The stored procedure provided (`dbo.SP_MIFID2_Report`) confirms concrete dependencies for
+MiFID reporting outputs into `dbo.MIFID2_Report` and `dbo.MIFID2_ME_Report`.
+
+#### Target tables written by procedure
+- `dbo.MIFID2_Report` (delete-by-date loop + multi-flow inserts)
+- `dbo.MIFID2_ME_Report` (delete-by-date loop + ME insert)
+- Side table updates:
+  - `dbo.MIFID2_Removed_OP_Partials` (open-tran partials removed from report population)
+
+#### Direct base objects referenced
+- Position and customer baselines:
+  - `dbo.MIFID2_ext_Position`
+  - `dbo.MIFID2_Customer`
+  - `dbo.MIFID2_ext_RegChange_Position`
+  - `dbo.MIFID2_RegChange_Customer`
+- Change/mirror/split and migration dependencies:
+  - `dbo.MIFID2_ext_PositionChangeLog`
+  - `dbo.MIFID2_ext_Mirror`
+  - `Dictionary.Ext_TradeFund`
+  - `dbo.Reg_Ext_HistorySplitRatio`
+  - `dbo.Reg_MigrationInOut_Population`
+  - `dbo.Reg_Regulation_Movments_Positions`
+- Instrument and metadata dependencies:
+  - `dbo.Reg_Instruments_SCD`
+  - `dbo.Reg_Instruments_Full_Description`
+  - `dbo.InstrumentMetaData_SpecialChar_Conversion`
+  - `dbo.Reg_Ext_Trade_InstrumentMetaData`
+  - `dbo.Reg_Ext_Trade_GetInstrument`
+  - `dbo.Reg_Ext_DictionaryCurrency`
+  - `dbo.Reg_Ext_DictionaryCurrencyType`
+  - `dbo.FuturesMetaData`
+- Internal exclusion controls:
+  - `dbo.MIFID2_Instruments_To_Exclude`
+- Fivetran controls/enrichment:
+  - `[ThirdParty_Fivetran].[Fivetran].[google_sheets].[isin_for_instrumentid_341]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+
+#### Procedure staging chain (temporary tables / CTE)
+- Initial extraction and normalization:
+  - `#changelog`, `#mirror`, `#Positions`, `#splits`, `#split`, `#trades`
+  - `#InstrumentsFullDescription`, `#Reg_Instruments_SCD`,
+    `#InstrumentMetaData_SpecialChar_Conversion`, `#Metadata`
+  - `#Inst_341_4UK`, `#Inst_341_UK_fix`
+- Partial-close handling:
+  - `#PartialPop`, `#PartialPopAll`
+  - `#PartialPopRegChange`, `#PartialPopAllRegChange`
+- Regulation-change handling:
+  - `#MifidChangeCusts`, `#RegInOutCusts`
+  - `#UKtoEUtrades`, `#EUtoUKtrades`
+  - `#PositionsRegChange_Temp`, `#PositionsRegChange`
+  - `#splitRegChange`, `#tradesRegChange`, `#tradesFinal`
+  - `#Is_EU_UK` (customer EU/UK report flags update)
+
+#### Key derived output fields validated by procedure logic
+- Jurisdiction/report routing:
+  - `RegulationReportID = 1` for EU/CySEC population,
+  - `RegulationReportID = 2` for UK/FCA population,
+  - plus additional inserts for Seychelles (`OrigRegulationID=9`) and ME (`OrigRegulationID=11`).
+- Trade/reference identity:
+  - `TransactionReferenceNumber` from `PositionIDOut` with jurisdiction-specific formatting
+    (UK token removal, `SC` and `ME` suffix patterns for dedicated flows).
+- Reg-change lineage:
+  - `OrigRegulationID` and `RegChange` are explicitly derived from migration windows
+    (`RegChange=0/1/2`), including EU<->UK moves and MIFID->other transitions.
+- Price/quantity normalization:
+  - split-adjusted open quantities from `Reg_Ext_HistorySplitRatio`,
+  - GBX normalization (`InitForexRate`, `EndForexRate` divided by 100 when `IsGBX=1`).
+- Counterparty and decision-maker population:
+  - buyer/seller identifier code and type branch logic from `IDType`, `PIN_LEI`, `PIN_Type`,
+    `BuyORSell`, `MirrorID`, and fund profile.
+- Instrument classification and underlying mapping:
+  - `InstrumentClassification`, `UnderlyingInstrumentCode`, `UnderlyingIndexName`,
+    and 341 UK ISIN override from Fivetran mapping.
+- Scope controls:
+  - internal and external exclusion filters (`MIFID2_Instruments_To_Exclude`,
+    `regtech_excluded_instruments`, `regtech_excluded_position_ids`,
+    and UK excluded CIDs).
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

@@ -134,6 +134,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_ASIC2_PositionReport_Agg`
 - `dbo.SP_ASIC2_PositionReport_Agg_Hedge`
 - `dbo.SP_ASIC2_CollateralReport`
+- `dbo.SP_MIFID2_Report`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -151,6 +152,17 @@ Impact:
   - ASIC aggregated position report procedure
   - ASIC aggregated hedge position report procedure
   - ASIC collateral report procedure
+  - MiFID report procedure (EU/UK + reg-change + Seychelles + ME branches)
+- Step 2B MiFID section now reflects procedure-validated field derivations for:
+  - report routing (`RegulationReportID`: `1=EU`, `2=UK`)
+  - occurred-under regulation lineage (`RegulationID` from `OrigRegulationID`)
+  - deterministic transaction reference formatting (`TransactionReferenceNumber`)
+  - migration controls (`RegChange=0/1/2` and migration-window logic)
+  - buyer/seller identifier and decision-maker branch logic
+  - split-adjusted quantity and GBX-normalized pricing
+  - instrument classification and UK InstrumentID 341 ISIN override
+  - execution timestamp/entity/venue branching across EU/UK inserts
+  - short-selling indicator and asset-class population rules
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
