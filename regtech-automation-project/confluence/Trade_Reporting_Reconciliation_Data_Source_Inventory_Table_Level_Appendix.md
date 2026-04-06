@@ -937,6 +937,73 @@ the MiFID EU AUS flow into `dbo.MIFID2_ETORO_Report`.
   - same-day filter (`ReportDate = @StartDate`) plus Fivetran-based exclusions for CID,
     instrument, and position IDs.
 
+### 3.5.17 Procedure-derived lineage (validated from `SP_MIFID2_HedgeEU_Report`)
+
+The stored procedure provided (`dbo.SP_MIFID2_HedgeEU_Report`) confirms concrete dependencies for
+MiFID EU hedge reporting inserts into `dbo.MIFID2_Hedge_Report` (`RegulationReportID=1`).
+
+#### Target table written by procedure
+- `dbo.MIFID2_Hedge_Report` (delete-by-date loop scoped to `RegulationReportID=1` + EU inserts)
+
+#### Direct base objects referenced
+- Hedge execution and LP identity:
+  - `dbo.MIFID2_ext_HedgeExecutionLog`
+  - `dbo.Reg_Ext_LiquidityAccountID`
+  - `dbo.Reg_LiquidtyAcount_SCD`
+- Instrument and metadata dependencies:
+  - `dbo.Reg_Instruments_SCD`
+  - `dbo.Reg_Instruments_Full_Description`
+  - `dbo.InstrumentMetaData_SpecialChar_Conversion`
+  - `dbo.Reg_Ext_DictionaryCurrency`
+  - `dbo.Reg_Ext_DictionaryCurrencyType`
+- Synapse + mapping enrichment for futures metadata:
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[Dealing_staging].[LP_EdnF_CoreTrades]`
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[Dealing_staging].[LP_IB_U1059976_Open_Positions_All]`
+  - `[ThirdParty_Fivetran].[Fivetran].[google_sheets].[ed_n_f_to_istrumentid_etoro]`
+- Fivetran controls:
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables / CTE)
+- Hedge execution extraction and routing:
+  - `#EUtrades` (execution log extraction, LP joins, flow routing `EU/UK`, row-id sequencing)
+- Instrument/metadata staging:
+  - `#InstrumentsFullDescriptionEU`
+  - `#Reg_Instruments_SCD`
+  - `#InstrumentMetaData_SpecialChar_Conversion` (deduped by instrument/report date)
+  - `#Metadata`
+- ED&F / IB enrichment:
+  - `#LP_EdnF_Trades_NonVIX`, `#LP_EdnF_Trades_VIX`, `#LP_EdnF_Trades`
+  - `#LP_IB_Trades`
+- Additional EU-via-UK hedge branch:
+  - `#realstock_EUtrades_via_UK`
+
+#### Key derived output fields validated by procedure logic
+- Routing and scope:
+  - output constrained to `MIFID2_Hedge_Report` with `RegulationReportID=1`,
+  - primary EU branch (`rowSource='EU'`) plus EU reporting of real-stock trades routed via UK LP (`rowSource='EU-UK'`).
+- Hedge transaction identity:
+  - `TransactionReferenceNumber` built from normalized `ProviderExecID` + `RowID` + report date,
+    with fallback to `LiquidityProvider + date + RowID`.
+- Counterparty/LEI population:
+  - executing entity fixed to EU LEI (`213800GIFQMSV7HROS23`) for EU branch,
+    with buyer/seller LEI assigned by side and LP LEI in hedge pairing logic.
+- Price and quantity controls:
+  - `Quantity` from hedge `Units`,
+  - `Price` from `ExecutionRate` with GBX divide-by-100 handling,
+  - `PriceType` from instrument currency type (`BSPS` for type 4 else `MNTR`).
+- Instrument/futures enrichment:
+  - extensive `InstrumentClassification` branch logic by LP LEI/account and instrument groups,
+  - ED&F/IB-driven fields for `InstrumentFullName`, `NotionalCurrency1`, `PriceMultiplier`,
+    `ExpiryDate`, and `DeliveryType` for real futures scenarios.
+- Control fields:
+  - `ShortSellingIndicator` set to `SELL` for real stock/ETF short cases,
+  - `CommodityDerivativeIndicator` set to `false` for instrument type 2,
+  - `BackReportingIndicator=0`,
+  - `EMSOrderID` explicitly populated in output.
+- Exclusion controls:
+  - instrument and position filters via Fivetran exclusion tables for `[MIFID2_Hedge_Report]`.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

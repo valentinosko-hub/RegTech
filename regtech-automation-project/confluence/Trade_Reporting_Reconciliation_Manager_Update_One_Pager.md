@@ -136,6 +136,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_ASIC2_CollateralReport`
 - `dbo.SP_MIFID2_Report`
 - `dbo.SP_MIFID2_ETORO_Report`
+- `dbo.SP_MIFID2_HedgeEU_Report`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -172,6 +173,17 @@ Impact:
     (`OpenTime`, `OpenPrice`, `Volume`)
   - EU AUS commodity/price-type mapping from instrument currency type and
     instrument reference derivations (including 50-char name safeguard)
+  - EU Hedge flow (`MIFID2_Hedge_Report`) routing controls
+    (`RegulationReportID=1`, `rowSource=EU/EU-UK`)
+  - EU Hedge deterministic transaction reference derivation from provider execution id,
+    row ordering, and report date
+  - EU Hedge counterparty/executing-entity LEI branching by side and LP profile
+  - EU Hedge economics (`ExecutionTime`, `Units`, `ExecutionRate`) with GBX normalization
+    and `numeric(16,8)` price casting
+  - EU Hedge ED&F/IB enrichment for futures-related fields
+    (`InstrumentFullName`, `NotionalCurrency1`, `PriceMultiplier`, `ExpiryDate`, `DeliveryType`)
+  - EU Hedge controls including `ShortSellingIndicator`, `CommodityDerivativeIndicator`,
+    `BackReportingIndicator=0`, and `EMSOrderID` propagation
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
