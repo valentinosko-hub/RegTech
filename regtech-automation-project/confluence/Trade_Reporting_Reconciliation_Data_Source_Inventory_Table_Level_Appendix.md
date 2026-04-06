@@ -201,6 +201,38 @@ The stored procedure provided (`dbo.SP_EMIR3_UK_Refit_Report_Daily`) confirms co
 - `#EMIR3_UK_Report_Prev` (previous report-day UTI/confirmation/execution pull)
 - `#EMIR3_UK_Refit_Report_Daily` (final shaped dataset before target insert)
 
+### 3.5.2 Procedure-derived lineage (validated from `SP_EMIR3_UK_Refit_Report_Collateral`)
+
+The stored procedure provided (`dbo.SP_EMIR3_UK_Refit_Report_Collateral`) confirms concrete dependencies for
+`dbo.EMIR3_UK_Refit_Report_Collateral`.
+
+#### Target table written by procedure
+- `dbo.EMIR3_UK_Refit_Report_Collateral` (truncate + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_Position`
+- `dbo.EMIR2_Customer`
+- `dbo.EMIR2_ext_DWH_V_Liabilities`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_corporate_clients_details]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables)
+- `#emir3_UK_coll_clients_details` (UK + REFIT-filtered client details)
+- `#EMIR3_collateral_ids` (eligible collateral population by CID/Regulation with exclusions)
+- `#equity` (RealizedEquity/Credit/TotalPositionsAmount by CID from liabilities source)
+- `#EMIR3_collateral_calculation` (counterparty type and excess calculation basis)
+- `#EMIR3_collateral_calculation_agg` (aggregation by CID or LEI-based collateral portfolio code)
+
+#### Key derived output fields validated by procedure logic
+- `Counterparty_2_identifier_type` (derived from `AccountTypeID` and `PlayerLevelID`)
+- `Collateral_portfolio_code` (CID/LEI-dependent derivation)
+- `Variation_margin_posted_by_counterparty_1_pre_haircut`
+- `Variation_margin_posted_by_counterparty_1_post_haircut`
+- `Excess_collateral_posted_by_counterparty_1`
+- `Collateral_timestamp`
+- `Action_type` (set to `MARU`)
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

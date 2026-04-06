@@ -118,12 +118,15 @@ Next action requested:
 
 ## 8) New evidence ingested (procedure-level)
 
-The following stored procedure has been ingested and used to tighten lineage/mapping:
+The following stored procedures have been ingested and used to tighten lineage/mapping:
 
 - `dbo.SP_EMIR3_UK_Refit_Report_Daily`
+- `dbo.SP_EMIR3_UK_Refit_Report_Collateral`
 
 Impact:
-- Step 2A now contains procedure-derived dependency lineage for EMIR UK REFIT daily.
+- Step 2A now contains procedure-derived dependency lineage for:
+  - EMIR UK REFIT daily report procedure
+  - EMIR UK REFIT collateral report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Action_type`
@@ -133,3 +136,7 @@ Impact:
   - `UPI`
   - product classification fields
   - valuation/notional/price fields
+  - collateral fields:
+    - `Variation_margin_posted_by_counterparty_1_post_haircut`
+    - `Excess_collateral_posted_by_counterparty_1`
+    - `Collateral_portfolio_code`
