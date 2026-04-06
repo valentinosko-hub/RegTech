@@ -133,6 +133,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_ASIC2_PositionReport`
 - `dbo.SP_ASIC2_PositionReport_Agg`
 - `dbo.SP_ASIC2_PositionReport_Agg_Hedge`
+- `dbo.SP_ASIC2_CollateralReport`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -149,6 +150,7 @@ Impact:
   - ASIC position report procedure
   - ASIC aggregated position report procedure
   - ASIC aggregated hedge position report procedure
+  - ASIC collateral report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
@@ -195,3 +197,6 @@ Impact:
   - aggregate hedge UTI generation (`...HN...`) with incident-specific override mappings in `ASIC2_Positions_AGG_Hedge`
   - aggregate hedge net-direction and zero-quantity backfill logic (`for_update` -> prior-day non-zero direction)
   - aggregate hedge valuation recomputation from weighted buy/sell price legs and USD conversion
+  - collateral population from `ASIC2_Positions_AGG` + liabilities source (`ASIC2_ext_DWH_V_Liabilities`) via `#ASIC2_collateral_calculation_agg`
+  - collateral counterparty identifier branching and portfolio-code mapping (`Variation_margin_collateral_portfolio_code = CDE_Counterparty_2`)
+  - collateral static output controls (`PRC2`, `TRUE` collateral indicator, `UTI` blank, end-of-day collateral timestamp)

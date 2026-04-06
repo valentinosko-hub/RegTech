@@ -769,6 +769,44 @@ The stored procedure provided (`dbo.SP_ASIC2_PositionReport_Agg_Hedge`) confirms
   - `CDE_Notional_amount_of_leg_1/2`, notional quantity handling with zero-quantity logic,
   - `CDE_Valuation_amount` derived as direction-aware MTM delta with USD conversion.
 
+### 3.5.14 Procedure-derived lineage (validated from `SP_ASIC2_CollateralReport`)
+
+The stored procedure provided (`dbo.SP_ASIC2_CollateralReport`) confirms concrete dependencies for
+`dbo.ASIC2_Collateral` (ASIC collateral reporting flow).
+
+#### Target table written by procedure
+- `dbo.ASIC2_Collateral` (delete-by-date loop + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.ASIC2_Positions_AGG`
+- `dbo.ASIC2_Customer_PositionReport`
+- `dbo.ASIC2_ext_DWH_V_Liabilities`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+
+#### Procedure staging chain (temporary tables)
+- `#ASIC2_collateral_ids` (in-scope CID/regulatory/counterparty set from aggregate positions + customer profile)
+- `#equity2` (RealizedEquity/Credit/TotalPositionsAmount by CID)
+- `#ASIC2_collateral_calculation` (counterparty identifier type derivation with account/LEI/CID rules)
+- `#ASIC2_collateral_calculation_agg` (non-corporate and corporate aggregation by counterparty code)
+
+#### Key derived output fields validated by procedure logic
+- Scope restricted to same-day aggregate-position population (`ASIC2_Positions_AGG.DateID = @StartDate`) with
+  exclusion control for `[ASIC2_Collateral]` instruments.
+- `CDE_Counterparty_2_identifier_type` derived from account profile logic:
+  - `FALSE` for account type 14,
+  - `TRUE` for corporate-like accounts (`AccountTypeID=2 and PlayerLevelID<>4`), selected CID overrides,
+    or LEI-populated cases.
+- `Variation_margin_collateral_portfolio_code` set to `CDE_Counterparty_2` (collateral portfolio key).
+- Collateral economics populated from aggregated liabilities:
+  - `CDE_Variation_margin_collected_by_reporting_counterparty_pre_haircut = TotalPositionsAmount`
+  - `CDE_Currency_of_variation_margin_collected = USD`
+- Static collateral attributes in current SP:
+  - `CDE_Collateralisation_category = PRC2`
+  - `CDE_Collateral_portfolio_indicator = TRUE`
+  - `Portfolio_containing_non_reported_component_indicator = FALSE`
+  - `Collateral_timestamp = <StartDate>T23:59:59Z`
+  - `UTI` blank, `Action_type` blank.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
