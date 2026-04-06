@@ -889,6 +889,54 @@ MiFID reporting outputs into `dbo.MIFID2_Report` and `dbo.MIFID2_ME_Report`.
     `regtech_excluded_instruments`, `regtech_excluded_position_ids`,
     and UK excluded CIDs).
 
+### 3.5.16 Procedure-derived lineage (validated from `SP_MIFID2_ETORO_Report`)
+
+The stored procedure provided (`dbo.SP_MIFID2_ETORO_Report`) confirms concrete dependencies for
+the MiFID EU AUS flow into `dbo.MIFID2_ETORO_Report`.
+
+#### Target table written by procedure
+- `dbo.MIFID2_ETORO_Report` (delete-by-date loop + insert for same-day AUS population)
+
+#### Direct base objects referenced
+- Source transactional population:
+  - `dbo.ASIC_Transactions`
+- Instrument and metadata dependencies:
+  - `dbo.Reg_Instruments_SCD`
+  - `dbo.Reg_Instruments_Full_Description`
+  - `dbo.InstrumentMetaData_SpecialChar_Conversion`
+  - `dbo.Reg_Ext_DictionaryCurrency`
+  - `dbo.Reg_Ext_DictionaryCurrencyType`
+- Fivetran controls:
+  - `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables)
+- `#InstrumentsFullDescription` (latest index-name descriptions per instrument)
+- `#Reg_Instruments_SCD` (tradable, date-valid SCD slice at report date)
+- `#Metadata` (instrument type/currency/ISIN/MiFID flags/full name/GBX normalization context)
+
+#### Key derived output fields validated by procedure logic
+- Jurisdiction routing is fixed for this flow:
+  - `RegulationReportID = 1` (MiFID EU report channel),
+  - `RegulationID = 1` (EU).
+- Trade/reference identity:
+  - `TransactionReferenceNumber = CAST(PositionID) + OpenORClose + 'AUS' + DateID`
+    (AUS-specific pattern to avoid collisions with other MiFID flows).
+- Counterparty role and LEI assignment:
+  - buyer/seller LEIs are hardcoded by side between EU reporting LEI (`213800GIFQMSV7HROS23`)
+    and ASIC legal entity LEI (`549300OK2V4QF20B0D04`).
+- Timestamp and economics:
+  - `TradingDateTime` from `ASIC_Transactions.OpenTime` in UTC string format,
+  - `Quantity` from `Volume`, `Price` from `OpenPrice`,
+  - `PriceType` from instrument currency type (`BSPS` for type 4 else `MNTR`).
+- Instrument classification and naming:
+  - `InstrumentClassification` via explicit `InstrumentTypeID` + InstrumentID mapping branches,
+  - `InstrumentFullName` uses `LEFT(..., 50) + ' CFD'` truncation safeguard.
+- Scope controls:
+  - same-day filter (`ReportDate = @StartDate`) plus Fivetran-based exclusions for CID,
+    instrument, and position IDs.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

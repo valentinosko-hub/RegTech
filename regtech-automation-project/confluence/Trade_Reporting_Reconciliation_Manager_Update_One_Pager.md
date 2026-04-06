@@ -135,6 +135,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_ASIC2_PositionReport_Agg_Hedge`
 - `dbo.SP_ASIC2_CollateralReport`
 - `dbo.SP_MIFID2_Report`
+- `dbo.SP_MIFID2_ETORO_Report`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -163,6 +164,14 @@ Impact:
   - instrument classification and UK InstrumentID 341 ISIN override
   - execution timestamp/entity/venue branching across EU/UK inserts
   - short-selling indicator and asset-class population rules
+  - EU AUS flow (`MIFID2_ETORO_Report`) transaction reference derivation
+    (`PositionID + OpenORClose + 'AUS' + DateID`)
+  - EU AUS fixed routing (`RegulationReportID=1`, `RegulationID=1`)
+  - EU AUS side-driven buyer/seller LEI assignment and fixed LEI code types
+  - EU AUS economics and timestamp sourcing from `ASIC_Transactions`
+    (`OpenTime`, `OpenPrice`, `Volume`)
+  - EU AUS commodity/price-type mapping from instrument currency type and
+    instrument reference derivations (including 50-char name safeguard)
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
