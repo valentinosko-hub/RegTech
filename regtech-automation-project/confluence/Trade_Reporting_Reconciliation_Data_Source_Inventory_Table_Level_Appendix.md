@@ -363,6 +363,61 @@ The stored procedure provided (`dbo.SP_EMIR2_ETORO_Refit_Trades`) confirms concr
 - `Valuation_amount` intentionally empty in this trade flow (trade-level TCTN record)
 - `Action_type` fixed to `POSC`, `Level` fixed to `TCTN`, `Uncollateralised` empty
 
+### 3.5.6 Procedure-derived lineage (validated from `SP_EMIR2_Seychelles_Refit_Report_Daily`)
+
+The stored procedure provided (`dbo.SP_EMIR2_Seychelles_Refit_Report_Daily`) confirms concrete dependencies for
+`dbo.EMIR2_Seychelles_Refit_Report_Daily` (EMIR Seychelles/RegulationID 9 REFIT daily flow).
+
+#### Target table written by procedure
+- `dbo.EMIR2_Seychelles_Refit_Report_Daily` (truncate + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_Position`
+- `dbo.EMIR2_Customer`
+- `dbo.Reg_Instruments_SCD`
+- `dbo.EMIR2_InstrumentMetaData`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_DailyMaxPrices`
+- `dbo.EMIR2_Refit_Report` (previous-day directional backfill for zero-quantity rows)
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_refit_taxonomy]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+
+#### Procedure staging chain (temporary tables)
+- `#Metadata` (tradable instrument metadata and ISO/currency normalization)
+- `#EMIR2_Position` (RegulationID 9 scoped source positions/trades)
+- `#EMIR2_InstrumentMetaData` (instrument metadata with exchange override and ISIN cleanup)
+- `#pos_opendate` (earliest open occurrence by instrument)
+- `#pos_openprice` (aggregated open price by instrument)
+- `#PricesEOD` (EOD bid/ask snapshot filtered by report date)
+- `#Valid_Pos` (aggregated net quantity/side by instrument)
+- `#all` (union of synthetic position rows and trade rows)
+- `#EMIR2_Report_Prev` (previous-day UTI/ticket/execution/confirmation pull)
+- `#EMIR2_Seychelles_Refit_Report_Daily` (final shaped dataset before target insert)
+
+#### Key derived output fields validated by procedure logic
+- Scope hard-filtered to `RegulationID = 9` with fixed Seychelles counterparty values:
+  - `Counterparty_2 = 549300L7LPQNKJQ1IW32`
+  - `Country_of_counterparty_2 = SC`
+- `Ticket` and `UTI` generation/fallback:
+  - position (`Trade = 0`) rows reuse prior-day `ERP.Ticket`/`ERP.UTI` when available
+  - else position pattern `HN + InstrumentID + Date + E`
+  - trade (`Trade = 1`) pattern `HP + PositionID + side/open-close suffix`
+- `Direction` includes `for_update` placeholder for zero-quantity rows, then backfilled from latest
+  `EMIR2_Refit_Report` non-zero UTI direction history
+- `Action_type`/`Level` split:
+  - position rows -> `Level = PSTN`, empty `Action_type`
+  - trade rows -> `Level = TCTN`, `Action_type = POSC`
+- `Valuation_amount` calculated at final insert for `PSTN` rows using directional
+  quantity * (EOD bid/ask - open price) logic
+- `UPI` + taxonomy fields (`Isda_taxonomy`, `Anna_*`) via Fivetran joins
+- `Uncollateralised` derived in final insert:
+  - empty for `TCTN`
+  - `TRUE` for `PSTN` when `Counterparty_2` is in configured LEI set, else `FALSE`
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
