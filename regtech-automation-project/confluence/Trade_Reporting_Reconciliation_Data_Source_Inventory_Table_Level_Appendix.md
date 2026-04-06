@@ -1153,6 +1153,85 @@ Note: DTCC/TRAX response ingestion is represented as not yet complete in the sou
   - `CAT Reporter Portal Event Count`
   - `CAT Reporter Portal Summary`
 
+### 4.5 Procedure-derived lineage (validated from `SP_Reg_US_NOrders`) - current (old) CAT model
+
+The stored procedure provided (`dbo.SP_Reg_US_NOrders`) confirms concrete dependencies for
+new-order CAT population in `dbo.Reg_US_NOrders` under the current (pre-fractional-native) model.
+
+#### Target table written by procedure
+- `dbo.Reg_US_NOrders` (delete-by-date loop + insert from `#All_NOrders`)
+
+#### Direct base objects referenced
+- Customer and instrument/reference dependencies:
+  - `dbo.Reg_US_Customers`
+  - `dbo.Reg_Instruments_ext` / `dbo.Reg_Instruments_SCD` (daily vs historical run branch)
+  - `[ThirdParty_Fivetran].[Fivetran].[google_sheets].[reg_official_finra_symbols]`
+- Order and execution history dependencies:
+  - `dbo.Reg_Ext_HistoryOrderForOpen`
+  - `dbo.Reg_Ext_HistoryOrderForClose`
+  - `dbo.Reg_Ext_History_OpenExecutionPlan`
+  - `dbo.Reg_Ext_History_CloseExecutionPlan`
+  - `dbo.Reg_Ext_History_ExecutedOpenOrders`
+  - `dbo.Reg_Ext_History_ExecutedCloseOrders`
+- Hedge/EMS dependencies:
+  - `dbo.Reg_Ext_HedgeEMSOrders`
+  - `dbo.Reg_Ext_HedgeOrderLog`
+
+#### Procedure staging chain (temporary tables)
+- Scope and reference preparation:
+  - `#US_Customer`, `#Reg_Instruments_SCD`, `#reg_official_finra_symbols`
+- Core order history staging:
+  - `#HistoryOrderForOpen`, `#HistoryOrderForClose`
+  - `#HedgeEMS_SendTime`, `#ExternalFailed`, `#ExternalSuccessl`
+  - `#UnifiedOrders` (consolidated order lifecycle staging)
+- Final shaping:
+  - `#All_NOrders` (CAT NO rows before final insert)
+
+#### Key derived output fields validated by procedure logic (current model)
+- Current message-generation model includes synthetic ME types for fractional/roundup behavior:
+  - base client new orders (`ME_Type=1`),
+  - residual new order (`ME_Type=2`),
+  - route-accept-related records (`ME_Type=4`),
+  - representative order (`ME_Type=5`),
+  - with additional route/fulfillment logic handled by companion CAT procedures.
+- Fractional handling in current logic:
+  - fractional detection via floor/ceiling comparison on amount-in-units,
+  - residual quantity generated as `CEILING(qty)-qty`,
+  - representative quantities generated with ceiling-based rounding.
+- Identity and CAT fields:
+  - deterministic `ORDER_ID`, `SOURCE_ORDER_ID`, `CAT_ORDER_ID`, and related suffix patterns
+    (`_RI`, `_A`) based on ME type and order-tree logic.
+- Internal/external failure controls:
+  - off-hour codes filtered (`956`, `1011`),
+  - internal failures removed from final set (`ErrorCode_c>0` with no external failure marker),
+  - special handling for external fail/success indicators and EMS send-time lineage.
+- Scope controls:
+  - customer filter excludes test accounts (`PlayerLevelID<>4`),
+  - execution filter enforces `ExecutionID>0`.
+
+### 4.6 CAT transition note (fractional-native Apex API) - announced model change
+
+Based on the provided change notice (target end of March), CAT file processing is expected to move
+from the current roundup-dependent model to fractional-native flow:
+
+- To be removed:
+  - `ME_Type=2` (Residual New Order / MENO)
+  - `ME_Type=3` (Residual Route / MEOR)
+  - `ME_Type=4` (Route Accept / MEOA)
+  - `ME_Type=10` (Inventory Fulfillment / MEOF)
+- To remain:
+  - `ME_Type=1` (Client New Order / MENO)
+  - `ME_Type=6` (Route to Apex / MEOR)
+  - `ME_Type=9` (Client Fulfillment / MEOF)
+- To change:
+  - `ME_Type=5` (Representative Order / MENO) remains only for copy-trade trees and
+    should carry exact fractional tree quantity (no ceiling-rounding).
+
+Additional announced operational impact:
+- APCC.ETOR file retirement (legacy file contained only ME_Type 2 and 3).
+- File structure and field contracts remain unchanged (format, column order, delimiters, IDs/suffixes);
+  row-volume and ME type composition change.
+
 ## 5) SFTR model
 
 ### 5.1 Source tables

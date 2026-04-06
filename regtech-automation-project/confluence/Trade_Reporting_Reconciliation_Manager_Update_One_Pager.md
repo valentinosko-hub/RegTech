@@ -138,6 +138,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_MIFID2_ETORO_Report`
 - `dbo.SP_MIFID2_HedgeEU_Report`
 - `dbo.SP_MIFID2_HedgeUK_Report`
+- `dbo.SP_Reg_US_NOrders`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -156,6 +157,7 @@ Impact:
   - ASIC aggregated hedge position report procedure
   - ASIC collateral report procedure
   - MiFID report procedure (EU/UK + reg-change + Seychelles + ME branches)
+  - CAT new-order procedure (current old model) with explicit transition note to fractional-native target model
 - Step 2B MiFID section now reflects procedure-validated field derivations for:
   - report routing (`RegulationReportID`: `1=EU`, `2=UK`)
   - occurred-under regulation lineage (`RegulationID` from `OrigRegulationID`)
@@ -196,6 +198,17 @@ Impact:
   - UK Hedge controls including `CommodityDerivativeIndicator`,
     `ExecutionWithinFirmType='ALG'`, `ExecutionWithinFirm='ETORODEALING01'`,
     `BackReportingIndicator=0`, and `EMSOrderID` propagation
+- Step 2B CAT section now reflects procedure-validated and transition-aware controls for:
+  - current `SP_Reg_US_NOrders` message construction (including ME-type branches `1/2/4/5`)
+  - order identity/suffix logic (`ORDER_ID`, `SOURCE_ORDER_ID`, `CAT_ORDER_ID`, `_A`, `_RI`)
+  - current fractional/roundup handling and representative linkage fields
+  - symbol normalization via official FINRA symbol correction mapping
+  - external/internal failure controls used for acceptance reconciliation
+  - announced target policy controls for cutover:
+    - remove `ME_Type 2/3/4/10`,
+    - keep `ME_Type 1/6/9`,
+    - keep `ME_Type 5` only for copy-tree representative exact quantity
+  - APCC.ETOR retirement control and 2026-03-26 test-file acceptance verification checkpoint
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
