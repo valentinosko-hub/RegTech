@@ -321,6 +321,48 @@ The stored procedure provided (`dbo.SP_EMIR2_ETORO_Refit_Positions`) confirms co
   - quantity * (EOD price - open price), sign-aware by `IsBuy`
 - `Uncollateralised` field derived in final insert from `Level` and counterparty list logic
 
+### 3.5.5 Procedure-derived lineage (validated from `SP_EMIR2_ETORO_Refit_Trades`)
+
+The stored procedure provided (`dbo.SP_EMIR2_ETORO_Refit_Trades`) confirms concrete dependencies for
+`dbo.EMIR2_ETORO_Refit_Trades` (ETORO intercompany/open-trade EMIR REFIT flow).
+
+#### Target table written by procedure
+- `dbo.EMIR2_ETORO_Refit_Trades` (delete-by-date loop + insert)
+
+#### Direct base objects referenced
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_Trade_InstrumentMetaData`
+- `dbo.Reg_Ext_Trade_GetInstrument`
+- `dbo.ASIC_Transactions`
+- `dbo.ASIC_ext_OpenPositions_PositionsReport`
+- `dbo.ASIC_Customer_PositionReport`
+- `dbo.ASIC_Positions_AGG` (for earliest occurred date helper)
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_refit_taxonomy]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+
+#### Procedure staging chain (temporary tables)
+- `#Metadata` (tradable instrument metadata and ISO/currency normalization)
+- `#TB_InstrumentMetaData` (instrument metadata with ExchangeID override and ISIN cleanup)
+- `#GetInstrument_abv` (buy/sell abbreviation normalization)
+- `#MinPossitionOccured` (minimum occurred date per instrument)
+
+#### Key derived output fields validated by procedure logic
+- `Ticket` and `UTI` generated as deterministic ETORO trade/open-position patterns:
+  - `Ticket = 'AUSHP' + PositionID + side/open-close suffix`
+  - `UTI = reporting entity LEI + 'AUSHP' pattern`
+- `Subsequent_position_UTI` linked to the ETORO positions pattern (`AUSHN...`)
+- `Direction` derived from `OpenORClose` and `IsBuy`
+- `Product_classification`, `Base_product`, `Sub_product`, `Further_sub_product`
+- `UPI` + taxonomy fields (`Isda_taxonomy`, `Anna_*`) via Fivetran joins
+- `Notional_amount_of_leg_1` derived as `OpenPrice * Quantity`
+- `Valuation_amount` intentionally empty in this trade flow (trade-level TCTN record)
+- `Action_type` fixed to `POSC`, `Level` fixed to `TCTN`, `Uncollateralised` empty
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
