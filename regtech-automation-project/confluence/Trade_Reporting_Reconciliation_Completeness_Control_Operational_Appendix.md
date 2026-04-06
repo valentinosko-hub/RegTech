@@ -48,6 +48,52 @@ These controls are reused across multiple flows:
      - `AccountTypeID NOT IN (7,9)`
      - `CountryID <> 250`.
 
+### 3.1 Filter-to-table lineage map (table.column ownership)
+
+Every filter used in Sections 4-6 is mapped below to its source table and column(s).
+
+| Filter family | Filter expression (as used in procedure) | Source table.column(s) | Notes |
+|---|---|---|---|
+| Reporting date window | `ReportDate BETWEEN @ReportDate1 AND @ReportDate2` | `dbo.MIFID2_Report.ReportDate`, `dbo.MIFID2_ETORO_Report.ReportDate`, `dbo.MIFID2_ME_Report.ReportDate`, `dbo.MIFID2_Hedge_Report.ReportDate`, `dbo.EMIR2_Refit_Report.ReportDate`, `dbo.EMIR2_ETORO_Refit_Trades.ReportDate`, `dbo.EMIR3_ME_Refit_Report.ReportDate`, `dbo.ASIC2_Transactions.ReportDate` | Audit-side date filter family |
+| BestEX date window | `Trade_date BETWEEN @ReportDate1 AND @ReportDate2` | `dbo.BestEX_Report.Trade_date` | Used in mismatch counterpart joins |
+| MiFID report routing scope | `RegulationID`, `RegulationReportID`, `OpenORClose` filters | `dbo.MIFID2_Report.RegulationID`, `dbo.MIFID2_Report.RegulationReportID`, `dbo.MIFID2_Report.OpenORClose`, plus equivalent columns in `dbo.MIFID2_ETORO_Report` / `dbo.MIFID2_ME_Report` | Determines MiFID regime slices |
+| BestEX entity/instrument scope | `eToroEntity`, `[CFD/Real]`, `OpenORClose` | `dbo.BestEX_Report.eToroEntity`, `dbo.BestEX_Report.[CFD/Real]`, `dbo.BestEX_Report.OpenORClose` | Counterpart filter family for MiFID/EMIR/ASIC |
+| Instrument eligibility (internal) | `Trade_date >= ValidFrom AND Trade_date < ValidTo`, `IsMifid`, `IsMifidByFCA` | `dbo.Reg_Instruments_SCD.ValidFrom`, `dbo.Reg_Instruments_SCD.ValidTo`, `dbo.Reg_Instruments_SCD.IsMifid`, `dbo.Reg_Instruments_SCD.IsMifidByFCA` | Referenced from BestEX and BI enrichment logic |
+| Migration position cleanup | `PrevRegulationID` / `RegulationID`, `OpenOccurred < Migration_Occurred` | `dbo.Reg_Regulation_Movments_Positions.PrevRegulationID`, `dbo.Reg_Regulation_Movments_Positions.RegulationID`, `dbo.Reg_Regulation_Movments_Positions.OpenOccurred`, `dbo.Reg_Regulation_Movments_Positions.Migration_Occurred` | Removes expected migration-timing differences |
+| Migration transaction cleanup | `PrevRegulationID` / `RegulationID`, `ExecutionTime < Migration_Occurred` | `dbo.Reg_RegulationInOutDailyData.PrevRegulationID`, `dbo.Reg_RegulationInOutDailyData.RegulationID`, `dbo.Reg_RegulationInOutDailyData.ExecutionTime`, `dbo.Reg_RegulationInOutDailyData.Migration_Occurred` | Removes expected migration-timing differences |
+| TraNa entity and product scope | `eToroEntity`, `OpenORClose`, `[CFD/Real]`, `InstrumentID` | `dbo.RegulationAggTrans.eToroEntity`, `dbo.RegulationAggTrans.OpenORClose`, `dbo.RegulationAggTrans.[CFD/Real]`, `dbo.RegulationAggTrans.InstrumentID` | Operational baseline count scope |
+| TraNa MiFID eligibility flags | `IsMifidByESMA`, `IsMifidByFCA` | `dbo.RegulationAggTrans.IsMifidByESMA`, `dbo.RegulationAggTrans.IsMifidByFCA` | These flags are internal fields (not direct external API checks) |
+| BI transaction/position population | open/close leg selection and active-position rules | `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Position].OpenDateID`, `.CloseDateID`, `.OriginalPositionID`, `.PositionID`, `.InstrumentID`, `.CID`, `.IsSettled`, `.OpenOccurred` | Used to construct BI trade/position populations |
+| BI customer eligibility | regulation/player/account/country validity | `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Fact_SnapshotCustomer].RegulationID`, `.PlayerLevelID`, `.IsValidCustomer`, `.AccountTypeID`, `.CountryID`, `.DateRangeID`, `.RealCID` | Defines BI customer scope |
+| BI date-range applicability | overlap between trade/position date and customer validity range | `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Range].FromDateID`, `.ToDateID`, `.DateRangeID` | Applies customer-range windows |
+| BI CID exclusions | excluded customer IDs | `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids].cid` | Removes known excluded CIDs from BI baseline |
+| MiFID hedge BI quality filters | execution success and provider validity | `[AZR-W-REAL-DB-2-BIDBUser].[etoro].[Hedge].[ExecutionLog].Success`, `.ProviderExecID`, `.OrderState`, `.Units`, `.ExecutionTime`; `dbo.Reg_Ext_LiquidityAccountID.eToroEntity`; `dbo.Reg_LiquidtyAcount_SCD.ValidFrom/ValidTo`; `dbo.Reg_Instruments_SCD.IsMifid` | Hedge BI baseline specific |
+
+### 3.2 Independence limitation (current state)
+
+Important limitation for control interpretation:
+
+- Instrument eligibility in completeness checks (`IsMifid`, `IsMifidByFCA`, date-valid instrument scope) is sourced from internal `dbo.Reg_Instruments_SCD` and internal downstream datasets that consume the same reference family.
+- Reporting-table generation also relies on this same internal reference family.
+
+Implication:
+
+- Step 2C currently provides strong internal completeness reconciliation (Audit vs TraNa vs BI), but **does not yet provide independent external reference-data validation** for MiFID/FCA FIRDS eligibility.
+
+### 3.3 Future enhancement - external reference-data validation
+
+Planned enhancement is to add independent eligibility checks via external APIs:
+
+- ESMA FIRDS:
+  - `https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#`
+- FCA reference data:
+  - `https://data.fca.org.uk/#/viewdata`
+
+Target outcome:
+
+- Validate internal eligibility flags (`IsMifid`, `IsMifidByFCA`) against independent external reference snapshots,
+- Add a fourth control lens for reference-data independence (in addition to Audit vs TraNa vs BI completeness).
+
 ## 4) MiFID flows (7)
 
 ### 4.1 MiFID UK CL

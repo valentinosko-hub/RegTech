@@ -55,7 +55,7 @@ The control compares three independently derived baselines:
 
 - **Audit baseline**: reporting-table population counts and cleaned mismatch sets.
 - **TraNa/Ops baseline**: operational transaction aggregates (for eligible flows).
-- **BI baseline**: independent DWH-derived population counts (Synapse/BI pipeline logic).
+- **BI baseline**: independent DWH-derived population counts (Synapse/BI pipeline logic), subject to the current instrument-eligibility dependency noted below.
 
 ```mermaid
 flowchart LR
@@ -103,6 +103,21 @@ Implementation note:
 - `dbo.Reg_Regulation_Movments_Positions`
 - `dbo.Reg_RegulationInOutDailyData`
 - `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+
+### 5.5 Independence caveat (current state)
+
+For MiFID/FCA eligibility filtering in Step 2C (`IsMifid`, `IsMifidByFCA`, and date-valid instrument joins), the control currently depends on:
+
+- `dbo.Reg_Instruments_SCD`
+
+This is a shared internal reference also used in reporting-table creation logic.  
+Therefore, instrument eligibility validation is not yet fully independent from the reporting pipeline for these flags.
+
+Planned enhancement path:
+
+- Introduce independent external reference validation using:
+  - ESMA FIRDS: `https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#`
+  - FCA reference data: `https://data.fca.org.uk/#/viewdata`
 
 ## 6) Core output metrics
 

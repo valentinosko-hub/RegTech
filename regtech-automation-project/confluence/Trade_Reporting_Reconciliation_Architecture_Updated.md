@@ -77,6 +77,12 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 
 > **DECISION**  
 > Operational / BI is treated as an independent comparison baseline for completeness controls in direct-reporting models (MiFID/EMIR/ASIC). It is not the table-creation pipeline for regulatory outputs.
+>
+> **Current limitation:** parts of instrument eligibility used in this comparison (for example `Reg_Instruments_SCD.IsMifid` / `IsMifidByFCA`) are internal reference data used by reporting logic, not an independent external validation feed.
+>
+> **Future enhancement path:** integrate direct external reference-data validation from:
+> - ESMA FIRDS: https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#
+> - FCA reference data: https://data.fca.org.uk/#/viewdata
 
 The operational control implementation and runbook for this baseline comparison are documented in:
 

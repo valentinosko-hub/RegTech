@@ -63,6 +63,7 @@ Status:
 - Three-way reconciliation model documented: **Audit vs TraNa vs BI**.
 - Includes runbook, metric definitions, flow coverage list, exclusion/false-positive logic, and management reporting format.
 - BI references are documented using main source-of-truth tables; helper temp-table construction is isolated in the Step 2C appendix implementation-detail section.
+- Step 2C appendix now includes explicit filter lineage (`table.column` ownership) and an independence caveat for instrument-eligibility controls (`Reg_Instruments_SCD`, `IsMifid`, `IsMifidByFCA`, `IsMifidByESMA`).
 - Output evidence table defined:
   - `dbo.DailyCompleteness_AuditLog`
 
@@ -88,6 +89,7 @@ Current state is "populated, validation pending." The following sign-offs are ne
 - Non-uniform ingestion coverage still exists for selected response paths.
 - LP delegated non-REGIS flows require explicit partial-coverage handling until ingestion closes.
 - Tolerance calibration requires business/risk alignment to avoid false positives or missed breaches.
+- MiFID eligibility filters currently depend on internal `Reg_Instruments_SCD`/`RegulationAggTrans` flags and are not yet externally validated against live ESMA/FCA sources in this control.
 
 ## 5) Recommended next step (immediate)
 

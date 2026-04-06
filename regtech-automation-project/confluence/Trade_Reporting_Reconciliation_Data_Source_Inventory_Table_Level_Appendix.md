@@ -45,6 +45,14 @@ To align with current project decisions:
   - `Reg_Instruments_SCD`
   - `Reg_LiquidtyAcount_SCD`
 
+#### Independence caveat and enhancement path
+- Current state:
+  - MiFID/FCA eligibility controls in internal reconciliation currently rely on internal reference flags (for example `Reg_Instruments_SCD.IsMifid`, `Reg_Instruments_SCD.IsMifidByFCA`) that are also used by reporting-table creation logic.
+  - This means eligibility validation is not yet fully independent from the internal reporting reference stack.
+- Future enhancement (external validation source):
+  - ESMA FIRDS: `https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#`
+  - FCA reference data: `https://data.fca.org.uk/#/viewdata`
+
 ### 3.2 Source tables (RegReportDB)
 
 #### EMIR source tables
