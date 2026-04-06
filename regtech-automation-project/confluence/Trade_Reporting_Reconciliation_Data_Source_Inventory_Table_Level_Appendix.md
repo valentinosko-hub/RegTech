@@ -473,6 +473,50 @@ The stored procedure provided (`dbo.SP_EMIR3_ME_Refit_Report`) confirms concrete
   - empty for `TCTN`
   - `TRUE` for `PSTN` when `Counterparty_2` is in configured LEI set (including ME LEI), else `FALSE`
 
+### 3.5.8 Procedure-derived lineage (validated from `SP_EMIR2_Refit_Collateral`)
+
+The stored procedure provided (`dbo.SP_EMIR2_Refit_Collateral`) confirms concrete dependencies for
+`dbo.EMIR2_Report_Refit_Collateral` (EMIR EU collateral REFIT flow).
+
+#### Target table written by procedure
+- `dbo.EMIR2_Report_Refit_Collateral` (delete-by-date loop + insert pattern)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_Position`
+- `dbo.EMIR2_Customer`
+- `dbo.EMIR2_ext_DWH_V_Liabilities`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_corporate_clients_details]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+
+#### Procedure staging chain (temporary tables)
+- `#emir2_UK_coll_clients_details` (non-GB corporate clients with `refit_y_n = 'Y'`)
+- `#Excluded_CIDs` (legacy CIDs with only pre-2014 activity to exclude)
+- `#collateral_ids` (in-scope collateral population by CID/regulation with instrument/position exclusions)
+- `#equity` (RealizedEquity/Credit/TotalPositionsAmount by CID from liabilities source)
+- `#collateral_calculation` (counterparty identifier type and excess basis by account type/player level)
+- `#collateral_calculation_agg` (non-corporate and corporate collateral aggregation baseline)
+- `#collateral_calculation_agg2` (corporate-only aggregation keyed by LEI)
+
+#### Key derived output fields validated by procedure logic
+- Scope hard-filtered to EMIR EU regulations `RegulationID IN (1,2)` and report date.
+- `Counterparty_2_identifier_type` derived from account profile:
+  - `TRUE` when `AccountTypeID = 2` and `PlayerLevelID <> 4`
+  - else `FALSE`
+- `Collateral_portfolio_code` and counterparty mapping split by segment:
+  - non-corporate uses `LEI + CID` synthetic code and reports against that code
+  - corporate uses client `LEI` aggregation and dedicated corporate insert branch
+- `Collateralisation_category` split:
+  - non-corporate -> `PRC2`
+  - corporate -> `PRC1`
+- Variation/excess amounts derived from collateral aggregation:
+  - non-corporate branch populates collected variation/excess fields
+  - corporate branch populates posted variation/excess fields
+  - `Excess` normalized to floor at zero before insert
+- `Action_type` fixed to `MARU`
+- `UTI` intentionally blank in collateral output (explicit TODO comment in SP)
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

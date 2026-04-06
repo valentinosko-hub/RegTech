@@ -127,6 +127,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_EMIR2_ETORO_Refit_Trades`
 - `dbo.SP_EMIR2_Seychelles_Refit_Report_Daily`
 - `dbo.SP_EMIR3_ME_Refit_Report`
+- `dbo.SP_EMIR2_Refit_Collateral`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -137,6 +138,7 @@ Impact:
   - EMIR ETORO trades report procedure
   - EMIR Seychelles REFIT daily report procedure
   - EMIR ME REFIT daily report procedure
+  - EMIR EU REFIT collateral report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
@@ -157,6 +159,9 @@ Impact:
   - ME-specific MEHN/MEHP Ticket/UTI patterns (RegulationID=11)
   - ME direction backfill for zero-quantity rows (`for_update` strategy)
   - ME valuation formula and valuation timestamp logic for `PSTN`
+  - EU collateral aggregation chain (`#collateral_ids` -> `#equity` -> `#collateral_calculation` -> `#collateral_calculation_agg*`)
+  - EU collateral corporate/non-corporate split (`PRC1`/`PRC2`) and `MARU` action outputs
+  - EU collateral exclusion controls (`regtech_excluded_*`, testing-CID list, historical open-date CID exclusion)
   - `Uncollateralised`
   - collateral fields:
     - `Variation_margin_posted_by_counterparty_1_post_haircut`
