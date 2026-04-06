@@ -30,22 +30,52 @@ Both are needed; this matrix is the control-design artifact.
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Notional` | Trade notional in reporting currency | `...` | `...` | `Cappitech payload notional` | `TRAX response notional/ack` | UTI + TradeID | Exact or product-tolerance | T+1 | Critical/Warning | Ops + Data | Draft | Example |
 
-## 4) Seeded mappings (initial examples)
+## 4) Wave 1 populated matrix (MiFID + EMIR critical fields)
 
-These are starter rows to make implementation concrete. Replace placeholders with exact table/field names per squad validation.
+This section is a concrete first delivery for manager review.  
+It is designed as implementation-ready content with explicit "SME validation required" status where physical column names may differ by feed version.
 
-| Model | Reporting field (expected) | Source field (internal) | Submitted evidence | Actual evidence | Key(s) | Match rule / tolerance | Timeliness | Severity | Status |
-|---|---|---|---|---|---|---|---|---|---|
-| MiFID | `MIFID2_Report.UTI` | Source UTI from trading/RegReport staging | UTI in Cappitech/TRAX submission | UTI in TRAX response | UTI | Exact match | T+1 | Critical | Draft |
-| MiFID | `MIFID2_Report.Notional` | Internal notional field in source trade view | Notional in submitted payload | Notional or accepted echo value | UTI + instrument | Numeric tolerance by product | T+1 | Warning/Critical by variance | Draft |
-| EMIR | `EMIR2_Refit_Report.EventType` | Internal lifecycle event type | Submitted lifecycle event | TR event acknowledgement/status | UTI + event timestamp | Allowed transition matrix | T+1 | Critical | Draft |
-| EMIR | `EMIR2_Report_Refit_Collateral.CollateralValue` | Internal collateral source | Submitted collateral value | TR response/validation result | UTI + collateral set | Numeric tolerance | T+1 | Warning | Draft |
-| ASIC | `ASIC2_Transactions.TransactionID` | Internal transaction ID | Submitted transaction ID | DTCC/TR response transaction ID | TransactionID | Exact match | T+2 | Critical | Draft |
-| SFTR | SFTR lifecycle action field | Derived lifecycle event from Vision snapshots | DTCC XML submitted action | DTCC ack/reject action | UTI + action date | Exact + sequencing checks | T+1 | Critical | Draft |
-| CAT | CAT event type (`MENO/MEOR/...`) | Internal order/event stream type | S3-delivered CAT event | FINRA feedback event status | OrderID + event seq | Exact sequence integrity | T+1 | Critical | Draft |
-| APA | Publication timestamp field | Internal trade event timestamp | Event Hub publication timestamp | TradeEcho confirmation timestamp | TradeID | Max delay threshold | Near real-time | Critical | Draft |
-| LTR | Position quantity in LTR payload | EOD holdings quantity source | CME/CFTC transfer payload quantity | Acknowledgement/control total evidence | Account + symbol + date | Tolerance by product/account | T+1 ops window | Warning/Critical | Draft |
-| LP delegated | LP reconciliation quantity/value | Internal DUCO value and LP feed value | LP submitted record reference | TR response (REGIS/UNAVISTA/DTCC) | LP trade identifier + date | Stage 1 and Stage 2 separate tolerances | T+1 | Critical | Draft |
+### 4.1 MiFID (EU/UK, ARM-based via TRAX)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.UTI` | Trading/Reg staging UTI lineage -> `MIFID2_ext_*` | Cappitech MiFID payload UTI | TRAX ARM response UTI/ack reference | UTI | Exact match | T+1 | Critical | Reg Ops + Data Eng | Ready for SME validation | Primary identity field |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.TransactionReferenceNumber` | RegReportDB MiFID source record ID | Cappitech transaction reference | TRAX transaction reference echo | UTI + transaction reference | Exact match | T+1 | Critical | Reg Ops | Ready for SME validation | Distinct from UTI in some flows |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.ExecutionTimestamp` | Trading execution timestamp (`Hedge.ExecutionLog` / trade source) | Payload execution datetime | TRAX accepted execution datetime | UTI | Exact (UTC normalization) | T+1 | Critical | Trading Tech + Reg Ops | Ready for SME validation | Timezone normalization required |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.BuyerLEI` | Customer/legal entity mapping (`MIFID2_Customer` / ext) | Payload buyer LEI | TRAX validation/ack buyer LEI | UTI + side | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format check (20 chars) |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.SellerLEI` | Customer/legal entity mapping (`MIFID2_Customer` / ext) | Payload seller LEI | TRAX validation/ack seller LEI | UTI + side | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format check (20 chars) |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.InstrumentID` | Instrument reference (`FIRDS_*`, `MIFID2_*`) | Payload ISIN/instrument ID | TRAX instrument acceptance field | UTI + instrument | Exact match | T+1 | Critical | Reg Data Management | Ready for SME validation | FIRDS alignment dependency |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Notional` | Trade economics source -> `MIFID2_ext_*` | Payload notional amount | TRAX amount echo/validation | UTI + instrument + currency | Numeric tolerance class N1 (0 for fixed income; configurable for FX) | T+1 | Warning/Critical | Reg Ops + Finance Control | Draft rule - calibrate | Product-specific thresholds |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Price` | Internal execution price source | Payload price | TRAX price validation/echo | UTI + instrument | Numeric tolerance class P1 (tick/precision rule) | T+1 | Warning/Critical | Reg Ops + Trading Tech | Draft rule - calibrate | Tick-size aware |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Quantity` | Internal quantity from trade source | Payload quantity | TRAX quantity echo/validation | UTI + instrument | Numeric tolerance class Q1 (normally exact) | T+1 | Warning | Reg Ops | Ready for SME validation | Decimal precision standardization |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.Currency` | Trade currency source | Payload currency | TRAX currency check | UTI | Exact ISO-4217 | T+1 | Critical | Reg Ops | Ready for SME validation | Enforce uppercase ISO code |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.BuySellIndicator` | Internal side flag | Payload side | TRAX side validation | UTI | Exact enum mapping (`BUY/SELL`) | T+1 | Critical | Reg Ops | Ready for SME validation | Side-code conversion table |
+| MiFID | MiFID II EU/UK | Trade | `MIFID2_Report.TradingVenue` | Venue mapping (`MIFID2_*`, reference data) | Payload venue MIC | TRAX venue validation | UTI + instrument | Exact MIC code match | T+1 | Warning | Reg Ops + Reference Data | Ready for SME validation | Venue whitelist required |
+
+### 4.2 EMIR (EU/UK, TR-based via Regis-TR/DTCC)
+
+| Model | Regulation | Reporting object | Reporting field (expected) | Source system/table.field (expected origin) | Submitted evidence field | Actual evidence field | Reconciliation key(s) | Match rule / tolerance | Timeliness | Severity | Owner | Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| EMIR | EMIR EU/UK | Trade/Lifecycle | `EMIR2_Refit_Report.UTI` | EMIR source + ext lineage (`EMIR2_*`, `EMIR2_ext_*`) | Cappitech TR payload UTI | REGIS/DTCC response UTI | UTI | Exact match | T+1 | Critical | Reg Ops + Data Eng | Ready for SME validation | Primary EMIR key |
+| EMIR | EMIR EU/UK | Trade/Lifecycle | `EMIR2_Refit_Report.ActionType` | Internal lifecycle event classification | Payload event/action type | TR response action/status | UTI + event timestamp | Exact enum with transition matrix | T+1 | Critical | Reg Ops | Ready for SME validation | NEW/MODI/TERM rules |
+| EMIR | EMIR EU/UK | Trade/Lifecycle | `EMIR2_Refit_Report.EventDate` | Internal lifecycle event date | Payload event date | TR accepted event date | UTI + action | Exact date (UTC/day normalization) | T+1 | Critical | Reg Ops | Ready for SME validation | Date normalization rule |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.Counterparty1LEI` | Counterparty mapping (`EMIR2_Customer`, refs) | Payload CP1 LEI | TR validation for CP1 LEI | UTI | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format control |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.Counterparty2LEI` | Counterparty mapping (`EMIR2_Customer`, refs) | Payload CP2 LEI | TR validation for CP2 LEI | UTI | Exact regex + value match | T+1 | Critical | Compliance Data + Reg Ops | Ready for SME validation | LEI format control |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.NotionalAmount` | Internal economics source | Payload notional amount | TR amount validation/echo | UTI + currency | Numeric tolerance class N1 | T+1 | Warning/Critical | Reg Ops + Finance Control | Draft rule - calibrate | Product-specific tolerance |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.NotionalCurrency` | Internal currency source | Payload currency | TR currency validation | UTI | Exact ISO-4217 | T+1 | Critical | Reg Ops | Ready for SME validation | ISO enforcement |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.Price` | Internal trade economics source | Payload price/rate | TR price/rate validation | UTI + product | Numeric tolerance class P1 | T+1 | Warning | Reg Ops + Trading Tech | Draft rule - calibrate | Product-dependent |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.UPI` | Reference enrichment (`UPI_*`, RTS refs) | Payload UPI | TR UPI validation/status | UTI + product | Exact match | T+1 | Critical | Reg Data Management | Ready for SME validation | UPI source quality dependency |
+| EMIR | EMIR EU/UK | Trade | `EMIR2_Refit_Report.ProductClassification` | Instrument meta + reference mapping | Payload product class | TR product-class validation | UTI + UPI | Exact/allowed mapping set | T+1 | Warning | Reg Data Management | Ready for SME validation | Controlled mapping table |
+| EMIR | EMIR EU/UK | Valuation | `EMIR2_Report_Refit_Collateral.ValuationAmount` | Internal valuation source | Payload valuation amount | TR valuation response field | UTI + valuation date | Numeric tolerance class V1 | T+1 | Warning | Reg Ops + Finance Control | Draft rule - calibrate | End-of-day valuation timing |
+| EMIR | EMIR EU/UK | Collateral | `EMIR2_Report_Refit_Collateral.CollateralAmount` | Internal collateral source | Payload collateral amount | TR collateral response field | UTI + collateral set + date | Numeric tolerance class C1 | T+1 | Warning | Reg Ops + Collateral Ops | Draft rule - calibrate | Collateral rounding policy |
+
+## 4.3 Wave 1 delivery status summary
+
+| Model | Target rows | Populated rows | Status | Next action |
+|---|---:|---:|---|---|
+| MiFID | 12 | 12 | Populated (validation pending) | Confirm physical payload/response column names with Cappitech/TRAX team |
+| EMIR | 12 | 12 | Populated (validation pending) | Confirm REGIS/DTCC response code mapping and nullable behaviors |
+| Total Wave 1 | 24 | 24 | Populated | Move to response-code matrix and rule calibration |
 
 ## 5) Model-by-model worksheet sections
 
