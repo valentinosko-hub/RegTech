@@ -279,6 +279,48 @@ The stored procedure provided (`dbo.SP_EMIR2_Refit_Report_Daily`) confirms concr
 - `Uncollateralised` flag in final insert logic
 - Corporate "flipped" counterparty insert (`FlippedReport = 1`)
 
+### 3.5.4 Procedure-derived lineage (validated from `SP_EMIR2_ETORO_Refit_Positions`)
+
+The stored procedure provided (`dbo.SP_EMIR2_ETORO_Refit_Positions`) confirms concrete dependencies for
+`dbo.EMIR2_ETORO_Refit_Positions` (ETORO positions-specific EMIR REFIT flow).
+
+#### Target table written by procedure
+- `dbo.EMIR2_ETORO_Refit_Positions` (delete-by-date loop + insert)
+
+#### Direct base objects referenced
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_Trade_InstrumentMetaData`
+- `dbo.Reg_Ext_Trade_GetInstrument`
+- `dbo.ASIC_Positions_AGG`
+- `dbo.ASIC_ext_OpenPositions_PositionsReport`
+- `dbo.Reg_Ext_DailyMaxPrices`
+- `dbo.EMIR2_ETORO_Refit_Positions` (previous-day directional backfill for `for_update` rows)
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_refit_taxonomy]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+
+#### Procedure staging chain (temporary tables)
+- `#Metadata` (tradable instrument metadata and ISO/currency normalization)
+- `#TB_InstrumentMetaData` (instrument metadata with ExchangeID override and ISIN cleanup)
+- `#GetInstrument_abv` (buy/sell currency abbreviation normalization)
+- `#RE_AGG_ASIC_Positions` (aggregated source position population from `ASIC_Positions_AGG`)
+- `#EMIR2_ETORO_Refit_Positions` (final shaped dataset before insert)
+
+#### Key derived output fields validated by procedure logic
+- `Ticket` and `UTI` generated as deterministic ETORO position patterns:
+  - `Ticket = 'AUSHN' + InstrumentID + Date + 'E'`
+  - `UTI = reporting entity LEI + Ticket pattern`
+- `Counterparty_2` fixed mapping for this flow (`549300OK2V4QF20B0D04`)
+- `Product_classification`, `Base_product`, `Sub_product`, `Further_sub_product` from InstrumentID case logic
+- `UPI` + taxonomy fields (`Isda_taxonomy`, `Anna_*`) via Fivetran joins
+- `Valuation_amount` recalculated on final insert from aggregated EOD price delta:
+  - quantity * (EOD price - open price), sign-aware by `IsBuy`
+- `Uncollateralised` field derived in final insert from `Level` and counterparty list logic
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
