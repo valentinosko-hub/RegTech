@@ -726,6 +726,49 @@ The stored procedure provided (`dbo.SP_ASIC2_PositionReport_Agg`) confirms concr
 - Procedure contains targeted manual UTI remediation updates for known rejected historical cases
   (DSR-8314/8331/8496/8590/8606/8670 series).
 
+### 3.5.13 Procedure-derived lineage (validated from `SP_ASIC2_PositionReport_Agg_Hedge`)
+
+The stored procedure provided (`dbo.SP_ASIC2_PositionReport_Agg_Hedge`) confirms concrete dependencies for
+`dbo.ASIC2_Positions_AGG_Hedge` (hedge-side aggregate ASIC position output).
+
+#### Target table written by procedure
+- `dbo.ASIC2_Positions_AGG_Hedge` (delete-by-date loop + insert from aggregate source model)
+
+#### Direct base objects referenced
+- `dbo.ASIC2_Positions_AGG` (primary source for same-day aggregate positions)
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.ASIC2_InstrumentMetaData`
+- `dbo.ASIC2_Positions_AGG_Hedge` (prior-day directional backfill source for zero-quantity rows)
+
+#### Procedure staging chain (temporary tables / CTE)
+- `#Metadata` (instrument symbol/exchange/ISIN/ISO context)
+- `#ASIC2_InstrumentMetaData` (instrument metadata overrides and ISIN cleanup)
+- `#new_direction` (net direction and quantity by instrument from base aggregate positions)
+- `help_agg_table` CTE (buy/sell weighted open/close prices, notional and UTI date derivation by instrument)
+- `#TEMP` (final hedge aggregate payload before insert)
+
+#### Key derived output fields validated by procedure logic
+- Scope is same-day aggregate position population (`ASIC2_Positions_AGG.ReportDate = @StartDate`) transformed
+  into hedge output shape.
+- Hedge identity and side transformation:
+  - `Hedge_Client = 'H'`
+  - `Deal = 'H_' + InstrumentID + '_' + min_uti_date`
+  - `UTI = '549300OK2V4QF20B0D04HN' + InstrumentID + 'D' + uti_date + 'A'` with explicit manual override cases.
+- Counterparty override is fixed for hedge flow:
+  - `CDE_Counterparty_2 = 213800GIFQMSV7HROS23`
+  - `CDE_Counterparty_2_identifier_type = TRUE`
+  - `Counterparty_2_name` and `Country_of_counterparty_2` are blank.
+- Direction and quantity handling:
+  - instrument-level direction/quantity netting from `#new_direction`,
+  - `for_update` placeholder when net quantity is zero, then backfilled from prior non-zero
+    `ASIC2_Positions_AGG_Hedge` history by UTI.
+- Valuation and economics are recalculated at aggregate hedge level:
+  - side-selected weighted open/close prices (`CDE_Price_Buy/Sell`, `Close Price Buy/Sell`),
+  - `CDE_Notional_amount_of_leg_1/2`, notional quantity handling with zero-quantity logic,
+  - `CDE_Valuation_amount` derived as direction-aware MTM delta with USD conversion.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

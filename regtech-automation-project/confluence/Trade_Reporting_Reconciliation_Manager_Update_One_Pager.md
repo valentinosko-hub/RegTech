@@ -132,6 +132,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_ASIC2_TransactionsReport_Hedge`
 - `dbo.SP_ASIC2_PositionReport`
 - `dbo.SP_ASIC2_PositionReport_Agg`
+- `dbo.SP_ASIC2_PositionReport_Agg_Hedge`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -147,6 +148,7 @@ Impact:
   - ASIC hedge transactions report procedure
   - ASIC position report procedure
   - ASIC aggregated position report procedure
+  - ASIC aggregated hedge position report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
@@ -190,3 +192,6 @@ Impact:
   - aggregate UTI lifecycle and switch-date logic in `ASIC2_Positions_AGG` (including excluded-UTI branch and targeted remediation cases)
   - aggregate SCD/open-close state management (`ASIC2_Positions_SCD` + history snapshot) and zero-quantity direction backfill
   - explicit aggregate valuation outputs (`CDE_Valuation_timestamp`, `CDE_Valuation_amount`, `CDE_Valuation_currency`, `CDE_Valuation_method`)
+  - aggregate hedge UTI generation (`...HN...`) with incident-specific override mappings in `ASIC2_Positions_AGG_Hedge`
+  - aggregate hedge net-direction and zero-quantity backfill logic (`for_update` -> prior-day non-zero direction)
+  - aggregate hedge valuation recomputation from weighted buy/sell price legs and USD conversion
