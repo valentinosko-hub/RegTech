@@ -122,20 +122,26 @@ The following stored procedures have been ingested and used to tighten lineage/m
 
 - `dbo.SP_EMIR3_UK_Refit_Report_Daily`
 - `dbo.SP_EMIR3_UK_Refit_Report_Collateral`
+- `dbo.SP_EMIR2_Refit_Report_Daily`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
   - EMIR UK REFIT daily report procedure
   - EMIR UK REFIT collateral report procedure
+  - EMIR EU REFIT daily report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
+  - `Ticket` / `Report_tracking_number`
   - `Action_type`
   - `Execution_timestamp`
   - `Confirmation_timestamp`
   - counterparty fields
+  - reporting-obligation logic fields
   - `UPI`
+  - taxonomy fields (`Isda_taxonomy`, `Anna_*`)
   - product classification fields
   - valuation/notional/price fields
+  - `Uncollateralised`
   - collateral fields:
     - `Variation_margin_posted_by_counterparty_1_post_haircut`
     - `Excess_collateral_posted_by_counterparty_1`

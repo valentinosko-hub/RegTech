@@ -233,6 +233,52 @@ The stored procedure provided (`dbo.SP_EMIR3_UK_Refit_Report_Collateral`) confir
 - `Collateral_timestamp`
 - `Action_type` (set to `MARU`)
 
+### 3.5.3 Procedure-derived lineage (validated from `SP_EMIR2_Refit_Report_Daily`)
+
+The stored procedure provided (`dbo.SP_EMIR2_Refit_Report_Daily`) confirms concrete dependencies for
+`dbo.EMIR2_Refit_Report_Daily` (EMIR EU REFIT daily flow).
+
+#### Target table written by procedure
+- `dbo.EMIR2_Refit_Report_Daily` (truncate + insert; plus corporate "flipped" insert)
+
+#### Direct base objects referenced
+- `dbo.EMIR2_Position`
+- `dbo.EMIR2_Customer`
+- `dbo.Reg_Instruments_SCD`
+- `dbo.EMIR2_InstrumentMetaData`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.Reg_Ext_DailyMaxPrices`
+- `dbo.EMIR2_Refit_Report` (previous-day state and directional backfill)
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_corporate_clients_details]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[emir_refit_taxonomy]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+
+#### Procedure staging chain (temporary tables)
+- `#EMIR2_Position` (position/trade extraction for in-scope regulations)
+- `#Metadata` (tradable instrument metadata and ISO/currency normalization)
+- `#EMIR2_InstrumentMetaData` (instrument metadata with overrides and ISIN cleanup)
+- `#pos_opendate` (min open date per CID/instrument)
+- `#pos_openprice` (aggregated open price per CID/instrument)
+- `#PricesEOD` (EOD bid/ask snapshot filtered by report date)
+- `#Valid_Pos` (aggregated net position and quantity)
+- `#all` (union of synthetic position records and trade records)
+- `#EMIR2_Report_Prev` (previous report-day UTI/ticket/confirmation/execution pull)
+- `#emir_corporate_clients_details` (corporate profile enrichment and sector split logic)
+- `#EMIR2_Refit_Report_Daily` (final shaped dataset before target insert)
+
+#### Key derived output fields validated by procedure logic
+- `Ticket` and `UTI` generation/fallback logic (reusing prior-day values when available)
+- `Counterparty_2` and `Counterparty_2_identifier_type` derivations
+- `Reporting_obligation_of_counterparty_2` (GB vs non-GB logic by account type and REFIT flags)
+- `Product_classification`, `Base_product`, `Sub_product`, `Further_sub_product`
+- `Valuation_amount` recalculation on insert using `#PricesEOD` and directional formula
+- `Uncollateralised` flag in final insert logic
+- Corporate "flipped" counterparty insert (`FlippedReport = 1`)
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
