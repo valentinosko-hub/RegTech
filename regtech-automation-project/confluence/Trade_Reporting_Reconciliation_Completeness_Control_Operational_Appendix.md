@@ -67,9 +67,13 @@ These controls are reused across multiple flows:
 - **TraNa baseline**
   - `dbo.RegulationAggTrans`
   - Filters: `eToroEntity='eToro UK'`, `OpenORClose IN ('ClientOpen','ClientClose')`, `IsMifidByFCA=1`, `IsMifidByESMA IN (0,1)`.
-- **BI baseline**
-  - `#TR` + `#FSC` + `#DR`
-  - Filters: `fsc.RegulationID IN (2)`, instrument scope `(InstrumentID IN (319,341) OR InstrumentTypeID IN (4,5,6))`, `IsMifidByFCA=1`.
+- **BI baseline (main tables)**
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Position]`
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Instrument]`
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Fact_SnapshotCustomer]`
+  - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Range]`
+  - `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+  - Filters: `RegulationID IN (2)`, instrument scope `(InstrumentID IN (319,341) OR InstrumentTypeID IN (4,5,6))`, `IsMifidByFCA=1`.
 
 ### 4.2 MiFID EU CL
 
@@ -85,8 +89,9 @@ These controls are reused across multiple flows:
   - Migration cleanup via `Reg_Regulation_Movments_Positions` and `Reg_RegulationInOutDailyData` with regulation `1`.
 - **TraNa baseline**
   - `RegulationAggTrans` filters: `eToroEntity='eToro EU'`, `ClientOpen/ClientClose`, `IsMifidByESMA=1`, `IsMifidByFCA IN (0,1)`, `InstrumentID<>624`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (1)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (1)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
 
 ### 4.3 MiFID EU Hedge
 
@@ -119,8 +124,9 @@ These controls are reused across multiple flows:
   - Migration cleanup with `PrevRegulationID IN (4,10)` and `RegulationID IN (4,10)`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro AUS'`, `ClientOpen/ClientClose`, `[CFD/Real]='CFD'`, MiFID flags, `InstrumentID<>624`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (4,10)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (4,10)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`, `IsSettled=0`, distinct trade identity.
 
 ### 4.5 MiFID EU SC
 
@@ -136,8 +142,9 @@ These controls are reused across multiple flows:
   - Migration cleanup with `PrevRegulationID=9` and `RegulationID=9`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro SC'`, `ClientOpen/ClientClose`, MiFID flags, `InstrumentID<>624`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (9)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (9)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
 
 ### 4.6 MiFID EU ME
 
@@ -152,8 +159,9 @@ These controls are reused across multiple flows:
   - Migration cleanup with `PrevRegulationID=11` and `RegulationID=11`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro ME'`, `ClientOpen/ClientClose`, MiFID flags, `InstrumentID<>624`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (11)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (11)`, MiFID instrument scope, `InstrumentID<>624`, `IsMifid=1`.
 
 ### 4.7 MiFID EU FCA
 
@@ -168,8 +176,9 @@ These controls are reused across multiple flows:
   - Migration cleanup with `PrevRegulationID=2` and `RegulationID=2`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro UK'`, `ClientOpen/ClientClose`, MiFID flags, `InstrumentID<>624`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (2)`, MiFID instrument scope, `IsMifid=1`, `IsMifidByFCA=1`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (2)`, MiFID instrument scope, `IsMifid=1`, `IsMifidByFCA=1`.
 
 ## 5) EMIR flows (5)
 
@@ -186,8 +195,9 @@ These controls are reused across multiple flows:
   - Reg-movement exclusions for `PrevRegulationID IN (1,2)` and `RegulationID IN (1,2)`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity IN ('eToro EU','eToro UK')`, `[CFD/Real]='CFD'`, `OpenORClose='ClientOpen'`, MiFID flags permissive.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (1,2)`, `OpenORClose='O'`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (1,2)`, open-leg scope, `IsSettled=0`, distinct trade identity.
 
 ### 5.2 EMIR TR AUS
 
@@ -201,8 +211,9 @@ These controls are reused across multiple flows:
   - Current procedure removes audit-side rows where `PositionID` appears in `Reg_Regulation_Movments_Positions` for the date window.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro AUS'`, `[CFD/Real]='CFD'`, `OpenORClose='ClientOpen'`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (4,10)`, `OpenORClose='O'`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (4,10)`, open-leg scope, `IsSettled=0`, distinct trade identity.
 
 ### 5.3 EMIR TR SC
 
@@ -216,8 +227,9 @@ These controls are reused across multiple flows:
   - Reg-movement exclusions with `PrevRegulationID=9` and `RegulationID=9`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro SC'`, `OpenORClose='ClientOpen'`, `[CFD/Real]='CFD'`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (9)`, `OpenORClose='O'`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (9)`, open-leg scope, `IsSettled=0`, distinct trade identity.
 
 ### 5.4 EMIR TR ME
 
@@ -231,8 +243,9 @@ These controls are reused across multiple flows:
   - Reg-movement exclusions with `PrevRegulationID=11` and `RegulationID=11`.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro ME'`, `OpenORClose='ClientOpen'`, `[CFD/Real]='CFD'`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (11)`, `OpenORClose='O'`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (11)`, open-leg scope, `IsSettled=0`, distinct trade identity.
 
 ### 5.5 EMIR POS CL
 
@@ -241,12 +254,14 @@ These controls are reused across multiple flows:
   - Filters: `ReportDate=@ReportDate1`, `IsPosition=1`, `FlippedReport=0`, `RegulationID<>9`.
 - **TraNa baseline**
   - Not applicable in current procedure (`TraNa_Transaction_Count` is null for POS flows).
-- **BI baseline**
-  - `#POS/#FSC/#DR` with:
-    - `fsc.RegulationID IN (1,2)`,
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters:
+    - `RegulationID IN (1,2)`,
+    - position active on report date,
     - `CAST(OpenOccurred AS DATE) >= '2014-02-12'`,
     - `IsSettled=0`.
-  - Count is based on grouped `(ReportDateID, CID, InstrumentID)` rows.
+  - Count is based on grouped `(date, CID, InstrumentID)` population.
 
 ## 6) ASIC flows (3)
 
@@ -266,8 +281,9 @@ These controls are reused across multiple flows:
     - `Reg_RegulationInOutDailyData` (`PrevRegulationID`/`RegulationID IN (4,10)` and migration timing checks).
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity='eToro AUS'`, `[CFD/Real]='CFD'`, `OpenORClose IN ('ClientOpen','ClientClose')`.
-- **BI baseline**
-  - `#TR/#FSC/#DR` with `RegulationID IN (4,10)`, `OpenORClose IN ('O','C')`, `IsSettled=0`, distinct `TradeID`.
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters: `RegulationID IN (4,10)`, open/close leg scope, `IsSettled=0`, distinct trade identity.
 
 ### 6.2 ASIC TR EU
 
@@ -281,8 +297,8 @@ These controls are reused across multiple flows:
   - Same migration/synthetic cleanup pattern as ASIC TR CL.
 - **TraNa baseline**
   - Same `RegulationAggTrans` filters as ASIC TR CL.
-- **BI baseline**
-  - Same `#TR/#FSC/#DR` filters as ASIC TR CL.
+- **BI baseline (main tables)**
+  - Same main-table sources and filters as ASIC TR CL (`Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, exclusions table).
 - **Implementation note**
   - Current stored procedure logic for ASIC TR CL and ASIC TR EU uses the same table/filter pattern; operational naming differs by regime label in outputs.
 
@@ -293,17 +309,29 @@ These controls are reused across multiple flows:
   - Filter: `ReportDate=@ReportDate1`.
 - **TraNa baseline**
   - Not applicable in current procedure (`TraNa_Transaction_Count` is null for POS flows).
-- **BI baseline**
-  - `#POS/#FSC/#DR` with:
-    - `fsc.RegulationID IN (4,10)`,
+- **BI baseline (main tables)**
+  - `Dim_Position`, `Dim_Instrument`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids`.
+  - Filters:
+    - `RegulationID IN (4,10)`,
+    - position active on report date,
     - `IsSettled=0`,
-    - count over grouped `(ReportDateID, CID, InstrumentID)` rows.
+    - count over grouped `(date, CID, InstrumentID)` rows.
 
-## 7) BI baseline construction details (shared)
+## 7) BI implementation detail (how helper temp tables are created)
 
-### 7.1 `#TR` (transactional BI base)
+Primary BI source-of-truth tables are:
 
-`#TR` is built from Synapse `Dim_Position` in three inserts:
+- `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Position]`
+- `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Instrument]`
+- `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Fact_SnapshotCustomer]`
+- `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Range]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+
+The stored procedure then materializes helper temp tables from those sources, as follows:
+
+### 7.1 `#TR` (transactional helper from main BI tables)
+
+`#TR` is created from `Dim_Position` (with `Dim_Instrument` and `Reg_Instruments_SCD` enrichment) in three inserts:
 
 1. Open legs for new positions (`OriginalPositionID IS NULL`),
 2. Open legs for rolled positions (`OriginalPositionID IS NOT NULL` and `PositionID=OriginalPositionID`),
@@ -315,17 +343,17 @@ Enrichment from `Reg_Instruments_SCD` contributes:
 - `IsMifidByFCA`,
 - `IsMifid`.
 
-### 7.2 `#POS` (position BI base)
+### 7.2 `#POS` (position helper from main BI tables)
 
 Built from open positions active on `@ReportDate1ID`:
 
 - `OpenDateID <= @ReportDate1ID`
 - and `(CloseDateID = 0 OR CloseDateID > @ReportDate1ID)`.
 
-### 7.3 Customer/date eligibility joins
+### 7.3 Customer/date eligibility helpers (`#DR`, `#CID`, `#FSC`)
 
 - `#DR` from `Dim_Range` overlapping the audit date window.
-- `#CID` built from `#TR` and `#POS`, excluding CIDs in Fivetran exclusion list.
+- `#CID` built from transaction/position helper populations, excluding CIDs in Fivetran exclusion list.
 - `#FSC` from `Fact_SnapshotCustomer` with eligibility filters listed in Section 3.
 
 ## 8) How to use this appendix operationally
