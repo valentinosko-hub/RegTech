@@ -517,6 +517,72 @@ The stored procedure provided (`dbo.SP_EMIR2_Refit_Collateral`) confirms concret
 - `Action_type` fixed to `MARU`
 - `UTI` intentionally blank in collateral output (explicit TODO comment in SP)
 
+### 3.5.9 Procedure-derived lineage (validated from `SP_ASIC2_TransactionsReport`)
+
+The stored procedure provided (`dbo.SP_ASIC2_TransactionsReport`) confirms concrete dependencies for
+`dbo.ASIC2_Transactions` (ASIC transaction-level report construction).
+
+#### Target tables written by procedure
+- `dbo.ASIC2_Transactions` (delete-by-date loop + insert from shaped temp table)
+- `dbo.ASIC2_Removed_OP_Partials` (operational side table for partial-close removals)
+
+#### Direct base objects referenced
+- `dbo.ASIC2_ext_PositionChangeLog`
+- `dbo.Reg_Ext_HistorySplitRatio`
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.ASIC2_InstrumentMetaData`
+- `dbo.ASIC2_ext_OpenPositions_PositionsReport`
+- `dbo.ASIC2_Positions`
+- `dbo.ASIC2_Customer_PositionReport`
+- `dbo.Reg_Ext_CustomerLatinName`
+- `dbo.Reg_DWH_StaticPosition`
+- `dbo.Reg_CurrencyPrice_Ext`
+- `dbo.Reg_RegulationInOutDailyData`
+- `dbo.Reg_Ext_CurrencyPriceMaxDateWithSplit`
+- `dbo.Reg_Instruments_ext`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables)
+- `#Changelog_for_Topen` (open-position changelog snapshot for same-day create events)
+- `#splits` (instrument split-ratio history for quantity adjustment)
+- `#Metadata` (instrument, currency, ISIN, ISO/GBX normalization)
+- `#ASIC2_InstrumentMetaData` (instrument metadata with ExchangeID override + ISIN cleanup)
+- `#pos`, `#prev` (current and prior-day position snapshots)
+- `#cust` (normalized customer identity, LEI, account type, country)
+- `#TRADE_OPEN`, `#HISTORY_OPEN`, `#HISTORY_CLOSE`, `#pop_in` (trade/lifecycle event extraction)
+- `#HISTORY_OPEN_TEMP_FOR_PartialClose`, `#pop_in_TEMP_FOR_PartialClose` (partial-close operational capture)
+- `#TRADES` (unioned event-level trade dataset)
+- `#ConvFixPop` (non-ISO conversion-rate backfill set)
+- `#ALL_Withsplit` (split-adjustment factors by position/date/instrument)
+- `#Reg_CurrencyPrice_Ext_for_ASIC` (deduplicated FX conversion helper)
+- `#ASIC2_LifeCycle_Position` (normalized lifecycle payload base)
+- `#ASIC2_RegOutDailyData`, `#RegOut`, `#RegOutCID`, `#Pos_CID_Prev`, `#ChangeType13`, `#RealOut`,
+  `#joined_pop`, `#RealEndPop` (regulation in/out and migration handling)
+- `#Prices_EOD` (EOD bid/ask for migration close events)
+- `#RegInNewDate_ByTRN` (reg-in filter against pre-migration trades)
+- `#ASIC2_Transactions` (final shaped records before insert)
+
+#### Key derived output fields validated by procedure logic
+- `UTI` deterministic pattern:
+  - `'549300OK2V4QF20B0D04' + 'P' + PositionID + side + 'A'`
+- Counterparty fields (`CDE_Counterparty_2`, identifier type, name, country) derived from account profile,
+  LEI presence, CID-specific overrides, and historical fallback for missing name/country.
+- Notional/price fields (`CDE_Notional_amount_of_leg_1/2`, `CDE_Price`, `CDE_Price_notation`) are instrument-type
+  sensitive, with ISO/GBX normalization and conversion-rate backfill for non-ISO records.
+- `CDE_Quantity_unit_of_measure_Leg_1` mapped by large InstrumentID taxonomy logic
+  (including DSR updates for GOLD 24/7, Iron Ore, and Rubber).
+- `CDE_Other_payment_*` fields derived for close events from `NetProfit`, with payer/receiver post-update
+  replacement of `for_update` placeholders by `CDE_Counterparty_2`.
+- Regulation migration handling embedded through multi-branch `RegChange` logic (`0`, `1`, `3`, `4`) and
+  pruning of pre-migration transactions.
+- Exclusion controls applied during final dataset build:
+  testing CIDs, excluded instruments, and excluded position IDs.
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`

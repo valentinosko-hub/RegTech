@@ -128,6 +128,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_EMIR2_Seychelles_Refit_Report_Daily`
 - `dbo.SP_EMIR3_ME_Refit_Report`
 - `dbo.SP_EMIR2_Refit_Collateral`
+- `dbo.SP_ASIC2_TransactionsReport`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -139,6 +140,7 @@ Impact:
   - EMIR Seychelles REFIT daily report procedure
   - EMIR ME REFIT daily report procedure
   - EMIR EU REFIT collateral report procedure
+  - ASIC transactions report procedure
 - Step 2B EMIR section now reflects procedure-validated field derivations for:
   - `UTI`
   - `Ticket` / `Report_tracking_number`
@@ -167,3 +169,10 @@ Impact:
     - `Variation_margin_posted_by_counterparty_1_post_haircut`
     - `Excess_collateral_posted_by_counterparty_1`
     - `Collateral_portfolio_code`
+- Step 2B ASIC section now reflects procedure-validated field derivations for:
+  - `UTI` deterministic pattern (`LEI + 'P' + PositionID + side + 'A'`)
+  - counterparty and identifier type branch logic (`AccountTypeID`/`PlayerLevelID`/LEI overrides)
+  - transaction lifecycle assembly from `#TRADE_OPEN`/`#HISTORY_OPEN`/`#HISTORY_CLOSE`/`#pop_in`
+  - migration-driven reg-in/reg-out handling (`#ASIC2_RegOutDailyData`, `#RealEndPop`)
+  - notional/price/quantity-unit derivation including GBX and non-ISO conversion handling
+  - other-payment fields (`CDE_Other_payment_*`) from close-side `NetProfit` logic with payer/receiver backfill
