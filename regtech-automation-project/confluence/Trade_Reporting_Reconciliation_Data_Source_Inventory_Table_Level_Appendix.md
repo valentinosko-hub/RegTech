@@ -1209,7 +1209,45 @@ new-order CAT population in `dbo.Reg_US_NOrders` under the current (pre-fraction
   - customer filter excludes test accounts (`PlayerLevelID<>4`),
   - execution filter enforces `ExecutionID>0`.
 
-### 4.6 CAT transition note (fractional-native Apex API) - announced model change
+### 4.6 Procedure-derived lineage (validated from `SP_Reg_US_Fullfilment`) - current (old) CAT model
+
+The stored procedure provided (`dbo.SP_Reg_US_Fullfilment`) confirms concrete dependencies for
+fulfillment CAT population in `dbo.Reg_US_Fullfilment` under the current (pre-fractional-native) model.
+
+#### Target table written by procedure
+- `dbo.Reg_US_Fullfilment` (delete-by-date loop + insert from `#All_Fullfilment`)
+
+#### Direct base objects referenced
+- New-order staging output:
+  - `dbo.Reg_US_NOrders`
+- Hedge execution fill source:
+  - `dbo.Reg_Ext_HedgeEMSOrders`
+- Shared helper functions:
+  - `dbo.fn_RemovePaddedDecimal`
+  - `dbo.DT_UTC2EST`
+
+#### Procedure staging chain (temporary tables)
+- `#All_Fullfilment` (fulfillment rows shaped from NO records + EMS execution details)
+
+#### Key derived output fields validated by procedure logic (current model)
+- Current fulfillment message split is ME-type dependent:
+  - `ME_Type=9` when source NO row is `ME_Type=1`,
+  - `ME_Type=10` otherwise in this fulfillment branch (legacy roundup/inventory behavior).
+- Scope and eligibility:
+  - source rows selected from `Reg_US_NOrders` where:
+    - `(ME_Type in (1,2) and IsFractional=1) OR (ME_Type=1 and AggOrderInd=2)`,
+    - `ExtFail_Ind=0`,
+    - report-date match.
+  - joined EMS rows constrained to `OrderStatus in ('Rejected','Filled')` and `FailReason is null`.
+- Identity and linkage:
+  - `SOURCE_ORDER_ID = ORDER_ID + '_RI'`,
+  - `CAT_CLIENT_ORDER_ID` and `CAT_FIRM_ORDER_ID` derived from NO identity with representative suffix logic.
+- Economics and timestamp:
+  - `ACTION_VOLUME` uses fractional-safe formatting branch,
+  - `ACTION_PRICE` from `EMS.ExecutionRate`,
+  - `CORRECTION_DATETIME` from `EMS.ExecutionTime` via UTC-to-EST conversion.
+
+### 4.7 CAT transition note (fractional-native Apex API) - announced model change
 
 Based on the provided change notice (target end of March), CAT file processing is expected to move
 from the current roundup-dependent model to fractional-native flow:

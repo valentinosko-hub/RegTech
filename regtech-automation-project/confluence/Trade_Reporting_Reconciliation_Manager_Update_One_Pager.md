@@ -139,6 +139,7 @@ The following stored procedures have been ingested and used to tighten lineage/m
 - `dbo.SP_MIFID2_HedgeEU_Report`
 - `dbo.SP_MIFID2_HedgeUK_Report`
 - `dbo.SP_Reg_US_NOrders`
+- `dbo.SP_Reg_US_Fullfilment`
 
 Impact:
 - Step 2A now contains procedure-derived dependency lineage for:
@@ -158,6 +159,7 @@ Impact:
   - ASIC collateral report procedure
   - MiFID report procedure (EU/UK + reg-change + Seychelles + ME branches)
   - CAT new-order procedure (current old model) with explicit transition note to fractional-native target model
+  - CAT fulfillment procedure (current old model) with transition note for removal of inventory-fulfillment path
 - Step 2B MiFID section now reflects procedure-validated field derivations for:
   - report routing (`RegulationReportID`: `1=EU`, `2=UK`)
   - occurred-under regulation lineage (`RegulationID` from `OrigRegulationID`)
@@ -200,10 +202,12 @@ Impact:
     `BackReportingIndicator=0`, and `EMSOrderID` propagation
 - Step 2B CAT section now reflects procedure-validated and transition-aware controls for:
   - current `SP_Reg_US_NOrders` message construction (including ME-type branches `1/2/4/5`)
+  - current `SP_Reg_US_Fullfilment` fulfillment construction (ME types `9/10` from NO lineage and EMS execution joins)
   - order identity/suffix logic (`ORDER_ID`, `SOURCE_ORDER_ID`, `CAT_ORDER_ID`, `_A`, `_RI`)
   - current fractional/roundup handling and representative linkage fields
   - symbol normalization via official FINRA symbol correction mapping
   - external/internal failure controls used for acceptance reconciliation
+  - fulfillment-specific controls (`SOURCE_ORDER_ID`, `CAT_CLIENT_ORDER_ID`, `CAT_FIRM_ORDER_ID`, `ACTION_VOLUME`, `ACTION_PRICE`, `CORRECTION_DATETIME`)
   - announced target policy controls for cutover:
     - remove `ME_Type 2/3/4/10`,
     - keep `ME_Type 1/6/9`,
