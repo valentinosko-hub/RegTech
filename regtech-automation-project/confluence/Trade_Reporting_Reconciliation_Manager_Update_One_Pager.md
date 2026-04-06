@@ -62,6 +62,7 @@ Status:
 - Operational control design documented for `dbo.usp_DailyCompleteness_Audit`.
 - Three-way reconciliation model documented: **Audit vs TraNa vs BI**.
 - Includes runbook, metric definitions, flow coverage list, exclusion/false-positive logic, and management reporting format.
+- BI references are documented using main source-of-truth tables; helper temp-table construction is isolated in the Step 2C appendix implementation-detail section.
 - Output evidence table defined:
   - `dbo.DailyCompleteness_AuditLog`
 

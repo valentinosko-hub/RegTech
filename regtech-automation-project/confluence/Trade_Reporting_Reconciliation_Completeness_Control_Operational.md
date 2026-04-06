@@ -92,6 +92,11 @@ flowchart LR
 - `[SYNAPSE-DWH-PROD].[sql_dp_prod_we].[DWH_dbo].[Dim_Range]`
 - `[AZR-W-REAL-DB-2-BIDBUser].[etoro].[Hedge].[ExecutionLog]`
 
+Implementation note:
+
+- BI helper temp tables used inside the procedure are documented separately in:
+  - `Trade_Reporting_Reconciliation_Completeness_Control_Operational_Appendix.md` (Section 7)
+
 ### 5.4 Filter and exclusion controls
 
 - `dbo.Reg_Instruments_SCD`
@@ -131,7 +136,7 @@ Note:
 
 ## 7) Data quality normalization and false-positive reduction
 
-Before final metrics are calculated, mismatch temp tables are cleaned by:
+Before final metrics are calculated, intermediate mismatch datasets are cleaned by:
 
 - migration-window exclusions (`OpenOccurred`, `ExecutionTime`, `Migration_Occurred` checks),
 - regulation movement exclusions (PrevRegulationID / RegulationID transitions),

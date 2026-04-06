@@ -103,9 +103,12 @@ These controls are reused across multiple flows:
   - Clean mismatch components are fixed to zero for this flow.
 - **TraNa baseline**
   - `RegulationAggTrans` with `eToroEntity IN ('eToro EU','eToro UK')`, `OpenORClose='HedgeExecution'`, MiFID flags enabled, `InstrumentID<>624`.
-- **BI baseline**
-  - Hedge-specific count from `[etoro].[Hedge].[ExecutionLog]` with LP and SCD joins.
-  - Core filters include successful executions, valid provider state, MiFID instrument eligibility.
+- **BI baseline (main tables)**
+  - `[AZR-W-REAL-DB-2-BIDBUser].[etoro].[Hedge].[ExecutionLog]`
+  - `dbo.Reg_Ext_LiquidityAccountID`
+  - `dbo.Reg_LiquidtyAcount_SCD`
+  - `dbo.Reg_Instruments_SCD`
+  - Core filters include successful executions, valid provider state, LP entity scope, and MiFID instrument eligibility.
 - **Special rule**
   - If BI count equals Audit count, final completeness is forced to `1.0` and mismatch marked as false positive.
 
