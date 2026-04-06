@@ -659,6 +659,73 @@ The stored procedure provided (`dbo.SP_ASIC2_PositionReport`) confirms concrete 
   - `regtech_excluded_instruments` for `[ASIC2_Positions]`
   - `regtech_excluded_position_ids` for `[ASIC2_Positions]`
 
+### 3.5.12 Procedure-derived lineage (validated from `SP_ASIC2_PositionReport_Agg`)
+
+The stored procedure provided (`dbo.SP_ASIC2_PositionReport_Agg`) confirms concrete dependencies for
+`dbo.ASIC2_Positions_AGG` (aggregated ASIC position reporting flow with SCD-driven UTI lifecycle).
+
+#### Target tables written by procedure
+- `dbo.ASIC2_Positions_AGG` (delete-by-date loop + insert from final shaped temp dataset)
+- `dbo.ASIC2_Positions_SCD` (close/update/insert/open-state maintenance)
+- `dbo.ASIC2_Positions_SCD_History` (daily snapshot persistence and rerun restoration source)
+
+#### Direct base objects referenced
+- `dbo.Reg_Instruments_SCD`
+- `dbo.Reg_Ext_DictionaryCurrency`
+- `dbo.ISO_Currencies_Static`
+- `dbo.ASIC2_ext_OpenPositions_PositionsReport`
+- `dbo.ASIC2_Customer_PositionReport`
+- `dbo.Reg_Ext_CustomerLatinName`
+- `dbo.Reg_RegulationInOutDailyData`
+- `dbo.ASIC2_Daily_Prices`
+- `dbo.Reg_DWH_StaticPosition`
+- `dbo.Reg_Ext_DailyMaxPrices`
+- `dbo.Reg_Ext_CurrencyPriceMaxDateWithSplit`
+- `dbo.ASIC2_Instrument_Automation`
+- `dbo.ASIC2_InstrumentMetaData`
+- `dbo.ASIC2_Positions_AGG` (prior-day directional backfill by UTI)
+- `dbo.ASIC2_Positions_SCD`
+- `dbo.ASIC2_Positions_SCD_History`
+- `dbo.ASIC_Positions_SCD` (referenced for AGGType joins in aggregation branches)
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[emir_refir_upi]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[asic_2_excluded_utis]`
+- `[ThirdParty_Fivetran].[Fivetran].[regtech].[regulation_report_excluded_cids]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_instruments]`
+- `[ThirdParty_Fivetran].[Fivetran].[regulation].[regtech_excluded_position_ids]`
+
+#### Procedure staging chain (temporary tables)
+- `#Metadata` (instrument-level symbol/ISIN/exchange/ISO context)
+- `#Positions` (open-position population with non-ISO conversion handling and signed units)
+- `#ASIC_RegOutDailyData`, `#RegInNewDate_ByCID`, `#RegInNewPrices` (regulation in/out migration adjustment)
+- `#ConvFixPop` (missing non-ISO conversion-rate fix path, including historic fallback)
+- `#ASIC_DailyMax_Prices` and `#Prices_EOD` (valuation pricing with non-ISO + GBX adjustments)
+- `#position_rn`, `#Open_Prices` (weighted-average open price selection)
+- `#Temp`, `#value0`, `#valuen0`, `#last_record`, `#closed` (net-position split and close/open lifecycle sets)
+- `#closed_Attributes` (latest trade attributes for aggregate payload enrichment)
+- `#ASIC2_InstrumentMetaData` (instrument metadata overrides and ISIN cleanup)
+- `#OLDASICTEMP` (aggregated open-population deal-level base)
+- `#TEMP` (final report-shaped aggregate output before insert)
+
+#### Key derived output fields validated by procedure logic
+- Aggregation scope is based on open positions at report boundary with signed-unit netting by CID/instrument.
+- SCD lifecycle management controls aggregate UTI continuity:
+  - closes prior aggregates when net units go to zero,
+  - inserts new aggregates for new/reopened populations,
+  - snapshots daily state into `ASIC2_Positions_SCD_History`.
+- Aggregate UTI/Deal generation uses date-structured patterns with switch-date logic:
+  - post-switch standardized `549300...C<CID>N<InstrumentID>D<Date>A` pattern,
+  - legacy fallback branch (`E02...`) retained for historical handling.
+- Direction handling includes `for_update` placeholder when net quantity equals zero, then backfill from
+  prior non-zero `ASIC2_Positions_AGG` UTI history.
+- Valuation outputs are explicitly produced in aggregate payload:
+  - `CDE_Valuation_timestamp` from valuation date + latest pricing time,
+  - `CDE_Valuation_amount` as side-aware MTM delta using close/open price and USD conversion,
+  - `CDE_Valuation_currency = USD`, `CDE_Valuation_method = MTMA`.
+- Counterparty and collateral portfolio fields are derived with account-type/player-level/LEI logic,
+  including DSR switch-date behavior and excluded-UTI override path.
+- Procedure contains targeted manual UTI remediation updates for known rejected historical cases
+  (DSR-8314/8331/8496/8590/8606/8670 series).
+
 #### ASIC report tables
 - `ASIC2_Transactions`
 - `ASIC2_Transactions_Hedge`
