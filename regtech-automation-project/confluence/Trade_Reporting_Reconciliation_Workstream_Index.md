@@ -33,6 +33,8 @@ This page tracks repository artifacts by project phase and Jira workstream.
   - `Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
 - Jira story decomposition for Step 2 execution:
   - `Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
+- Manager-ready one-page status summary:
+  - `Trade_Reporting_Reconciliation_Manager_Update_One_Pager.md`
 - Per-reporting-model diagrams:
   - `../diagrams/reporting-model-data-source-flows.md`
 
