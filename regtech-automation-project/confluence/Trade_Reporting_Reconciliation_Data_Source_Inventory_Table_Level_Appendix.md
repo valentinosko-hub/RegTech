@@ -1247,7 +1247,60 @@ fulfillment CAT population in `dbo.Reg_US_Fullfilment` under the current (pre-fr
   - `ACTION_PRICE` from `EMS.ExecutionRate`,
   - `CORRECTION_DATETIME` from `EMS.ExecutionTime` via UTC-to-EST conversion.
 
-### 4.7 CAT transition note (fractional-native Apex API) - announced model change
+### 4.7 Procedure-derived lineage (validated from `SP_Reg_US_ROrders`) - current (old) CAT model
+
+The stored procedure provided (`dbo.SP_Reg_US_ROrders`) confirms concrete dependencies for
+routing-order CAT population in `dbo.Reg_US_ROrders` under the current (pre-fractional-native) model.
+
+#### Target table written by procedure
+- `dbo.Reg_US_ROrders` (delete-by-date loop + insert from `#All_ROrders`)
+
+#### Direct base objects referenced
+- Customer and instrument/reference dependencies:
+  - `dbo.Reg_US_Customers`
+  - `dbo.Reg_Instruments_ext` / `dbo.Reg_Instruments_SCD` (daily vs historical run branch)
+  - `[ThirdParty_Fivetran].[Fivetran].[google_sheets].[reg_official_finra_symbols]`
+- Upstream NO linkage:
+  - `dbo.Reg_US_NOrders`
+- Hedge/EMS routing dependencies:
+  - `dbo.Reg_Ext_HedgeEMSOrders`
+  - `dbo.Reg_Ext_HedgeOrderLog`
+- External-failure indicator source:
+  - `dbo.Reg_Ext_HedgeEMSOrders` (market-placed/rejected dual-status detection)
+- Shared helper functions:
+  - `dbo.fn_RemovePaddedDecimal`
+  - `dbo.DT_UTC2EST`
+
+#### Procedure staging chain (temporary tables)
+- Scope and reference preparation:
+  - `#US_Customer`, `#Reg_Instruments_SCD`, `#reg_official_finra_symbols`
+  - `#ExternalFailed`
+- NO/EMS staging:
+  - `#NOrder_Data`
+  - `#HedgeEMSOrders`
+  - `#HedgeOrderLog`
+- Routing synthesis:
+  - `#Perp_ROrders` (ME_Type 6 representative route and ME_Type 3 residual route branches)
+  - `#All_ROrders` (final CAT RO records before insert)
+
+#### Key derived output fields validated by procedure logic (current model)
+- Current routing message split is ME-type dependent:
+  - `ME_Type=6` for representative route records,
+  - `ME_Type=3` for residual route records (legacy roundup path).
+- Scope and eligibility:
+  - NO linkage constrained to `Reg_US_NOrders` rows in (`ME_Type in (2,5,999)` or `ME_Type=1` with non-agg path),
+  - customer filter excludes test accounts (`PlayerLevelID<>4`),
+  - hedge execution source constrained to filled EMS orders in this procedure.
+- Identity and linkage:
+  - deterministic RO `ORDER_ID`, `SOURCE_ORDER_ID`, `SOURCE_PARENT_ID`, `CAT_ORDER_ID`,
+    `CAT_ROUTED_ORDER_ID`, and `CL_ORD_ID` with ME-type-specific suffix conventions.
+- Routing and destination attribution:
+  - `EVENT='RO'`, destination/imid fields branch by `ME_Type` (`APCC` vs `ETOR` sender/destination roles).
+- Error and reject controls:
+  - `CAT_REJECTED_IND` sourced from external failure marker path,
+  - error text composes OMS and EMS fail context where available.
+
+### 4.8 CAT transition note (fractional-native Apex API) - announced model change
 
 Based on the provided change notice (target end of March), CAT file processing is expected to move
 from the current roundup-dependent model to fractional-native flow:
