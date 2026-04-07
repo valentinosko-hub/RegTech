@@ -74,23 +74,31 @@ flowchart LR
 
 ### 4.1 Regime-by-regime comparison matrix (BI prioritized)
 
-| Regime | Primary completeness comparison | Secondary comparison | BestEX diagnostic comparison |
-|---|---|---|---|
-| MiFID UK CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| MiFID EU CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| MiFID EU Hedge | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | No |
-| MiFID EU AUS | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| MiFID EU SC | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| MiFID EU ME | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| MiFID EU FCA | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| EMIR TR CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| EMIR TR AUS | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| EMIR TR SC | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| EMIR TR ME | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| ASIC TR CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| ASIC TR EU | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
-| EMIR POS CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Not applicable | No |
-| ASIC POS CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Not applicable | No |
+Shared BI eligibility filters (apply to all non-hedge BI rows):
+
+- `Fact_SnapshotCustomer.PlayerLevelID <> 4`
+- `Fact_SnapshotCustomer.IsValidCustomer = 1`
+- `Fact_SnapshotCustomer.AccountTypeID NOT IN (7,9)`
+- `Fact_SnapshotCustomer.CountryID <> 250`
+- exclusion via `regulation_report_excluded_cids.cid IS NULL`
+
+| Regime | BI source tables used for count | BI filter fields (table.column) | BI filter criteria (regime-specific) | Primary completeness comparison | Secondary comparison | BestEX diagnostic |
+|---|---|---|---|---|---|---|
+| MiFID UK CL | `Dim_Position`, `Reg_Instruments_SCD`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids` | `Fact_SnapshotCustomer.RegulationID`; `Dim_Position.InstrumentID`; `Reg_Instruments_SCD.InstrumentTypeID`; `Reg_Instruments_SCD.IsMifidByFCA` | `RegulationID=2`; `(InstrumentID IN (319,341) OR InstrumentTypeID IN (4,5,6))`; `IsMifidByFCA=1` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| MiFID EU CL | same core BI tables as above | `Fact_SnapshotCustomer.RegulationID`; `Dim_Position.InstrumentID`; `Reg_Instruments_SCD.InstrumentTypeID`; `Reg_Instruments_SCD.IsMifid` | `RegulationID=1`; `(InstrumentID IN (319,341) OR InstrumentTypeID IN (4,5,6))`; `InstrumentID<>624`; `IsMifid=1` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| MiFID EU Hedge | `Hedge.ExecutionLog`, `Reg_Ext_LiquidityAccountID`, `Reg_LiquidtyAcount_SCD`, `Reg_Instruments_SCD` | `ExecutionLog.ExecutionTime/Units/Success/ProviderExecID/OrderState`; `Reg_Ext_LiquidityAccountID.eToroEntity`; `Reg_Instruments_SCD.IsMifid` | date in range; `Units>0`; `Success=1`; not(`ProviderExecID IS NULL` and `OrderState=4`); LP entity in EU/UK set; MiFID instrument scope | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | No |
+| MiFID EU AUS | same core BI tables as MiFID UK/EU | `Fact_SnapshotCustomer.RegulationID`; `Dim_Position.IsSettled`; `Reg_Instruments_SCD.IsMifid`; instrument fields above | `RegulationID IN (4,10)`; MiFID instrument scope; `InstrumentID<>624`; `IsMifid=1`; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| MiFID EU SC | same core BI tables as MiFID UK/EU | `Fact_SnapshotCustomer.RegulationID`; instrument fields above; `Reg_Instruments_SCD.IsMifid` | `RegulationID=9`; MiFID instrument scope; `InstrumentID<>624`; `IsMifid=1` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| MiFID EU ME | same core BI tables as MiFID UK/EU | `Fact_SnapshotCustomer.RegulationID`; instrument fields above; `Reg_Instruments_SCD.IsMifid` | `RegulationID=11`; MiFID instrument scope; `InstrumentID<>624`; `IsMifid=1` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| MiFID EU FCA | same core BI tables as MiFID UK/EU | `Fact_SnapshotCustomer.RegulationID`; instrument fields above; `Reg_Instruments_SCD.IsMifid`; `Reg_Instruments_SCD.IsMifidByFCA` | `RegulationID=2`; MiFID instrument scope; `IsMifid=1`; `IsMifidByFCA=1` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| EMIR TR CL | `Dim_Position`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids` | `Fact_SnapshotCustomer.RegulationID`; leg-derived `OpenORClose`; `Dim_Position.IsSettled` | `RegulationID IN (1,2)`; open-leg scope; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| EMIR TR AUS | same core BI tables as EMIR TR CL | `Fact_SnapshotCustomer.RegulationID`; leg-derived `OpenORClose`; `Dim_Position.IsSettled` | `RegulationID IN (4,10)`; open-leg scope; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| EMIR TR SC | same core BI tables as EMIR TR CL | `Fact_SnapshotCustomer.RegulationID`; leg-derived `OpenORClose`; `Dim_Position.IsSettled` | `RegulationID=9`; open-leg scope; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| EMIR TR ME | same core BI tables as EMIR TR CL | `Fact_SnapshotCustomer.RegulationID`; leg-derived `OpenORClose`; `Dim_Position.IsSettled` | `RegulationID=11`; open-leg scope; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| ASIC TR CL | `Dim_Position`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids` | `Fact_SnapshotCustomer.RegulationID`; leg-derived `OpenORClose`; `Dim_Position.IsSettled` | `RegulationID IN (4,10)`; open+close leg scope; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| ASIC TR EU | same core BI tables as ASIC TR CL | same as ASIC TR CL | same as ASIC TR CL | Audit vs BI (`Audit_vs_BI_Completeness`) | Audit vs TraNa | Yes |
+| EMIR POS CL | `Dim_Position`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids` | `Fact_SnapshotCustomer.RegulationID`; `Dim_Position.OpenDateID`; `Dim_Position.CloseDateID`; `Dim_Position.OpenOccurred`; `Dim_Position.IsSettled` | `RegulationID IN (1,2)`; active position on report date; `OpenOccurred>='2014-02-12'`; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Not applicable | No |
+| ASIC POS CL | `Dim_Position`, `Fact_SnapshotCustomer`, `Dim_Range`, `regulation_report_excluded_cids` | `Fact_SnapshotCustomer.RegulationID`; `Dim_Position.OpenDateID`; `Dim_Position.CloseDateID`; `Dim_Position.IsSettled` | `RegulationID IN (4,10)`; active position on report date; `IsSettled=0` | Audit vs BI (`Audit_vs_BI_Completeness`) | Not applicable | No |
 
 ## 5) Key source tables used by the control
 
