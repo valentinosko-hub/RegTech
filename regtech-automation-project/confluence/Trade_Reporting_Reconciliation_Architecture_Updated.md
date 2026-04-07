@@ -83,6 +83,8 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 > **Future enhancement path:** integrate direct external reference-data validation from:
 > - ESMA FIRDS: https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#
 > - FCA reference data: https://data.fca.org.uk/#/viewdata
+>
+> **Control-priority policy:** for Step 2C completeness interpretation, Audit-vs-BI is primary, Audit-vs-TraNa is secondary, and BestEX comparisons are diagnostic where implemented.
 
 The operational control implementation and runbook for this baseline comparison are documented in:
 

@@ -57,6 +57,12 @@ The control compares three independently derived baselines:
 - **TraNa/Ops baseline**: operational transaction aggregates (for eligible flows).
 - **BI baseline**: independent DWH-derived population counts (Synapse/BI pipeline logic), subject to the current instrument-eligibility dependency noted below.
 
+Control priority for completeness decisions:
+
+1. **Primary KPI**: `Audit_vs_BI_Completeness` (BI-prioritized completeness baseline),
+2. **Secondary KPI**: `Audit_vs_TraNa_Completeness` (operational cross-check),
+3. **Diagnostic layer**: BestEX record-set mismatches (where applicable) for exception triage/root cause.
+
 ```mermaid
 flowchart LR
     A[Audit reporting tables<br/>MIFID2_*, EMIR2_*, ASIC2_*] --> R[Daily completeness engine<br/>usp_DailyCompleteness_Audit]
@@ -65,6 +71,26 @@ flowchart LR
     R --> D[DailyCompleteness_AuditLog]
     D --> E[Operations dashboard / exception workflow]
 ```
+
+### 4.1 Regime-by-regime comparison matrix (BI prioritized)
+
+| Regime | Primary completeness comparison | Secondary comparison | BestEX diagnostic comparison |
+|---|---|---|---|
+| MiFID UK CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| MiFID EU CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| MiFID EU Hedge | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | No |
+| MiFID EU AUS | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| MiFID EU SC | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| MiFID EU ME | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| MiFID EU FCA | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| EMIR TR CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| EMIR TR AUS | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| EMIR TR SC | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| EMIR TR ME | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| ASIC TR CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| ASIC TR EU | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Audit count vs TraNa count | Yes |
+| EMIR POS CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Not applicable | No |
+| ASIC POS CL | Audit count vs BI count (`Audit_vs_BI_Completeness`) | Not applicable | No |
 
 ## 5) Key source tables used by the control
 
@@ -210,10 +236,11 @@ ORDER BY RunDtmUtc DESC, ReportDate DESC, OrderID;
 For manager updates, present Step 2C as:
 
 1. **Coverage**: regimes included (15)
-2. **Latest run health**: count of green/amber/red regimes
-3. **Top exceptions**: highest `Clean_Mismatch_Total` and lowest completeness
-4. **Action owners**: named owner and target action per exception
-5. **Trend**: 5-day trend of `Audit_vs_BI_Completeness`
+2. **Latest run health (BI-prioritized)**: count of green/amber/red regimes based first on `Audit_vs_BI_Completeness`
+3. **Secondary health view**: `Audit_vs_TraNa_Completeness` drift and diagnostic mismatch behavior
+4. **Top exceptions**: highest `Clean_Mismatch_Total` and lowest completeness
+5. **Action owners**: named owner and target action per exception
+6. **Trend**: 5-day trend of `Audit_vs_BI_Completeness` (primary) and `Audit_vs_TraNa_Completeness` (secondary)
 
 ## 10) Governance and threshold placeholders (for sign-off)
 

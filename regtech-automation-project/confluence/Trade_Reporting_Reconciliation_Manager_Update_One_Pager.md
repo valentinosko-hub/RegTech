@@ -61,6 +61,10 @@ Artifact:
 Status:
 - Operational control design documented for `dbo.usp_DailyCompleteness_Audit`.
 - Three-way reconciliation model documented: **Audit vs TraNa vs BI**.
+- Completeness interpretation is now documented as **BI-prioritized**:
+  - primary KPI: `Audit_vs_BI_Completeness`,
+  - secondary KPI: `Audit_vs_TraNa_Completeness`,
+  - BestEX used as diagnostic set-level comparison where implemented.
 - Includes runbook, metric definitions, flow coverage list, exclusion/false-positive logic, and management reporting format.
 - BI references are documented using main source-of-truth tables; helper temp-table construction is isolated in the Step 2C appendix implementation-detail section.
 - Step 2C appendix now includes explicit filter lineage (`table.column` ownership) and an independence caveat for instrument-eligibility controls (`Reg_Instruments_SCD`, `IsMifid`, `IsMifidByFCA`, `IsMifidByESMA`).

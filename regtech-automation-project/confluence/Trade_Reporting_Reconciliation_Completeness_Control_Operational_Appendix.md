@@ -55,7 +55,7 @@ Every filter used in Sections 4-6 is mapped below to its source table and column
 | Filter family | Filter expression (as used in procedure) | Source table.column(s) | Notes |
 |---|---|---|---|
 | Reporting date window | `ReportDate BETWEEN @ReportDate1 AND @ReportDate2` | `dbo.MIFID2_Report.ReportDate`, `dbo.MIFID2_ETORO_Report.ReportDate`, `dbo.MIFID2_ME_Report.ReportDate`, `dbo.MIFID2_Hedge_Report.ReportDate`, `dbo.EMIR2_Refit_Report.ReportDate`, `dbo.EMIR2_ETORO_Refit_Trades.ReportDate`, `dbo.EMIR3_ME_Refit_Report.ReportDate`, `dbo.ASIC2_Transactions.ReportDate` | Audit-side date filter family |
-| BestEX date window | `Trade_date BETWEEN @ReportDate1 AND @ReportDate2` | `dbo.BestEX_Report.Trade_date` | Used in mismatch counterpart joins |
+| BestEX date window | `Trade_date BETWEEN @ReportDate1 AND @ReportDate2` | `dbo.BestEX_Report.Trade_date` | Used in BestEX diagnostic joins (secondary) |
 | MiFID report routing scope | `RegulationID`, `RegulationReportID`, `OpenORClose` filters | `dbo.MIFID2_Report.RegulationID`, `dbo.MIFID2_Report.RegulationReportID`, `dbo.MIFID2_Report.OpenORClose`, plus equivalent columns in `dbo.MIFID2_ETORO_Report` / `dbo.MIFID2_ME_Report` | Determines MiFID regime slices |
 | BestEX entity/instrument scope | `eToroEntity`, `[CFD/Real]`, `OpenORClose` | `dbo.BestEX_Report.eToroEntity`, `dbo.BestEX_Report.[CFD/Real]`, `dbo.BestEX_Report.OpenORClose` | Counterpart filter family for MiFID/EMIR/ASIC |
 | Instrument eligibility (internal) | `Trade_date >= ValidFrom AND Trade_date < ValidTo`, `IsMifid`, `IsMifidByFCA` | `dbo.Reg_Instruments_SCD.ValidFrom`, `dbo.Reg_Instruments_SCD.ValidTo`, `dbo.Reg_Instruments_SCD.IsMifid`, `dbo.Reg_Instruments_SCD.IsMifidByFCA` | Referenced from BestEX and BI enrichment logic |
@@ -93,6 +93,32 @@ Target outcome:
 
 - Validate internal eligibility flags (`IsMifid`, `IsMifidByFCA`) against independent external reference snapshots,
 - Add a fourth control lens for reference-data independence (in addition to Audit vs TraNa vs BI completeness).
+
+### 3.4 Regime comparison matrix (BI prioritized)
+
+Completeness checks are interpreted in this order:
+
+1. Primary: **Audit vs BI** (`Audit_vs_BI_Completeness`),
+2. Secondary: **Audit vs TraNa** (`Audit_vs_TraNa_Completeness`),
+3. Diagnostic: **BestEX set mismatches** where implemented.
+
+| Regime | Primary comparison (used for completeness priority) | Secondary comparison | BestEX diagnostic |
+|---|---|---|---|
+| MiFID UK CL | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_Report` vs `BestEX_Report`) |
+| MiFID EU CL | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_Report` vs `BestEX_Report`) |
+| MiFID EU Hedge | Audit reporting tables vs BI hedge baseline | Audit vs TraNa (`RegulationAggTrans`) | No |
+| MiFID EU AUS | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_ETORO_Report` vs `BestEX_Report`) |
+| MiFID EU SC | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_Report` vs `BestEX_Report`) |
+| MiFID EU ME | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_ME_Report` vs `BestEX_Report`) |
+| MiFID EU FCA | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`MIFID2_Report` vs `BestEX_Report`) |
+| EMIR TR CL | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`EMIR2_Refit_Report` vs `BestEX_Report`) |
+| EMIR TR AUS | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`EMIR2_ETORO_Refit_Trades` vs `BestEX_Report`) |
+| EMIR TR SC | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`EMIR2_Refit_Report` vs `BestEX_Report`) |
+| EMIR TR ME | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`EMIR3_ME_Refit_Report` vs `BestEX_Report`) |
+| ASIC TR CL | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`ASIC2_Transactions` vs `BestEX_Report`) |
+| ASIC TR EU | Audit reporting tables vs BI baseline tables | Audit vs TraNa (`RegulationAggTrans`) | Yes (`ASIC2_Transactions` vs `BestEX_Report`) |
+| EMIR POS CL | Audit reporting tables vs BI baseline tables | Not applicable | No |
+| ASIC POS CL | Audit reporting tables vs BI baseline tables | Not applicable | No |
 
 ## 4) MiFID flows (7)
 
