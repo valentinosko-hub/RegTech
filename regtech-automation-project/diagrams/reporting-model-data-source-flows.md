@@ -2,7 +2,18 @@
 
 This page provides separate flow diagrams for each reporting model, with MiFID, EMIR, and ASIC split individually.
 
-## MiFID (EU/UK) - TR/ARM-Based
+## Cross-cutting operational views
+
+- Step 2C daily operational sequence:
+  - `step2c-daily-operational-sequence.md`
+- Exception lifecycle (swimlane):
+  - `exception-lifecycle-swimlane.md`
+- Ingestion coverage status heatmap:
+  - `ingestion-coverage-status-heatmap.md`
+- Instrument reference-data validation (current vs target):
+  - `reference-data-validation-current-vs-target.md`
+
+## MiFID (EU/UK) - ARM-Based
 
 ```mermaid
 flowchart LR
@@ -10,14 +21,14 @@ flowchart LR
   B["MiFID source tables (RegReportDB)<br/>FCA_DLTINS_Prev, FCA_FULINS_Prev, FIRDS_DLTINS_Prev, FIRDS_FULINS<br/>FuturesMetaData, MIFID2_Customer, MIFID2_RegChange_Customer<br/>MIFID2_NPD_TRAX, MIFID2_Removed_OP_Partials, MIFID2_Instruments_To_Exclude"]
   C["Upstream ext tables (RegReportDB)<br/>MIFID2_ext_Customer, MIFID2_ext_Position, MIFID2_ext_PositionChangeLog<br/>MIFID2_ext_HedgeExecutionLog, MIFID2_ext_RegChange_* , MIFID2_ext_Position_TRAX"]
   D["Expected (Golden Source)<br/>MIFID2_Report, MIFID2_Hedge_Report, MIFID2_ETORO_Report, MIFID2_ME_Report"]
-  E["Submitted state<br/>Cappitech files -> TRAX / REGIS"]
-  F["Actual state<br/>ARM/TR responses (TRAX validation, REGIS responses)"]
+  E["Submitted state<br/>Cappitech files -> TRAX (MiFID ARM)"]
+  F["Actual state<br/>ARM responses (TRAX validation and acknowledgements)"]
   G["Databricks recon<br/>Bronze -> Silver -> Gold -> Reconciliation"]
 
   A --> B --> C --> D --> E --> F --> G
 ```
 
-## EMIR (EU/UK) - TR/ARM-Based
+## EMIR (EU/UK) - TR-Based
 
 ```mermaid
 flowchart LR
@@ -32,7 +43,7 @@ flowchart LR
   A --> B --> C --> D --> E --> F --> G
 ```
 
-## ASIC - TR/ARM-Based
+## ASIC - TR-Based
 
 ```mermaid
 flowchart LR
@@ -41,7 +52,7 @@ flowchart LR
   C["Upstream ext tables (RegReportDB)<br/>ASIC2_ext_Position, ASIC2_ext_Customer, ASIC2_Reg_Ext_DailyMaxPrices<br/>ASIC2_ext_DWH_V_Liabilities, ASIC2_ext_OpenPositions_PositionsReport, ASIC_ext_PositionChangeLog"]
   D["Expected (Golden Source)<br/>ASIC2_Transactions, ASIC2_Transactions_Hedge, ASIC2_Positions_AGG, ASIC2_Positions_AGG_Hedge, ASIC2_Collateral"]
   E["Submitted state<br/>Cappitech vendor path"]
-  F["Actual state<br/>ARM/TR response files"]
+  F["Actual state<br/>TR response files"]
   G["Databricks recon<br/>Expected vs Submitted vs Actual validation"]
 
   A --> B --> C --> D --> E --> F --> G

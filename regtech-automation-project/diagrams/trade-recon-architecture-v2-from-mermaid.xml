@@ -45,7 +45,7 @@
         </mxCell>
 
         
-        <mxCell id="submission" value="Submission Channels&amp;#xa;Cappitech (TR/ARM), S3 (CAT), TradeEcho (APA)&amp;#xa;DTCC direct (SFTR), CME/CFTC via FIPS (LTR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e0f8;strokeColor=#7f70bf;fontSize=12;" vertex="1" parent="1">
+        <mxCell id="submission" value="Submission Channels&amp;#xa;Cappitech (ARM for MiFID; TR for EMIR/ASIC), S3 (CAT), TradeEcho (APA)&amp;#xa;DTCC direct (SFTR), CME/CFTC via FIPS (LTR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6e0f8;strokeColor=#7f70bf;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="600" y="380" width="600" height="70" as="geometry" />
         </mxCell>
 

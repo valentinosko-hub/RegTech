@@ -11,13 +11,34 @@ This document consolidates architecture and data-source details from the final d
 
 ---
 
+## 0) Related requirements artifacts
+
+- Workstream index and phase tracker:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Workstream_Index.md`
+- Phase 1 scope definition:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Scope_Definition.md`
+- Phase 1 objectives and success criteria:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Phase1_Objectives_and_Success_Criteria.md`
+- Step 2 inventory catalog:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Data_Source_Inventory_Catalog.md`
+- Step 2 field-level mapping matrix:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Field_Mapping_Matrix.md`
+- Step 2 operational completeness control:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
+- Step 2 operational completeness appendix (detailed per-regime filters/tables):
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational_Appendix.md`
+- Step 2 Jira-ready story breakdown:
+  - `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Step2_Jira_Story_Breakdown.md`
+
+---
+
 ## 1) Scope and reporting models
 
 Regulations and reporting models covered:
 
-- MiFID (EU/UK) - ARM-based
-- EMIR (EU/UK) - TR-based
-- ASIC - TR-based
+- MiFID (EU/UK) - ARM-Based
+- EMIR (EU/UK) - TR-Based
+- ASIC - TR-Based
 - CAT (US) - event-driven
 - SFTR - direct to DTCC
 - LTR - manual/transitional
@@ -28,9 +49,9 @@ Regulations and reporting models covered:
 
 | Model | Regulation | Operating pattern | Submitted channel | Actual-state source |
 |---|---|---|---|---|
-| MiFID | MiFID (EU/UK) | ARM-based | Cappitech -> TRAX endpoints | ARM response files |
-| EMIR | EMIR (EU/UK) | TR-based | Cappitech -> Regis-TR | TR response files |
-| ASIC | ASIC | TR-based | Cappitech -> DTCC | TR response files |
+| MiFID | MiFID (EU/UK) | ARM-based | Cappitech -> TRAX (ARM path) | TRAX ARM response files |
+| EMIR | EMIR (EU/UK) | TR-based | Cappitech -> Regis-TR/DTCC | TR response files |
+| ASIC | ASIC | TR-based | Cappitech -> Regis-TR/DTCC | TR response files |
 | CAT | CAT (US) | Event-driven | S3 exchange -> FINRA CAT | CAT feedback files (SharePoint) |
 | SFTR | SFTR | Direct-to-TR | Direct DTCC XML/SFTP | DTCC acknowledgements/rejections |
 | LTR | LTR | Manual/transitional | FIPS VM -> CME/CFTC | Acknowledgement + transfer tracking |
@@ -56,6 +77,18 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 
 > **DECISION**  
 > Operational / BI is treated as an independent comparison baseline for completeness controls in direct-reporting models (MiFID/EMIR/ASIC). It is not the table-creation pipeline for regulatory outputs.
+>
+> **Current limitation:** parts of instrument eligibility used in this comparison (for example `Reg_Instruments_SCD.IsMifid` / `IsMifidByFCA`) are internal reference data used by reporting logic, not an independent external validation feed.
+>
+> **Future enhancement path:** integrate direct external reference-data validation from:
+> - ESMA FIRDS: https://registers.esma.europa.eu/publication/searchRegister?core=esma_registers_firds#
+> - FCA reference data: https://data.fca.org.uk/#/viewdata
+>
+> **Control-priority policy:** for Step 2C completeness interpretation, Audit-vs-BI is primary, Audit-vs-TraNa is secondary, and BestEX comparisons are diagnostic where implemented.
+
+The operational control implementation and runbook for this baseline comparison are documented in:
+
+- `regtech-automation-project/confluence/Trade_Reporting_Reconciliation_Completeness_Control_Operational.md`
 
 ---
 
@@ -87,7 +120,7 @@ For direct reporting (MiFID/EMIR/ASIC), Operational/BI is modeled as a **complet
 
 ### 3.2 External submission and feedback channels
 
-- Cappitech (TR/ARM submission path)
+- Cappitech (submission path split by model: TRAX for MiFID ARM; REGIS/DTCC for TR models)
 - S3 (CAT submission exchange)
 - TradeEcho/LSEG (APA)
 - DTCC (SFTR direct and TR responses by model)
@@ -109,7 +142,7 @@ Use each model section as:
 2. **Transformations / expected baseline** (golden source expectation)
 3. **Submitted / actual channels** (what was sent vs what was acknowledged/returned)
 
-## 4.1 MiFID (EU/UK) - ARM-based
+## 4.1 MiFID (EU/UK) - ARM-Based
 
 ### Core internal sources
 
@@ -132,12 +165,12 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech files to ARM endpoints (e.g., TRAX path by flow)
-- Actual: ARM response files (where ingested), represented in Databricks response layers
+- Submitted: Cappitech files to TRAX ARM endpoints (MiFID EU/UK flows)
+- Actual: ARM response files from TRAX (where ingested), represented in Databricks response layers
 
 ---
 
-## 4.2 EMIR (EU/UK) - TR-based
+## 4.2 EMIR (EU/UK) - TR-Based
 
 ### Core internal sources
 
@@ -168,7 +201,7 @@ Use each model section as:
 
 ---
 
-## 4.3 ASIC - TR-based
+## 4.3 ASIC - TR-Based
 
 ### Core internal sources
 
@@ -197,7 +230,7 @@ Use each model section as:
 
 ### Submitted / actual channels
 
-- Submitted: Cappitech vendor files -> DTCC (by flow)
+- Submitted: Cappitech vendor files
 - Actual: TR response files by model path
 
 ---
@@ -330,6 +363,7 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - DTCC/TRAX/UNAVISTA represented as partial/pending by model flow
 - LTR remains acknowledgement/transfer-led rather than full actual-state lifecycle
 - Some shared reference assets include migration and data-quality caveats (e.g., partial migration of certain reference tables)
+- Step 2C daily three-way completeness control (Audit vs TraNa vs BI) is now documented with runbook and metric definitions
 
 > **WARNING**  
 > Coverage status can differ by model and endpoint; maintain model-level assumptions explicitly in reconciliations and operational runbooks.
@@ -361,4 +395,15 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - LTR: `regtech-automation-project/diagrams/reporting-model-ltr-data-sources.md`
 - LP delegated: `regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.md`
 - APA: `regtech-automation-project/diagrams/reporting-model-apa-data-sources.md`
+
+### 6.3 Operational control and closure views
+
+- Step 2C daily operational sequence:
+  - `regtech-automation-project/diagrams/step2c-daily-operational-sequence.md`
+- Exception lifecycle and escalation:
+  - `regtech-automation-project/diagrams/exception-lifecycle-swimlane.md`
+- Ingestion coverage status heatmap:
+  - `regtech-automation-project/diagrams/ingestion-coverage-status-heatmap.md`
+- Instrument eligibility validation current-vs-target:
+  - `regtech-automation-project/diagrams/reference-data-validation-current-vs-target.md`
 

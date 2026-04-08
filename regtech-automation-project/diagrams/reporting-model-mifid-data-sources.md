@@ -8,8 +8,8 @@ flowchart LR
   I3["RegReportDB MiFID source tables<br/>FIRDS_* / FCA_* / MIFID2_*"]
   I4["MiFID ext_ transformations<br/>MIFID2_ext_* + Reg_Ext_*"]
   I5["MiFID expected reports<br/>MIFID2_Report / MIFID2_Hedge_Report<br/>MIFID2_ETORO_Report / MIFID2_ME_Report"]
-  I6["Submitted state<br/>Cappitech files -> TRAX/Regis/DTCC"]
-  I7["Actual state<br/>TRAX + TR response files<br/>(main.regtech bronze_*)"]
+  I6["Submitted state<br/>Cappitech files -> TRAX (MiFID ARM endpoint)"]
+  I7["Actual state<br/>TRAX ARM response files<br/>(main.regtech bronze_*)"]
   I8["Completeness control check<br/>Operational/BI vs MiFID expected reports"]
 
   T --> I2

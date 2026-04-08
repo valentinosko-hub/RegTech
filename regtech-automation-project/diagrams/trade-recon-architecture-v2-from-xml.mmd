@@ -11,7 +11,7 @@ flowchart TB
 
   regext["Upstream / RegExt Layer<br/>AZR-WE-BI-21 RegReportDB ext_*<br/>SSIS + stored procedure transformations"]
   report["Regulatory Reporting (Golden Source)<br/>RegReportDB audit baselines (Expected)<br/>MIFID2_* / EMIR*_Report / ASIC2_* / Reg_US_*"]
-  submission["Submission Channels<br/>Cappitech (TR/ARM), S3 (CAT), TradeEcho (APA)<br/>DTCC direct (SFTR), CME/CFTC via FIPS (LTR)"]
+  submission["Submission Channels<br/>Cappitech (ARM for MiFID; TR for EMIR/ASIC), S3 (CAT), TradeEcho (APA)<br/>DTCC direct (SFTR), CME/CFTC via FIPS (LTR)"]
 
   subgraph DB["Databricks Platform"]
     direction LR

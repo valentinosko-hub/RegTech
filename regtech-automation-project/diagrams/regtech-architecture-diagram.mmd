@@ -17,10 +17,17 @@ flowchart TD
 
   subgraph MODELS["Final Data Source Inventory - Reporting Models"]
     direction TB
-    subgraph TR["TR/ARM-Based (MiFID / EMIR / ASIC)"]
+    subgraph MIFID_ARM["MiFID (EU/UK) - ARM-Based"]
+      MIFID_EXP["Expected state<br/>Synapse + Hedge + RegReportDB reports"]
+      MIFID_SUB["Submitted state<br/>Cappitech submission files -> TRAX ARM"]
+      MIFID_ACT["Actual state<br/>TRAX ARM responses<br/>ingestion coverage evolving"]
+      MIFID_EXP --> MIFID_SUB --> MIFID_ACT
+    end
+
+    subgraph EMIR_ASIC_TR["EMIR/ASIC - TR-Based"]
       TR_EXP["Expected state<br/>Synapse + Hedge + RegReportDB reports"]
-      TR_SUB["Submitted state<br/>Cappitech submission files<br/>bronze_cappitech_* planned"]
-      TR_ACT["Actual state<br/>Regis/TRAX/DTCC responses<br/>Regis ingested, DTCC/TRAX pending"]
+      TR_SUB["Submitted state<br/>Cappitech submission files -> REGIS/DTCC<br/>bronze_cappitech_* planned"]
+      TR_ACT["Actual state<br/>REGIS/DTCC TR responses<br/>REGIS ingested, DTCC pending by flow"]
       TR_EXP --> TR_SUB --> TR_ACT
     end
 
@@ -131,6 +138,9 @@ flowchart TD
   K3 --> VALID
   ARCH --> DBX
 
+  MIFID_EXP --> GO
+  MIFID_SUB --> BR
+  MIFID_ACT --> BR
   TR_EXP --> GO
   TR_SUB --> BR
   TR_ACT --> BR
