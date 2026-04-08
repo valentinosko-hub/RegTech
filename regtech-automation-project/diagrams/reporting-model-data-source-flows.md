@@ -2,6 +2,17 @@
 
 This page provides separate flow diagrams for each reporting model, with MiFID, EMIR, and ASIC split individually.
 
+## Cross-cutting operational views
+
+- Step 2C daily operational sequence:
+  - `step2c-daily-operational-sequence.md`
+- Exception lifecycle (swimlane):
+  - `exception-lifecycle-swimlane.md`
+- Ingestion coverage status heatmap:
+  - `ingestion-coverage-status-heatmap.md`
+- Instrument reference-data validation (current vs target):
+  - `reference-data-validation-current-vs-target.md`
+
 ## MiFID (EU/UK) - ARM-Based
 
 ```mermaid

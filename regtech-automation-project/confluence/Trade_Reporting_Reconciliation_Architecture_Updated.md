@@ -396,3 +396,14 @@ For completeness checks in APA flows, filtered comparison is performed against:
 - LP delegated: `regtech-automation-project/diagrams/reporting-model-lp-delegated-data-sources.md`
 - APA: `regtech-automation-project/diagrams/reporting-model-apa-data-sources.md`
 
+### 6.3 Operational control and closure views
+
+- Step 2C daily operational sequence:
+  - `regtech-automation-project/diagrams/step2c-daily-operational-sequence.md`
+- Exception lifecycle and escalation:
+  - `regtech-automation-project/diagrams/exception-lifecycle-swimlane.md`
+- Ingestion coverage status heatmap:
+  - `regtech-automation-project/diagrams/ingestion-coverage-status-heatmap.md`
+- Instrument eligibility validation current-vs-target:
+  - `regtech-automation-project/diagrams/reference-data-validation-current-vs-target.md`
+

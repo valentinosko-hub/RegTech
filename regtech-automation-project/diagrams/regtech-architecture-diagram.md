@@ -1,5 +1,12 @@
 # RegTech Recon Engine Diagram (Project-Aligned, Final Inventory)
 
+Legend:
+
+- **Live**: ingestion/control path represented as active.
+- **Partial**: path active for some flows/endpoints but incomplete coverage.
+- **Pending**: defined path exists but ingestion is not yet fully operational.
+- **Limited**: only acknowledgement/transfer evidence exists (no full lifecycle feedback).
+
 ```mermaid
 flowchart TD
   subgraph KPI["Regulatory Reconciliation Engine - Operating Profile"]
