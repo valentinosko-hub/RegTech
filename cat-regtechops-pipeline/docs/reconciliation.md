@@ -18,7 +18,13 @@ There is no CAT accepted-records file.
 Matching is by:
 
 * `trade_date` from the filename; and
-* `raw_record_hash`, where error-file `raw_record` is the original record after the first three error columns.
+* `record_match_hash`, a CSV-aware canonical hash of the original submitted record.
+
+The raw record text is still retained for audit. The matching hash is built by
+generic CSV tokenization, quote handling, BOM/line-ending normalization, and
+surrounding field whitespace trimming. This keeps Phase 1 schema-agnostic while
+avoiding false accepts caused by harmless quote or whitespace differences between
+submission and error files.
 
 Status logic:
 

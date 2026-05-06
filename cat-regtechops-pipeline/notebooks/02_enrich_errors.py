@@ -60,6 +60,7 @@ def ensure_enrichment_tables() -> None:
           error_roe_id STRING,
           event_type STRING,
           raw_record STRING,
+          record_match_hash STRING,
           raw_line STRING,
           created_ts TIMESTAMP NOT NULL,
           updated_ts TIMESTAMP NOT NULL
@@ -82,6 +83,7 @@ def ensure_enrichment_tables() -> None:
           error_description STRING,
           error_record_key STRING,
           raw_record_hash STRING NOT NULL,
+          record_match_hash STRING NOT NULL,
           created_ts TIMESTAMP NOT NULL,
           updated_ts TIMESTAMP NOT NULL
         )
@@ -219,6 +221,7 @@ def build_enriched_errors() -> DataFrame:
         F.col("err.error_roe_id"),
         F.col("err.event_type"),
         F.col("err.raw_record"),
+        F.col("err.record_match_hash"),
         F.col("err.raw_line"),
         F.current_timestamp().alias("created_ts"),
         F.current_timestamp().alias("updated_ts"),
@@ -229,9 +232,8 @@ def build_trade_status() -> DataFrame:
     submissions = spark.table(RAW_SUBMISSIONS_TABLE).alias("sub")
     errors_by_record = (
         spark.table(ENRICHED_ERRORS_TABLE)
-        .where(F.col("raw_record").isNotNull())
-        .withColumn("raw_record_hash", F.sha2(F.col("raw_record"), 256))
-        .groupBy("trade_date", "raw_record_hash")
+        .where(F.col("record_match_hash").isNotNull())
+        .groupBy("trade_date", "record_match_hash")
         .agg(
             F.concat_ws(";", F.sort_array(F.collect_set("error_code"))).alias("error_code"),
             F.concat_ws("; ", F.sort_array(F.collect_set("error_description"))).alias("error_description"),
@@ -242,7 +244,7 @@ def build_trade_status() -> DataFrame:
     joined = submissions.join(
         errors_by_record,
         (F.col("sub.trade_date").eqNullSafe(F.col("err.trade_date")))
-        & (F.col("sub.raw_record_hash") == F.col("err.raw_record_hash")),
+        & (F.col("sub.record_match_hash") == F.col("err.record_match_hash")),
         "left",
     )
     return joined.select(
@@ -257,6 +259,7 @@ def build_trade_status() -> DataFrame:
         F.col("err.error_description"),
         F.col("err.error_record_key"),
         F.col("sub.raw_record_hash"),
+        F.col("sub.record_match_hash"),
         F.current_timestamp().alias("created_ts"),
         F.current_timestamp().alias("updated_ts"),
     )

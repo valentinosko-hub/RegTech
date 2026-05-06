@@ -50,8 +50,8 @@ The editable Mermaid diagram is in `diagrams/architecture.mmd`.
 
 | Notebook | Purpose |
 | --- | --- |
-| `notebooks/00_sftp_pull.py` | Discovers supported files on SFTP, extracts trade date from the filename, registers immutable file versions, downloads new or retryable files, and updates lifecycle status. |
-| `notebooks/01_parse_files.py` | Loads the CAT error dictionary once, parses no-header meta feedback positionally, stores raw submission/delete records, and parses only the first three error fields while retaining the original record as `raw_record`. |
+| `notebooks/00_sftp_pull.py` | Discovers supported files on SFTP, extracts trade date from the filename, registers immutable file versions, downloads new or retryable files, and updates lifecycle status. Failed downloads are retried on a later discovery run. |
+| `notebooks/01_parse_files.py` | Loads the CAT error dictionary once, parses no-header meta feedback positionally, stores raw submission/delete records, and parses only the first three error fields while retaining the original record as `raw_record`. CSV-aware helpers extract event type and matching keys without event-schema parsing. |
 | `notebooks/02_enrich_errors.py` | Enriches error records from `bi_output_regtechops_cat_error_dictionary` and reconciles accepted/rejected trade status. |
 | `notebooks/03_monitoring.py` | Displays file lifecycle, meta feedback, trade status, unknown error code, and failed file summaries. |
 
@@ -66,7 +66,9 @@ There is no accepted-records file.
 `02_enrich_errors.py` reconciles status by matching:
 
 1. `trade_date`, extracted from the filename; and
-2. `raw_record_hash`, calculated from the full submitted raw record and from the error file `raw_record` remainder after `error_code,action_type,errorROEID`.
+2. `record_match_hash`, calculated from a CSV-aware canonical representation of the submitted raw record and the error file `raw_record` remainder after `error_code,action_type,errorROEID`.
+
+`raw_record_hash` remains available for exact lineage. `record_match_hash` is the safer production match key because it is not sensitive to CSV quoting, leading/trailing field whitespace, BOMs, or line-ending differences.
 
 Status output:
 

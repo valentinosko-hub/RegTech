@@ -75,7 +75,9 @@ Error files are parsed only for:
 3. `errorROEID`
 
 The remaining text is stored as `raw_record`. Event type is extracted as the
-second comma-delimited field of `raw_record`.
+second CSV field of `raw_record` with quote-aware parsing. This is event-type
+agnostic and works for all CAT event types because the CAT event type position
+is consistent while downstream event schemas differ.
 
 ### Data files
 
@@ -94,7 +96,9 @@ Trade status is derived from:
 
 `raw submissions LEFT JOIN enriched errors`
 
-on `trade_date` and the SHA-256 hash of the raw original record.
+on `trade_date` and `record_match_hash`, a SHA-256 hash over a CSV-canonicalized
+record. This avoids false accepts/rejects caused by quoting, leading/trailing
+field spaces, BOMs, or line-ending differences.
 
 * match exists: `REJECTED`
 * no match exists: `ACCEPTED`

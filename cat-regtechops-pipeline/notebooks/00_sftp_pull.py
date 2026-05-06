@@ -220,7 +220,7 @@ def classify_file(file_name: str) -> Optional[str]:
 
 def parse_file_name(file_name: str) -> Dict[str, Optional[str]]:
     match = re.search(
-        r"^(?P<submitter>[^_]+)_(?P<reporter>[^_]+)_(?P<trade_date>\d{8})_.*_(?P<sequence>\d+)(?:\.|_)",
+        r"^(?P<submitter>[^_]+)_(?P<reporter>[^_]+)_(?P<trade_date>\d{8})_.*?_(?P<sequence>\d+)(?=\.|_)",
         file_name,
     )
     if not match:
@@ -446,8 +446,14 @@ try:
     discovered_files = discover_files(sftp)
     new_files = upsert_discovered_files(discovered_files)
     files_to_download = new_files[:MAX_FILES_PER_RUN]
+    failures = []
     for discovered_file in files_to_download:
-        download_file(sftp, discovered_file)
+        try:
+            download_file(sftp, discovered_file)
+        except Exception as exc:
+            failures.append(f"{discovered_file['file_name']}: {exc}")
+    if failures:
+        raise RuntimeError("One or more CAT files failed to land: " + "; ".join(failures))
     process_log(
         "00_sftp_pull",
         "SUCCESS",

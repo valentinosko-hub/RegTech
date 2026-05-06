@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS regtech_ops_stg.bi_output_regtechops_cat_linkage_erro
   error_roe_id STRING,
   event_type STRING,
   raw_record STRING,
+  record_match_hash STRING,
   raw_line STRING NOT NULL,
   created_ts TIMESTAMP NOT NULL,
   updated_ts TIMESTAMP NOT NULL
@@ -113,6 +114,7 @@ CREATE TABLE IF NOT EXISTS regtech_ops_stg.bi_output_regtechops_cat_raw_submissi
   event_type STRING,
   raw_record STRING NOT NULL,
   raw_record_hash STRING NOT NULL,
+  record_match_hash STRING NOT NULL,
   created_ts TIMESTAMP NOT NULL,
   updated_ts TIMESTAMP NOT NULL
 )
@@ -163,6 +165,7 @@ CREATE TABLE IF NOT EXISTS regtech_ops_stg.bi_output_regtechops_cat_enriched_err
   error_roe_id STRING,
   event_type STRING,
   raw_record STRING,
+  record_match_hash STRING,
   raw_line STRING,
   created_ts TIMESTAMP NOT NULL,
   updated_ts TIMESTAMP NOT NULL
@@ -187,6 +190,7 @@ CREATE TABLE IF NOT EXISTS regtech_ops_stg.bi_output_regtechops_cat_trade_status
   error_description STRING,
   error_record_key STRING,
   raw_record_hash STRING NOT NULL,
+  record_match_hash STRING NOT NULL,
   created_ts TIMESTAMP NOT NULL,
   updated_ts TIMESTAMP NOT NULL
 )

@@ -9,9 +9,10 @@ raw records into external Delta tables.
 from __future__ import annotations
 
 import hashlib
+import csv
 import traceback
 from datetime import datetime, timezone
-from typing import Optional
+from typing import List, Optional, Tuple
 
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
@@ -28,6 +29,16 @@ META_TABLE = f"{SCHEMA}.{TABLE_PREFIX}cat_meta_feedback"
 RAW_SUBMISSIONS_TABLE = f"{SCHEMA}.{TABLE_PREFIX}cat_raw_submissions"
 RAW_ERRORS_TABLE = f"{SCHEMA}.{TABLE_PREFIX}cat_linkage_errors"
 DICTIONARY_TABLE = f"{SCHEMA}.{TABLE_PREFIX}cat_error_dictionary"
+
+MATCH_FIELD_SEPARATOR = "\x1f"
+ERROR_ROW_SCHEMA = StructType(
+    [
+        StructField("error_code", StringType(), True),
+        StructField("action_type", StringType(), True),
+        StructField("error_roe_id", StringType(), True),
+        StructField("raw_record", StringType(), True),
+    ]
+)
 
 
 def widget_value(name: str, default: str) -> str:
@@ -106,6 +117,7 @@ def ensure_parse_tables() -> None:
           event_type STRING,
           raw_record STRING NOT NULL,
           raw_record_hash STRING NOT NULL,
+          record_match_hash STRING NOT NULL,
           created_ts TIMESTAMP NOT NULL,
           updated_ts TIMESTAMP NOT NULL
         )
@@ -130,6 +142,7 @@ def ensure_parse_tables() -> None:
           error_roe_id STRING,
           event_type STRING,
           raw_record STRING,
+          record_match_hash STRING,
           raw_line STRING NOT NULL,
           created_ts TIMESTAMP NOT NULL,
           updated_ts TIMESTAMP NOT NULL
@@ -249,7 +262,7 @@ def process_log(
 
 def read_text_with_row_numbers(path: str) -> DataFrame:
     rdd = spark.sparkContext.textFile(path).zipWithIndex().map(lambda row: (int(row[1]) + 1, row[0]))
-    return spark.createDataFrame(rdd, ["row_number", "raw_line"])
+    return spark.createDataFrame(rdd, ["row_number", "raw_line"]).where(F.length(F.trim(F.col("raw_line"))) > 0)
 
 
 def processed_file_keys(task_name: str) -> DataFrame:
@@ -300,6 +313,59 @@ def parse_cat_timestamp(value_col: F.Column) -> F.Column:
         F.to_timestamp(value_col, "yyyyMMdd'T'HHmmss.SSSSSS"),
         F.to_timestamp(value_col, "yyyyMMdd'T'HHmmss"),
     )
+
+
+def parse_csv_fields(value: Optional[str]) -> List[str]:
+    if value is None:
+        return []
+    text = value.lstrip("\ufeff").rstrip("\r\n")
+    try:
+        return [field.strip() for field in next(csv.reader([text], skipinitialspace=True))]
+    except Exception:
+        return [field.strip() for field in text.split(",")]
+
+
+def csv_field(value: Optional[str], index: int) -> Optional[str]:
+    fields = parse_csv_fields(value)
+    return fields[index] if len(fields) > index else None
+
+
+def canonical_record(value: Optional[str]) -> Optional[str]:
+    fields = parse_csv_fields(value)
+    if not fields:
+        return None
+    return MATCH_FIELD_SEPARATOR.join(fields)
+
+
+def split_error_line(value: Optional[str]) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
+    if value is None:
+        return (None, None, None, None)
+    text = value.lstrip("\ufeff").rstrip("\r\n")
+    in_quotes = False
+    delimiter_count = 0
+    index = 0
+    while index < len(text):
+        char = text[index]
+        if char == '"':
+            if in_quotes and index + 1 < len(text) and text[index + 1] == '"':
+                index += 2
+                continue
+            in_quotes = not in_quotes
+        elif char == "," and not in_quotes:
+            delimiter_count += 1
+            if delimiter_count == 3:
+                header_fields = parse_csv_fields(text[:index])
+                header_fields = (header_fields + [None, None, None])[:3]
+                return (header_fields[0], header_fields[1], header_fields[2], text[index + 1 :])
+        index += 1
+    header_fields = parse_csv_fields(text)
+    header_fields = (header_fields + [None, None, None])[:3]
+    return (header_fields[0], header_fields[1], header_fields[2], None)
+
+
+csv_field_udf = F.udf(csv_field, StringType())
+canonical_record_udf = F.udf(canonical_record, StringType())
+split_error_line_udf = F.udf(split_error_line, ERROR_ROW_SCHEMA)
 
 
 def load_error_dictionary_once() -> int:
@@ -419,9 +485,10 @@ def parse_submission_file(file_row) -> int:
         F.lit(file_row.reporter).alias("reporter"),
         F.lit(file_row.file_sequence).alias("file_sequence"),
         F.col("row_number"),
-        F.split(F.col("raw_line"), ",", -1).getItem(1).alias("event_type"),
+        csv_field_udf(F.col("raw_line"), F.lit(1)).alias("event_type"),
         F.col("raw_line").alias("raw_record"),
         F.sha2(F.col("raw_line"), 256).alias("raw_record_hash"),
+        F.sha2(canonical_record_udf(F.col("raw_line")), 256).alias("record_match_hash"),
         F.current_timestamp().alias("created_ts"),
         F.current_timestamp().alias("updated_ts"),
     )
@@ -430,9 +497,9 @@ def parse_submission_file(file_row) -> int:
 
 def parse_error_file(file_row) -> int:
     df = read_text_with_row_numbers(file_row.landing_path)
-    parts = F.split(F.col("raw_line"), ",", 4)
-    raw_record = parts.getItem(3)
-    parsed = df.select(
+    split = split_error_line_udf(F.col("raw_line"))
+    parsed_base = df.withColumn("parsed_error", split)
+    parsed = parsed_base.select(
         F.sha2(F.concat_ws("||", F.lit(file_row.file_key), F.col("row_number"), F.col("raw_line")), 256).alias(
             "error_record_key"
         ),
@@ -444,11 +511,12 @@ def parse_error_file(file_row) -> int:
         F.lit(file_row.reporter).alias("reporter"),
         F.lit(file_row.file_sequence).alias("file_sequence"),
         F.col("row_number"),
-        parts.getItem(0).alias("error_code"),
-        parts.getItem(1).alias("action_type"),
-        parts.getItem(2).alias("error_roe_id"),
-        F.split(raw_record, ",", -1).getItem(1).alias("event_type"),
-        raw_record.alias("raw_record"),
+        F.col("parsed_error.error_code").alias("error_code"),
+        F.col("parsed_error.action_type").alias("action_type"),
+        F.col("parsed_error.error_roe_id").alias("error_roe_id"),
+        csv_field_udf(F.col("parsed_error.raw_record"), F.lit(1)).alias("event_type"),
+        F.col("parsed_error.raw_record").alias("raw_record"),
+        F.sha2(canonical_record_udf(F.col("parsed_error.raw_record")), 256).alias("record_match_hash"),
         F.col("raw_line"),
         F.current_timestamp().alias("created_ts"),
         F.current_timestamp().alias("updated_ts"),

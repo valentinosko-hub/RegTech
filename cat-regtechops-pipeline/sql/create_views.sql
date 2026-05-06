@@ -36,6 +36,7 @@ SELECT
   error_category,
   processing_stage,
   event_type,
+  record_match_hash,
   COUNT(*) AS error_count,
   MAX(updated_ts) AS latest_updated_ts
 FROM regtech_ops_stg.bi_output_regtechops_cat_enriched_errors
@@ -46,7 +47,8 @@ GROUP BY
   error_description,
   error_category,
   processing_stage,
-  event_type;
+  event_type,
+  record_match_hash;
 
 CREATE OR REPLACE VIEW regtech_ops_stg.bi_output_regtechops_cat_v_unknown_error_codes AS
 SELECT

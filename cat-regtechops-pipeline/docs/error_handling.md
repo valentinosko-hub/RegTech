@@ -28,7 +28,11 @@ Set `fail_on_unknown_error_codes=true` in the monitoring task only when operatio
 
 ## File failures
 
-SFTP download failures update the registry row to `FAILED`, retain the exception message, and write a failed process-log row. A future run discovers the same immutable file version and can retry failed rows after remediation.
+SFTP download failures update the registry row to `FAILED`, retain the
+exception message, and write a failed process-log row. The SFTP task continues
+attempting the remaining files in the batch, then fails the task if any file
+failed. A future run rediscovers the same immutable file version and retries
+rows whose registry status is `FAILED`.
 
 ## Parser failures
 
