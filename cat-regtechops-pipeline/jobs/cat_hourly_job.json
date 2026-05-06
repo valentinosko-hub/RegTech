@@ -1,0 +1,135 @@
+{
+  "name": "CAT_RegTechOps_Hourly_Pipeline",
+  "description": "CAT SFTP ingestion, parsing, error enrichment and reconciliation. Runs every hour.",
+  "email_notifications": {
+    "on_failure": [],
+    "on_success": [],
+    "no_alert_for_skipped_runs": false
+  },
+  "webhook_notifications": {},
+  "timeout_seconds": 3600,
+  "max_concurrent_runs": 1,
+  "schedule": {
+    "quartz_cron_expression": "0 0 * * * ?",
+    "timezone_id": "America/New_York",
+    "pause_status": "UNPAUSED"
+  },
+  "tasks": [
+    {
+      "task_key": "sftp_pull",
+      "description": "Connect to CAT SFTP, detect new files, download to ABFSS landing zone",
+      "notebook_task": {
+        "notebook_path": "/Repos/regtech-ops/cat-regtechops-pipeline/notebooks/00_sftp_pull",
+        "base_parameters": {
+          "secret_scope": "regtech-ops",
+          "sftp_user": "93007"
+        },
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "cat_pipeline_cluster",
+      "libraries": [
+        { "pypi": { "package": "paramiko>=3.4.0" } }
+      ],
+      "timeout_seconds": 900,
+      "max_retries": 2,
+      "min_retry_interval_millis": 60000,
+      "retry_on_timeout": false
+    },
+    {
+      "task_key": "parse_files",
+      "description": "Parse all downloaded files and route to structured Delta tables",
+      "depends_on": [
+        { "task_key": "sftp_pull" }
+      ],
+      "notebook_task": {
+        "notebook_path": "/Repos/regtech-ops/cat-regtechops-pipeline/notebooks/01_parse_files",
+        "base_parameters": {},
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 1200,
+      "max_retries": 1,
+      "min_retry_interval_millis": 30000,
+      "retry_on_timeout": false
+    },
+    {
+      "task_key": "enrich_errors",
+      "description": "Enrich error records from dictionary, compute trade status",
+      "depends_on": [
+        { "task_key": "parse_files" }
+      ],
+      "notebook_task": {
+        "notebook_path": "/Repos/regtech-ops/cat-regtechops-pipeline/notebooks/02_enrich_errors",
+        "base_parameters": {
+          "error_dict_abfss_path": "abfss://analysis@stgdpdlwe.dfs.core.windows.net/BI_OUTPUT/RegTechOps/config/cat_error_dictionary_full_v4_1_0.json"
+        },
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 900,
+      "max_retries": 1,
+      "min_retry_interval_millis": 30000,
+      "retry_on_timeout": false
+    },
+    {
+      "task_key": "monitoring",
+      "description": "Compute reconciliation KPIs and log pipeline health metrics",
+      "depends_on": [
+        { "task_key": "enrich_errors" }
+      ],
+      "notebook_task": {
+        "notebook_path": "/Repos/regtech-ops/cat-regtechops-pipeline/notebooks/03_monitoring",
+        "base_parameters": {
+          "lookback_hours": "2"
+        },
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 600,
+      "max_retries": 0,
+      "retry_on_timeout": false
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "cat_pipeline_cluster",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "node_type_id": "Standard_DS3_v2",
+        "num_workers": 2,
+        "spark_conf": {
+          "spark.databricks.delta.preview.enabled": "true",
+          "spark.databricks.delta.schema.autoMerge.enabled": "true",
+          "spark.sql.shuffle.partitions": "8"
+        },
+        "azure_attributes": {
+          "availability": "ON_DEMAND_AZURE",
+          "first_on_demand": 1,
+          "spot_bid_max_price": -1
+        },
+        "spark_env_vars": {
+          "PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+        },
+        "init_scripts": [],
+        "enable_elastic_disk": true,
+        "autotermination_minutes": 20
+      }
+    }
+  ],
+  "run_as": {
+    "service_principal_name": "cat-pipeline-sp"
+  },
+  "tags": {
+    "team": "regtech-ops",
+    "pipeline": "cat-sftp",
+    "environment": "production",
+    "cost-center": "regulatory"
+  },
+  "parameters": [
+    {
+      "name": "run_id",
+      "default": ""
+    }
+  ],
+  "format": "MULTI_TASK"
+}

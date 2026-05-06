@@ -1,0 +1,117 @@
+flowchart TD
+    subgraph SFTP["CAT SFTP (transfer.s3.com/cat)"]
+        F1["*.csv.bz2\nSubmission files"]
+        F2["*.ack.csv\n*.integrity.csv\n*.ingestion.csv\nMeta feedback"]
+        F3["*.ingestion.error.csv.bz2\n*.linkage.error_*.csv.bz2\nError files"]
+        F4["*.DEL.csv.bz2\nDelete files"]
+    end
+
+    subgraph NB00["Notebook 00: sftp_pull (hourly)"]
+        S0A["List SFTP /cat\ndirectory"]
+        S0B["Compare vs\nfile registry\n(skip known files)"]
+        S0C["Download to ABFSS\nsftp_landing/{trade_date}/"]
+        S0D["Register in\ncat_file_registry\nDISCOVERED → DOWNLOADED"]
+    end
+
+    subgraph LANDING["ABFSS Landing Zone\nsftp_landing/{trade_date}/{file}"]
+        L1["Raw bytes\nimmutable"]
+    end
+
+    subgraph NB01["Notebook 01: parse_files"]
+        P1["Route by\nfile_type"]
+        P2["Meta parser\n(positional CSV,\nno header)"]
+        P3["Submission parser\n(bz2 decompress,\nraw lines)"]
+        P4["Error parser\n(col0-2 structured,\ncol3+ raw_record)"]
+        P5["Delete handler\n(DELETE_MARKER prefix)"]
+    end
+
+    subgraph NB02["Notebook 02: enrich_errors"]
+        E1["Bootstrap\nerror dictionary\n(367 codes, v4.1.0)"]
+        E2["Enrich ingestion\nerrors via LEFT JOIN\nerror_code → description"]
+        E3["Enrich linkage\nerrors via LEFT JOIN"]
+        E4["Compute\ntrade status\nREJECTED + ACCEPTED"]
+    end
+
+    subgraph NB03["Notebook 03: monitoring"]
+        M1["Reconciliation\nby trade date"]
+        M2["Top error codes"]
+        M3["Failed files"]
+        M4["Pipeline KPIs"]
+        M5["Late-arriving files"]
+    end
+
+    subgraph TABLES["Delta Tables (regtech_ops_stg)"]
+        T1[("cat_file_registry\nfile lifecycle")]
+        T2[("cat_meta_feedback\nACK/integrity/\ningestion")]
+        T3[("cat_raw_submissions\nraw lines")]
+        T4[("cat_error_dictionary\n367 codes v4.1.0")]
+        T5[("cat_enriched_errors\ningestion errors\n+ description")]
+        T6[("cat_linkage_errors\nlinkage errors\n+ description")]
+        T7[("cat_trade_status\nREJECTED/ACCEPTED")]
+        T8[("cat_process_log\naudit log")]
+    end
+
+    subgraph SECRET["Databricks Secrets"]
+        SEC["scope: regtech-ops\nkey: TR-S3-CAT-SSHKey"]
+    end
+
+    %% SFTP flow
+    SFTP --> S0A
+    SEC --> S0A
+    S0A --> S0B
+    S0B -->|"new files only"| S0C
+    S0C --> L1
+    S0C --> S0D
+    S0D --> T1
+
+    %% Parse flow
+    L1 -->|"DOWNLOADED files"| P1
+    P1 -->|"ACK/INTEGRITY/\nINGESTION_META"| P2
+    P1 -->|"SUBMISSION"| P3
+    P1 -->|"INGESTION_ERROR\nLINKAGE_ERROR"| P4
+    P1 -->|"DELETE"| P5
+    P2 --> T2
+    P3 --> T3
+    P4 --> T5
+    P4 --> T6
+    P5 --> T3
+    P1 -->|"status update"| T1
+    P1 --> T8
+
+    %% Enrich flow
+    E1 --> T4
+    T4 -->|"LEFT JOIN\nerror_code"| E2
+    T4 -->|"LEFT JOIN\nerror_code"| E3
+    T5 --> E2
+    T6 --> E3
+    E2 -->|"MERGE update"| T5
+    E3 -->|"MERGE update"| T6
+    T2 -->|"total_records\nerror_count"| E4
+    T5 -->|"errorROEIDs"| E4
+    T6 -->|"errorROEIDs"| E4
+    E4 -->|"MERGE upsert"| T7
+    E1 --> T8
+    E2 --> T8
+
+    %% Monitoring
+    T1 --> M1
+    T2 --> M1
+    T5 --> M2
+    T6 --> M2
+    T1 --> M3
+    T7 --> M1
+    T8 --> M4
+    T1 --> M5
+
+    %% Styling
+    classDef notebook fill:#1a73e8,color:#fff,stroke:#0d47a1
+    classDef table fill:#0f9d58,color:#fff,stroke:#006424
+    classDef storage fill:#f9ab00,color:#000,stroke:#e37400
+    classDef secret fill:#db4437,color:#fff,stroke:#9c0000
+    classDef sftp fill:#7b1fa2,color:#fff,stroke:#4a0072
+
+    class NB00,NB01,NB02,NB03 notebook
+    class T1,T2,T3,T4,T5,T6,T7,T8 table
+    class LANDING storage
+    class SECRET secret
+    class SFTP sftp
