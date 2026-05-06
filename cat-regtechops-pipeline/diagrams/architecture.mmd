@@ -1,0 +1,33 @@
+flowchart LR
+    A["CAT SFTP<br/>transfer.s3.com:/cat"] --> B["00_sftp_pull<br/>Discover new file versions"]
+    B --> C["External ADLS landing<br/>BI_OUTPUT/RegTechOps/_landing/cat"]
+    B --> R["bi_output_regtechops_cat_file_registry<br/>DISCOVERED -> PROCESSING -> SUCCESS/FAILED"]
+    C --> D["01_parse_files<br/>Parse raw records only"]
+    D --> M["bi_output_regtechops_cat_meta_feedback"]
+    D --> S["bi_output_regtechops_cat_raw_submissions<br/>All submitted records"]
+    D --> E["bi_output_regtechops_cat_linkage_errors<br/>Rejected raw error records"]
+    J["CAT error dictionary JSON<br/>v4.1.0 r15"] --> K["bi_output_regtechops_cat_error_dictionary"]
+    K --> F["02_enrich_errors"]
+    E --> F
+    F --> G["bi_output_regtechops_cat_enriched_errors<br/>Dictionary-enriched rejects"]
+    S --> H["Accepted = submissions minus errors"]
+    G --> H
+    H --> I["bi_output_regtechops_cat_trade_status<br/>ACCEPTED / REJECTED"]
+    R --> L["03_monitoring"]
+    M --> L
+    G --> L
+    I --> L
+    L --> P["bi_output_regtechops_cat_process_log"]
+    B --> P
+    D --> P
+    F --> P
+
+    classDef source fill:#fff3cd,stroke:#856404,color:#111;
+    classDef notebook fill:#d1ecf1,stroke:#0c5460,color:#111;
+    classDef delta fill:#d4edda,stroke:#155724,color:#111;
+    classDef log fill:#f8d7da,stroke:#721c24,color:#111;
+
+    class A,J source;
+    class B,D,F,L notebook;
+    class C,R,M,S,E,K,G,I delta;
+    class P log;
