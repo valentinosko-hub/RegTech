@@ -1,0 +1,95 @@
+{
+  "name": "cat-regtechops-hourly-pipeline",
+  "description": "Hourly CAT SFTP ingestion, enrichment, reconciliation, and monitoring pipeline.",
+  "max_concurrent_runs": 1,
+  "timeout_seconds": 0,
+  "format": "MULTI_TASK",
+  "schedule": {
+    "quartz_cron_expression": "0 0 * * * ?",
+    "timezone_id": "UTC",
+    "pause_status": "UNPAUSED"
+  },
+  "job_clusters": [
+    {
+      "job_cluster_key": "cat_pipeline_cluster",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "node_type_id": "Standard_D4ds_v5",
+        "driver_node_type_id": "Standard_D4ds_v5",
+        "num_workers": 2,
+        "data_security_mode": "SINGLE_USER",
+        "spark_conf": {
+          "spark.databricks.delta.schema.autoMerge.enabled": "true",
+          "spark.sql.session.timeZone": "UTC"
+        }
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "task_key": "00_sftp_pull",
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 3600,
+      "max_retries": 1,
+      "min_retry_interval_millis": 300000,
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/cat-regtechops-pipeline/notebooks/00_sftp_pull",
+        "base_parameters": {
+          "sftp_host": "transfer.s3.com",
+          "sftp_port": "22",
+          "sftp_username": "93007",
+          "sftp_remote_dir": "/cat",
+          "secret_scope": "regtech-ops",
+          "secret_key_name": "TR-S3-CAT-SSHKey"
+        }
+      }
+    },
+    {
+      "task_key": "01_parse_files",
+      "depends_on": [
+        {
+          "task_key": "00_sftp_pull"
+        }
+      ],
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 3600,
+      "max_retries": 0,
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/cat-regtechops-pipeline/notebooks/01_parse_files",
+        "base_parameters": {}
+      }
+    },
+    {
+      "task_key": "02_enrich_errors",
+      "depends_on": [
+        {
+          "task_key": "01_parse_files"
+        }
+      ],
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 3600,
+      "max_retries": 0,
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/cat-regtechops-pipeline/notebooks/02_enrich_errors",
+        "base_parameters": {
+          "error_dictionary_json_path": "abfss://analysis@stgdpdlwe.dfs.core.windows.net/BI_OUTPUT/RegTechOps/reference/cat_error_dictionary_full_v4_1_0.json"
+        }
+      }
+    },
+    {
+      "task_key": "03_monitoring",
+      "depends_on": [
+        {
+          "task_key": "02_enrich_errors"
+        }
+      ],
+      "job_cluster_key": "cat_pipeline_cluster",
+      "timeout_seconds": 3600,
+      "max_retries": 0,
+      "notebook_task": {
+        "notebook_path": "/Workspace/Shared/cat-regtechops-pipeline/notebooks/03_monitoring",
+        "base_parameters": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+flowchart TD
+    A[CAT SFTP transfer.s3.com:/cat] --> B[00_sftp_pull]
+    B --> C[(bi_output_regtechops_cat_file_registry)]
+    B --> D[ABFSS Landing<br/>/BI_OUTPUT/RegTechOps/cat_landing/raw_sftp]
+
+    D --> E[01_parse_files]
+    C --> E
+
+    E --> F[(bi_output_regtechops_cat_meta_feedback)]
+    E --> G[(bi_output_regtechops_cat_raw_submissions)]
+    E --> H[(bi_output_regtechops_cat_linkage_errors)]
+    E --> C
+
+    I[CAT Error Dictionary JSON] --> J[02_enrich_errors]
+    H --> J
+    G --> J
+    J --> K[(bi_output_regtechops_cat_error_dictionary)]
+    J --> L[(bi_output_regtechops_cat_enriched_errors)]
+    J --> M[(bi_output_regtechops_cat_trade_status)]
+    J --> C
+
+    C --> N[03_monitoring]
+    L --> N
+    M --> N
+    N --> O[(bi_output_regtechops_cat_process_log)]
+    N --> P[Operational Views<br/>Pipeline Health / Reconciliation / Unknown Codes]
