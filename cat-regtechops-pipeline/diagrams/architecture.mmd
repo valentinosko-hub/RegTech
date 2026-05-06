@@ -1,0 +1,36 @@
+flowchart LR
+  subgraph SFTP [transfer.s3.com /cat]
+    R[Remote files]
+  end
+  subgraph N00 [00_sftp_pull]
+    L[List + stat]
+    D[Download to DBFS staging]
+    REG1[Upsert file_registry DISCOVERED]
+  end
+  subgraph N01 [01_parse_files]
+    P[Parse by file_kind]
+    M[meta_feedback]
+    S[raw_submissions]
+    E[linkage_errors]
+    REG2[registry SUCCESS/FAILED]
+  end
+  subgraph N02 [02_enrich_errors]
+    DICT[error_dictionary load once]
+    ENR[enriched_errors]
+    TS[trade_status merge]
+  end
+  subgraph N03 [03_monitoring]
+    Q[Health SQL + display]
+  end
+  R --> L --> D --> REG1
+  REG1 --> P
+  P --> M
+  P --> S
+  P --> E
+  P --> REG2
+  REG2 --> DICT
+  E --> ENR
+  DICT --> ENR
+  S --> TS
+  ENR --> TS
+  TS --> Q

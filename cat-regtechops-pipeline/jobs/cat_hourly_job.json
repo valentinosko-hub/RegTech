@@ -1,0 +1,108 @@
+{
+  "name": "CAT_RegTechOps_Hourly",
+  "max_concurrent_runs": 1,
+  "schedule": {
+    "quartz_cron_expression": "0 0 * * * ?",
+    "timezone_id": "UTC",
+    "pause_status": "UNPAUSED"
+  },
+  "job_clusters": [
+    {
+      "job_cluster_key": "cat_regtechops_cluster",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 2,
+        "spark_conf": {
+          "spark.databricks.delta.preview.enabled": "true"
+        },
+        "aws_attributes": {
+          "availability": "SPOT_WITH_FALLBACK"
+        }
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "task_key": "cat_00_sftp_pull",
+      "job_cluster_key": "cat_regtechops_cluster",
+      "libraries": [],
+      "notebook_task": {
+        "notebook_path": "/Repos/PROD/cat-regtechops-pipeline/notebooks/00_sftp_pull",
+        "base_parameters": {
+          "catalog": "hive_metastore",
+          "schema": "regtech_ops_stg",
+          "secret_scope": "regtech-ops",
+          "sftp_host": "transfer.s3.com",
+          "sftp_remote_dir": "/cat",
+          "ssh_private_key_secret_key": "TR-S3-CAT-SSHKey",
+          "sftp_username_secret_key": "CAT_SFTP_USERNAME",
+          "staging_dbfs_dir": "/dbfs/tmp/cat_regtechops_staging"
+        },
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 3600,
+      "retry_on_timeout": true,
+      "max_retries": 1,
+      "min_retry_interval_millis": 120000
+    },
+    {
+      "task_key": "cat_01_parse_files",
+      "depends_on": [{ "task_key": "cat_00_sftp_pull" }],
+      "job_cluster_key": "cat_regtechops_cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/PROD/cat-regtechops-pipeline/notebooks/01_parse_files",
+        "base_parameters": {
+          "catalog": "hive_metastore",
+          "schema": "regtech_ops_stg"
+        },
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 7200,
+      "max_retries": 1,
+      "min_retry_interval_millis": 120000
+    },
+    {
+      "task_key": "cat_02_enrich_errors",
+      "depends_on": [{ "task_key": "cat_01_parse_files" }],
+      "job_cluster_key": "cat_regtechops_cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/PROD/cat-regtechops-pipeline/notebooks/02_enrich_errors",
+        "base_parameters": {
+          "catalog": "hive_metastore",
+          "schema": "regtech_ops_stg",
+          "error_dictionary_path": "dbfs:/FileStore/regtech/cat_error_dictionary_full_v4_1_0.json"
+        },
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 3600,
+      "max_retries": 1,
+      "min_retry_interval_millis": 120000
+    },
+    {
+      "task_key": "cat_03_monitoring",
+      "depends_on": [{ "task_key": "cat_02_enrich_errors" }],
+      "job_cluster_key": "cat_regtechops_cluster",
+      "notebook_task": {
+        "notebook_path": "/Repos/PROD/cat-regtechops-pipeline/notebooks/03_monitoring",
+        "base_parameters": {
+          "catalog": "hive_metastore",
+          "schema": "regtech_ops_stg",
+          "trade_date_filter": ""
+        },
+        "source": "WORKSPACE"
+      },
+      "timeout_seconds": 600,
+      "max_retries": 0
+    }
+  ],
+  "tags": {
+    "domain": "regtech",
+    "feed": "CAT",
+    "environment": "production"
+  },
+  "format": "MULTI_TASK",
+  "queue": {
+    "enabled": true
+  }
+}

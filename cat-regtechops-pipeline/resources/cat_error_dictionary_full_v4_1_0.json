@@ -1,0 +1,2214 @@
+{
+  "source_file": "03.06.26_CAT_Reporting_Technical_Specifications_for_Industry_Members_v4.1.0r15_CLEAN.pdf",
+  "version": "4.1.0 r15",
+  "generated_from_pages": "424-448",
+  "entry_count": 367,
+  "notes": [
+    "Duplicate code 3501 appears twice with different stages/severity in the source dictionary and is preserved as-is.",
+    "Entries are sorted by stage, code, severity, and text for easier downstream use."
+  ],
+  "entries": [
+    {
+      "code": 2001,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid accountHolderType When required, accountHolderType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2002,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid actionType actionType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2003,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid affiliateFlag affiliateFlag must be populated with one of the allowable values"
+    },
+    {
+      "code": 2004,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid aggregatedOrders If populated, aggregatedOrders must be in the correct format"
+    },
+    {
+      "code": 2005,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid askPrice When required, askPrice must be in the correct format. Required when askQty is populated"
+    },
+    {
+      "code": 2006,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid askQty When required, askQty must be in the correct format. Required askPrice is populated"
+    },
+    {
+      "code": 2007,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid atsDisplayInd When required, atsDisplayInd must be one of the allowable values"
+    },
+    {
+      "code": 2008,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid atsOrderType When required, atsOrderType must be equal to a unique identifier representing the specific order type provided to CAT by the ATS"
+    },
+    {
+      "code": 2009,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid bidPrice When required, bidPrice must be in the correct format; must be populated if bidQty is populated"
+    },
+    {
+      "code": 2010,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid bidQty When required, bidQty must be in the correct format; must be populated if bidPrice is populated"
+    },
+    {
+      "code": 2011,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid CATReporterIMID If populated, CATReporterIMID must be valid for the Event Date and must equal the CATReporterIMID in the filename"
+    },
+    {
+      "code": 2012,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid cancelQty cancelQty must be populated in the correct format"
+    },
+    {
+      "code": 2013,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid cancelFlag cancelFlag must be populated in the correct format"
+    },
+    {
+      "code": 2014,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid cancelTimestamp When required, cancelTimestamp must be in the correct format; must be populated if cancelFlag is True"
+    },
+    {
+      "code": 2015,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid capacity capacity must be populated with one of the allowable values"
+    },
+    {
+      "code": 2017,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid custDspIntrFlag custDspIntrFlag must be populated with one of the allowable values"
+    },
+    {
+      "code": 2018,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid deptType deptType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2019,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Combination of destination and destinationType is Invalid For Route Events, the following destinationType and destination combinations are required: • If destinationType is ‘F' or ‘O', the destination must be the IMID of an Industry Member. Must be valid for the Event Date. Error Error Code Error Code Description Explanation Error/ Warning • If destinationType is ‘E', the destination must be one of the allowable values. • If destinationType is ‘D', the destination must be one of the allowable values."
+    },
+    {
+      "code": 2020,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid destinationType destinationType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2021,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid displayPrice When required, displayPrice must be in the correct format"
+    },
+    {
+      "code": 2022,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid displayQty When required, displayQty must be in the correct format"
+    },
+    {
+      "code": 2023,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid dupROIDCond dupROIDCond must be populated with one of the allowable values"
+    },
+    {
+      "code": 2024,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid electronicDupFlag electronicDupFlag must be populated and is one of the allowable values"
+    },
+    {
+      "code": 2025,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid electronicTimestamp electronicTimestamp must be in the correct format"
+    },
+    {
+      "code": 2026,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid errorROEID errorROEID must be blank when the actionType is ‘NEW'; must be populated when actionType is ‘RPR'"
+    },
+    {
+      "code": 2027,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid eventTimestamp For all applicable events with the exception of Child Orders, eventTimestamp must be in the correct format. If manualFlag is true, eventTimestamp must be reported in increments of at least one second. If manualFlag is false, eventTimestamp must be reported in increments of at least milliseconds"
+    },
+    {
+      "code": 2028,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Combination of exchOriginCode and destinationType is invalid For applicable events, the following exchOriginCode and destinationType combination are required: • If destinationType is not E, exchOriginCode must be blank. • If destinationType is E, exchOriginCode must be populated when the value is communicated to the exchange"
+    },
+    {
+      "code": 2030,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid fillKeyDate fillKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2031,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmDesignatedID When required, firmDesignatedID must be in the correct format and unique among all identifiers from any given Industry Member for each business date"
+    },
+    {
+      "code": 2032,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmROEID firmROEID must be populated and in the correct format"
+    },
+    {
+      "code": 2033,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid Event Date in the firmROEID The Event Date portion of the firmROEID must be in the correct format and must equal the date portion of eventTimestamp"
+    },
+    {
+      "code": 2034,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid fulfillmentID fulfillmentID must be populated in the correct format"
+    },
+    {
+      "code": 2035,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid fulfillmentLinkType fulfillmentLinkType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2036,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid handlingInstructions handlingInstructions must be in the correct format and must include allowable values. Name and valid paired Value must be provided when applicable"
+    },
+    {
+      "code": 2037,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid infoBarrierID infoBarrierID must be in the correct format"
+    },
+    {
+      "code": 2038,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid initiator initiator must be populated with one of the allowable values. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 2039,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid isoInd When required, isoInd value must be one of the allowable values"
+    },
+    {
+      "code": 2040,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid leavesQty When required, leavesQty must be in the correct format, and must be less than or equal to quantity"
+    },
+    {
+      "code": 2041,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid manualFlag When required, manualFlag must be one of the allowable values"
+    },
+    {
+      "code": 2042,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid manualOrderKeyDate manualOrderKeyDate must be in the correct format; required if manualOrderID is populated"
+    },
+    {
+      "code": 2043,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid manualOrderID manualOrderID must be in the correct format"
+    },
+    {
+      "code": 2044,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid marketCenterID When required, marketCenterID must be one of the allowable values"
+    },
+    {
+      "code": 2045,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid minQty minQty must be in the correct format"
+    },
+    {
+      "code": 2046,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid mpStatusCode mpStatusCode must be one of the allowable values"
+    },
+    {
+      "code": 2047,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nbboSource When required, nbboSource must be one of the allowable values"
+    },
+    {
+      "code": 2048,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nbboTimestamp When required, nbboTimestamp must be in the correct format"
+    },
+    {
+      "code": 2049,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nbbPrice When required, nbbPrice must be in the correct format"
+    },
+    {
+      "code": 2050,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nbbQty When required, nbbQty must be in the correct format"
+    },
+    {
+      "code": 2051,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nboPrice When required, nboPrice must be in the correct format"
+    },
+    {
+      "code": 2052,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid nboQty When required, nboQty must be in the correct format"
+    },
+    {
+      "code": 2053,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid negotiatedTradeFlag negotiatedTradeFlag must be populated and one of the allowable values"
+    },
+    {
+      "code": 2054,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid sideDetailsInd sideDetailsInd must be populated with one of the allowable values"
+    },
+    {
+      "code": 2056,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid onlyOneQuoteFlag onlyOneQuoteFlag must be populated with one of the allowable values if required to populate"
+    },
+    {
+      "code": 2057,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid openCloseIndicator When required, openCloseIndicator must be one of the allowable values"
+    },
+    {
+      "code": 2058,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid optionID optionID must be populated in the correct format"
+    },
+    {
+      "code": 2060,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "optionID not valid on Event Date optionID is not valid on the event date. • For allocation events tradeDate is used. • For all other events date portion of eventTimestamp is used"
+    },
+    {
+      "code": 2061,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID orderID must be populated in the correct format"
+    },
+    {
+      "code": 2062,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderType orderType must be populated one of the allowable values"
+    },
+    {
+      "code": 2063,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate orderKeyDate must be populated and in the correct format"
+    },
+    {
+      "code": 2064,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid originatingIMID If populated, originatingIMID must be in the correct format on all secondary events. Must be valid for the Event Date"
+    },
+    {
+      "code": 2065,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid parentOrderID parentOrderID must be populated in the correct format. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 2066,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid parentOrderKeyDate parentOrderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2067,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid price price must be in the correct format"
+    },
+    {
+      "code": 2068,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorFillKeyDate When required, priorFillKeyDate must be populated and in the correct format"
+    },
+    {
+      "code": 2070,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorFulfillmentID When required, priorFulfillmentID must be in the correct format"
+    },
+    {
+      "code": 2071,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorOrderID When required, priorOrderID must be populated in the correct format"
+    },
+    {
+      "code": 2072,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorOrderKeyDate When required, priorOrderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2073,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorQuoteKeyDate When required, priorQuoteKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2074,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorQuoteID When required, priorQuoteID must be populated and must be in the correct format"
+    },
+    {
+      "code": 2076,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid quantity quantity must be in the correct format"
+    },
+    {
+      "code": 2077,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid quoteID quoteID must be populated in the correct format"
+    },
+    {
+      "code": 2078,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid quoteKeyDate quoteKeyDate must be populated and in the correct format"
+    },
+    {
+      "code": 2080,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid quoteRejectedFlag When required, quoteRejectedFlag must be populated in one of the allowable values"
+    },
+    {
+      "code": 2081,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid receivedQuoteID receivedQuoteID must be populated in the correct format"
+    },
+    {
+      "code": 2082,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid receiverIMID receiverIMID must be populated in the correct format. Must be valid for the Event Date"
+    },
+    {
+      "code": 2083,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid receivingDeskType receivingDeskType must be populated in one of the allowable values"
+    },
+    {
+      "code": 2084,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid reportingExceptionCode reportingExceptionCode must be one of the allowable values"
+    },
+    {
+      "code": 2085,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid representativeInd representativeInd must be populated in one of the allowable values"
+    },
+    {
+      "code": 2086,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid routedOrderID routedOrderID must be populated in the correct format"
+    },
+    {
+      "code": 2087,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid routedQuoteID When required, routedQuoteID must be populated in the correct format"
+    },
+    {
+      "code": 2088,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid routeRejectedFlag routeRejectedFlag must be one of the allowable values"
+    },
+    {
+      "code": 2089,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Combination of senderType and senderIMID is invalid If senderType = F or O, senderIMID is the IMID of an Industry Member. If senderType = E, senderIMID must be one of the allowable values"
+    },
+    {
+      "code": 2090,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid senderType When required, senderType must be one of the allowable values"
+    },
+    {
+      "code": 2091,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid senderIMID When required, senderIMID must be populated in the correct format. Must be valid for the Event Date. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 2092,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid seqNum When required, seqNum must be in the correct format"
+    },
+    {
+      "code": 2093,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid session When required, session must be populated. Required when destinationType is ‘E' or ‘D'"
+    },
+    {
+      "code": 2095,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid side side must be populated in one of the allowable values as defined in Appendix G: Data Dictionary"
+    },
+    {
+      "code": 2096,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid symbol symbol must be populated in the correct format"
+    },
+    {
+      "code": 2098,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "symbol not valid on Event Date symbol is not valid on the event date. • For allocation events tradeDate is used. • For all other events date portion of eventTimestamp is used"
+    },
+    {
+      "code": 2099,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "symbol does not match listing market format For exchange listed securities, the symbol format must match the format published by the primary listing market"
+    },
+    {
+      "code": 2100,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid tapeTradeID When required, tapeTradeID must be populated. When populated, tapeTradeID must be in the correct format"
+    },
+    {
+      "code": 2101,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid timeInForce timeInForce value must be populated with a valid Value in the correct format. Name and Value must be provided when applicable"
+    },
+    {
+      "code": 2102,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid tradeID tradeID must be populated in the correct format"
+    },
+    {
+      "code": 2103,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid tradeKeyDate tradeKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2104,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid tradingSession tradingSession must be populated in one of the allowable values"
+    },
+    {
+      "code": 2105,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid type For each event type, type must be populated and one of the allowable values"
+    },
+    {
+      "code": 2106,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid unsolicitedInd unsolicitedInd must be populated in one of the allowable values"
+    },
+    {
+      "code": 2107,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid workingPrice When provided, workingPrice must be populated in the correct format. workingPrice must be blank if atsDisplayInd is blank. When required, workingPrice must be populated in the correct format if atsDisplayInd is populated. If no workingPrice is applicable, it must be 0"
+    },
+    {
+      "code": 2108,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid buyDetails If sideDetailsInd = BUY, buyDetails must be populated. If sideDetailsInd = SELL, buyDetails must not be populated"
+    },
+    {
+      "code": 2109,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in buyDetails When required, orderID must be populated in the correct format"
+    },
+    {
+      "code": 2110,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in buyDetails When required, orderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2111,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid side in buyDetails side must be populated in the correct format"
+    },
+    {
+      "code": 2112,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmDesignatedID in buyDetails When required, firmDesignatedID must be populated in the correct format"
+    },
+    {
+      "code": 2113,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid accountHolderType in When required, accountHolderType must be one of the allowable Error Error Code Error Code Description Explanation Error/ Warning buyDetails values."
+    },
+    {
+      "code": 2114,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID and orderID in buyDetails When required, the combination of firmDesignatedID and orderID in buyDetails must be valid. See Table 49: Trade Side Details for more details"
+    },
+    {
+      "code": 2115,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid sellDetails If sideDetailsInd = SELL, sellDetails must be populated. If sideDetailsInd = BUY, sellDetails must not be populated"
+    },
+    {
+      "code": 2116,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in sellDetails When required, orderID must be populated in the correct format"
+    },
+    {
+      "code": 2117,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in sellDetails When required, orderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2118,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid side in sellDetails side must be populated in the correct format"
+    },
+    {
+      "code": 2119,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmDesignatedID in sellDetails When required, firmDesignatedID must be populated in the correct format"
+    },
+    {
+      "code": 2120,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid accountHolderType in sellDetails When required, accountHolderType must be populated in the correct format"
+    },
+    {
+      "code": 2121,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in clientDetails orderID must be populated in the correct format"
+    },
+    {
+      "code": 2122,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in clientDetails orderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2123,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid side in clientDetails side must be populated in the correct format"
+    },
+    {
+      "code": 2124,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid firmDesignatedID in clientDetails firmDesignatedID must be blank"
+    },
+    {
+      "code": 2125,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid accountHolderType in clientDetails accountHolderType must be blank"
+    },
+    {
+      "code": 2126,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in firmDetails When required, orderID must be populated and in the correct format"
+    },
+    {
+      "code": 2127,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in firmDetails When required, orderKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2128,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid side in firmDetails side must be populated and in the correct format"
+    },
+    {
+      "code": 2129,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmDesignatedID in firmDetails When required, firmDesignatedID must be in the correct format"
+    },
+    {
+      "code": 2130,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid accountHolderType in firmDetails When required, accountHolderType must be one of the allowable values"
+    },
+    {
+      "code": 2132,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Record exceeds maximum length Record length must not exceed the maximum length for each record"
+    },
+    {
+      "code": 2133,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Additional fields are specified in the record but are not defined for this CAT Refer to Sections 3.4 & 4.14 for permitted fields for each CAT event type. Error Error Code Error Code Description Explanation Error/ Warning event type"
+    },
+    {
+      "code": 2134,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid JSON or CSV format The record is not represented in a valid format as specified in Section 2.5 Data Types"
+    },
+    {
+      "code": 2136,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid Alphanumeric Character A field value in the record contains a delimiter or a non- allowable ASCII character"
+    },
+    {
+      "code": 2137,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2139,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "eventTimestamp is greater than the current date and time The eventTimestamp is greater than system date"
+    },
+    {
+      "code": 2142,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of aggregatedOrders and representativeInd The combination of aggregatedOrders and representativeInd must be valid. See Appendix C for more details on reporting representative and combined orders"
+    },
+    {
+      "code": 2143,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of electronicDupFlag and manualFlag The combination of electronicDupFlag and manualFlag must be valid. See Section 3.2.2 for more details"
+    },
+    {
+      "code": 2144,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of electronicTimestamp and manualFlag The combination of electronicTimestamp and manualFlag must be valid. See Section 3.2.2 for more details"
+    },
+    {
+      "code": 2145,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of fulfillmentLinkType and firmDetails The combination of fulfillmentLinkType and firmDetails must be valid. See Appendix C for more details on reporting representative and combined orders"
+    },
+    {
+      "code": 2146,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid clientDetails clientDetails must be populated in the correct format"
+    },
+    {
+      "code": 2147,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid firmDetails firmDetails must be populated in the correct format"
+    },
+    {
+      "code": 2148,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID and orderID in sellDetails When required, the combination of firmDesignatedID and orderID in sellDetails must be valid. See Table 49: Trade Side Details for more details"
+    },
+    {
+      "code": 2149,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "CATReporterIMID and senderIMID must be assigned to the same firm CATReporterIMID and senderIMID must be assigned to the same firm"
+    },
+    {
+      "code": 2150,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "CATReporterIMID and receiverIMID must be assigned to the same firm CATReporterIMID and receiverIMID must be assigned to the same firm"
+    },
+    {
+      "code": 2151,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2153,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Data File is not Readable Data File format is not readable as it contains an invalid compression format"
+    },
+    {
+      "code": 2154,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quoteWantedInd When required, quoteWantedInd must be populated in one of the allowable values"
+    },
+    {
+      "code": 2156,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid reservedForFutureUse reservedForFutureUse must not be populated"
+    },
+    {
+      "code": 2157,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in buyDetails If populated, quantity in buyDetails must be in the correct format"
+    },
+    {
+      "code": 2158,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in buyDetails If populated, originatingIMID in buyDetails must be in the correct format"
+    },
+    {
+      "code": 2159,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in If populated, quantity in sellDetails must be in the correct format. Error Error Code Error Code Description Explanation Error/ Warning sellDetails"
+    },
+    {
+      "code": 2160,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in sellDetails If populated, originatingIMID in sellDetails must be in the correct format"
+    },
+    {
+      "code": 2161,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in clientDetails If populated, quantity in clientDetails must be in the correct format"
+    },
+    {
+      "code": 2162,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in clientDetails If populated, originatingIMID in clientDetails must be in the correct format"
+    },
+    {
+      "code": 2163,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in firmDetails If populated, quantity in firmDetails must be in the correct format"
+    },
+    {
+      "code": 2164,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in firmDetails If populated, originatingIMID in firmDetails must be in the correct format"
+    },
+    {
+      "code": 2165,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in aggregatedOrders When required, orderID in aggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2166,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in aggregatedOrders When required, orderKeyDate in aggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2167,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in aggregatedOrders If populated, quantity in aggregatedOrders must be in the correct format"
+    },
+    {
+      "code": 2168,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in aggregatedOrders If populated, originatingIMID in aggregatedOrders must be in correct format"
+    },
+    {
+      "code": 2169,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of reportingExceptionCode and tapeTradeID The combination of reportingExceptionCode and tapeTradeID must be valid. Refer to Section 4.11 Trade for more details"
+    },
+    {
+      "code": 2170,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid allocationKeyDate allocationKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2171,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid allocationID allocationID must be populated in the correct format"
+    },
+    {
+      "code": 2172,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorAllocationKeyDate When required, priorAllocationKeyDate must be populated in the correct format"
+    },
+    {
+      "code": 2173,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priorAllocationID When required, priorAllocationID must be populated and must be in the correct format"
+    },
+    {
+      "code": 2175,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid institutionFlag institutionFlag must be populated with one of the allowable values"
+    },
+    {
+      "code": 2176,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid tradeDate tradeDate must be populated in the correct format"
+    },
+    {
+      "code": 2177,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid settlementDate settlementDate must be populated in the correct format"
+    },
+    {
+      "code": 2178,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid allocationType allocationType must be populated with one of the allowable values"
+    },
+    {
+      "code": 2179,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid DVPCustodianID When required, DVPCustodianID must be populated in the correct format"
+    },
+    {
+      "code": 2180,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid correspondentCRD If populated, correspondentCRD must be populated in the correct format"
+    },
+    {
+      "code": 2181,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid newOrderFDID If populated, newOrderFDID must be populated in the correct format. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 2182,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid allocationInstructionTime If populated, allocationInstructionTime must be in the correct format"
+    },
+    {
+      "code": 2184,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of clearingFirm and reportingExceptionCode Combination of clearingFirm and reportingExceptionCode must be valid"
+    },
+    {
+      "code": 2185,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of counterparty and reportingExceptionCode Combination of counterparty and reportingExceptionCode must be valid"
+    },
+    {
+      "code": 2186,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid solicitationFlag solicitationFlag must be populated with one of the allowable values"
+    },
+    {
+      "code": 2187,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid RFQID If populated, RFQID must be in the correct format"
+    },
+    {
+      "code": 2188,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid unpricedInd unpricedInd must be populated with one of the allowable values"
+    },
+    {
+      "code": 2189,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of senderIMID and destination or receiverIMID On Order Route or New Quote events, senderIMID must not equal destination. On Order Accepted, Order Modified, and Quote Received events, senderIMID must not equal receiverIMID"
+    },
+    {
+      "code": 2190,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of orderID and parentOrderID or priorOrderID If populated, the combination of parentOrderID and parentOrderKeyDate or priorOrderID and priorOrderKeyDate must not equal the combination of orderID and orderKeyDate"
+    },
+    {
+      "code": 2191,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of orderID and orderID in aggregatedOrders If populated, the combination of orderID and orderKeyDate must not equal any combination of orderID and orderKeyDate within the aggregatedOrders field"
+    },
+    {
+      "code": 2192,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid triggerPrice If populated, triggerPrice must be in the correct format"
+    },
+    {
+      "code": 2200,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid legDetails legDetails must be populated in correct format"
+    },
+    {
+      "code": 2201,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid legRefID in legDetails When populated, legRefID must be in correct format"
+    },
+    {
+      "code": 2202,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid legRatioQuantity in legDetails legRatioQuantity must be populated in correct format"
+    },
+    {
+      "code": 2203,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid numberOfLegs numberOfLegs must be populated in correct format"
+    },
+    {
+      "code": 2204,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid pairedOrderID If populated, pairedOrderID must be in correct format"
+    },
+    {
+      "code": 2205,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid requestTimestamp If populated, requestTimestamp must be in correct format"
+    },
+    {
+      "code": 2206,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid multiLegInd multiLegInd must be populated with one of the allowable values"
+    },
+    {
+      "code": 2207,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid retiredFieldPosition retiredFieldPosition must not be populated"
+    },
+    {
+      "code": 2208,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid priorRoutedOrderID When required, priorRoutedOrderID must be populated in correct format"
+    },
+    {
+      "code": 2209,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of routedOrderID and priorRoutedOrderID If populated, the routedOrderID and priorRoutedOrderID must not be equal"
+    },
+    {
+      "code": 2210,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid underlying If populated, underlying must be valid for the Event Date and in correct format. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 2211,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid netPrice If populated, netPrice must be valid and in correct format"
+    },
+    {
+      "code": 2212,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2213,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of symbol and optionID fields in legDetails In legDetails, the combination of symbol and optionID must be valid"
+    },
+    {
+      "code": 2214,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid openCloseIndicator in legDetails If populated, openCloseIndicator in legDetails must be populated with an allowable value"
+    },
+    {
+      "code": 2215,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid side in legDetails side in legDetails must be populated with an allowable value"
+    },
+    {
+      "code": 2216,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid priceType When required, priceType must be populated with an allowable value"
+    },
+    {
+      "code": 2217,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid destination When required destination must be populated with a valid IMID"
+    },
+    {
+      "code": 2218,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid occClearingMemberID When required, occClearingMemberID must be populated in the correct format"
+    },
+    {
+      "code": 2219,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2220,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2221,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of symbol and openCloseIndicator fields in legDetails openCloseIndicator in legDetails must not be populated when symbol in legDetails is populated"
+    },
+    {
+      "code": 2222,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid clearingFirm When required, clearingFirm must be populated in the correct format"
+    },
+    {
+      "code": 2223,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of orderID and firmDesignatedID in firmDetails firmDesignatedID in firmDetails must not be populated when orderID in firmDetails is populated or vice versa"
+    },
+    {
+      "code": 2224,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid symbol in legDetails symbol in legDetails not valid on the Event Date. • For allocation events tradeDate is used. • For all other events date portion of eventTimestamp is used"
+    },
+    {
+      "code": 2225,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid optionID in legDetails optionID in legDetails not valid on the Event Date. • For allocation events tradeDate is used. • For all other events date portion of eventTimestamp is used"
+    },
+    {
+      "code": 2226,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of price and netPrice price must be blank or zero when netPrice is populated"
+    },
+    {
+      "code": 2227,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of orderID in buyDetails and sellDetails When both buyDetails.orderID and sellDetails.orderID are provided, they must not be the same"
+    },
+    {
+      "code": 2228,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of orderID in firmDetails and clientDetails firmDetails.orderID and clientDetails.orderID must not be the same"
+    },
+    {
+      "code": 2229,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid deskOrderID When provided, deskOrderID must be in correct format"
+    },
+    {
+      "code": 2230,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid priorDeskOrderID When provided, priorDeskOrderID must be in correct format and must not be equal to deskOrderID"
+    },
+    {
+      "code": 2231,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid representativeQuoteInd When provided, representativeQuoteInd must be populated in one of the allowable values"
+    },
+    {
+      "code": 2232,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid askAggregatedOrders When required, askAggregatedOrders must be provided and in correct format"
+    },
+    {
+      "code": 2233,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in askAggregatedOrders orderID in askAggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2234,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in askAggregatedOrders orderKeyDate in askAggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2235,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in askAggregatedOrders If populated, quantity in askAggregatedOrders must be in the correct format"
+    },
+    {
+      "code": 2236,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in askAggregatedOrders If populated, originatingIMID in askAggregatedOrders must be in correct format"
+    },
+    {
+      "code": 2237,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of representativeQuoteInd and askAggregatedOrders The combination of askAggregatedOrders and representativeQuoteInd must be valid"
+    },
+    {
+      "code": 2238,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid bidAggregatedOrders When required, bidAggregatedOrders must be provided and in correct format"
+    },
+    {
+      "code": 2239,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderID in bidAggregatedOrders When required, orderID in bidAggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2240,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid orderKeyDate in bidAggregatedOrders When required, orderKeyDate in bidAggregatedOrders must be populated in the correct format"
+    },
+    {
+      "code": 2241,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid quantity in bidAggregatedOrders If populated, quantity in bidAggregatedOrders must be in the correct format"
+    },
+    {
+      "code": 2242,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid originatingIMID in bidAggregatedOrders If populated, originatingIMID in bidAggregatedOrders must be in correct format"
+    },
+    {
+      "code": 2243,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of representativeQuoteInd and bidAggregatedOrders The combination of bidAggregatedOrders and representativeQuoteInd must be valid"
+    },
+    {
+      "code": 2244,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID and representativeQuoteInd The combination of firmDesignatedID and representativeQuoteInd must be valid"
+    },
+    {
+      "code": 2245,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID and accountHolderType The combination of firmDesignatedID and accountHolderType must be valid"
+    },
+    {
+      "code": 2246,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of unsolicitedInd and representativeQuoteInd The combination of unsolicitedInd and representativeQuoteInd must be valid"
+    },
+    {
+      "code": 2247,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of quantity and ‘CASH' handlingInstructions A quantity value of ‘0' must be reported for notional orders reported with the ‘CASH' handlingInstructions value"
+    },
+    {
+      "code": 2248,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2249,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or invalid RFQFlag RFQFlag must be populated in the correct format"
+    },
+    {
+      "code": 2250,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or invalid quotePriceType When provided, quotePriceType must be populated with an allowable value"
+    },
+    {
+      "code": 2251,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2252,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2253,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 2254,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid askRelativePrice When provided, askRelativePrice must be populated with an allowable value"
+    },
+    {
+      "code": 2255,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid bidRelativePrice When provided, bidRelativePrice must be populated with an allowable value"
+    },
+    {
+      "code": 2256,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Missing or Invalid validUntilDuration When provided, validUntilDuration must be populated with an allowable value"
+    },
+    {
+      "code": 2257,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of RFQFlag and RFQID The combination of RFQFlag and RFQID must be valid"
+    },
+    {
+      "code": 2258,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of capacity and firmDesignatedID in buyDetails The combination of capacity and firmDesignatedID in buyDetails must be valid"
+    },
+    {
+      "code": 2259,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of capacity and firmDesignatedID in sellDetails The combination of capacity and firmDesignatedID in sellDetails must be valid"
+    },
+    {
+      "code": 2260,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid BFMMFlag BFMMFlag must be populated with one of the allowable values"
+    },
+    {
+      "code": 2261,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and accountHolderType The combination of BFMMFlag and accountHolderType must be valid"
+    },
+    {
+      "code": 2262,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and side The combination of BFMMFlag and side must be valid"
+    },
+    {
+      "code": 2263,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid BFMMFlag in buyDetails When required, BFMMFlag must be populated in the correct format"
+    },
+    {
+      "code": 2264,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid BFMMFlag in sellDetails When required, BFMMFlag must be populated in the correct format"
+    },
+    {
+      "code": 2265,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and accountHolderType in buyDetails The combination of BFMMFlag and accountHolderType in buyDetails must be valid"
+    },
+    {
+      "code": 2266,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and side in buyDetails The combination of BFMMFlag and side in buyDetails must be valid"
+    },
+    {
+      "code": 2267,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and accountHolderType in sellDetails The combination of BFMMFlag and accountHolderType in sellDetails must be valid"
+    },
+    {
+      "code": 2268,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of BFMMFlag and side in sellDetails The combination of BFMMFlag and side in sellDetails must be valid"
+    },
+    {
+      "code": 2269,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID and aggregatedOrders The combination of firmDesignatedID and aggregatedOrders must be valid"
+    },
+    {
+      "code": 2270,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid firmDesignatedID on supplement event The firmDesignatedID on supplement event must be valid (i.e., not ‘PENDING')"
+    },
+    {
+      "code": 2271,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID, The combination of firmDesignatedID, aggregatedOrders, Error aggregatedOrders, routeRejectedFlag, and legDetails. routeRejectedFlag, and legDetails must be valid."
+    },
+    {
+      "code": 2272,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Invalid combination of firmDesignatedID, quoteRejectedFlag, and legDetails. The combination of firmDesignatedID, quoteRejectedFlag, and legDetails must be valid"
+    },
+    {
+      "code": 2273,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "buyDetails array exceeds the object limitation The buyDetails is limited to one set of details"
+    },
+    {
+      "code": 2274,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "sellDetails array exceeds the object limitation The sellDetails is limited to one set of details"
+    },
+    {
+      "code": 2275,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "clientDetails array exceeds the object limitation The clientDetails is limited to one set of details"
+    },
+    {
+      "code": 2276,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "firmDetails array exceeds the object limitation The firmDetails is limited to one set of details"
+    },
+    {
+      "code": 2801,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Reserved"
+    },
+    {
+      "code": 2802,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Reserved"
+    },
+    {
+      "code": 2803,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Reserved"
+    },
+    {
+      "code": 2999,
+      "severity": "ERROR",
+      "stage": "DATA_INGESTION",
+      "text": "Exceeds Max Error Limit The record contains more than 8 errors. Error Linkage Discovery errors are generated by performing event comparisons that result in the identification of duplicates, out of sequence events and unlinked events. To identify duplicate Linkage Keys, the CAT Processor will ensure the CAT Linkage Keys, as defined in Section 2.6.1, are not repeated. Unlinked error codes are assigned based on a processing order when determining the reason for an unlinked event. The process begins with the check associated with the codes having the lowest sequence value. When the \"Multiple Fields did not Match\" reason is assigned, it is because a determination could not be made. In such cases, it is possible that the unlink reason is because the other party's event was not reported or had a processing error which prevented the event from participating in Linkage Discover y. In cases when linkage did not occur between venues, separate error codes will be assigned to the CAT Reporter whose record did not link and the CAT Reporter that was named. Error Code Descriptions that begin with \"Named\" indicate when the CAT Reporter was named in a record submitted by another CAT Reporter (Industry Member, Exchange or TRF/ADF/ORF) that is unlinked. Refer to CAT Alert 2019- 04 for additional information on named linkage errors. Note: Named Errors for Exchange Trade Linkage breaks (exchange floor trade events where a corresponding MOOT event is missing) are not currently available. The below tables contain error messages that are associated with Linkage Discovery Errors. Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 6003,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Matching routedOrderID/routedQuoteID cannot be found The routedOrderID/routedQuoteID reported on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event does not match to a corresponding routedOrderID on the exchange order or Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 6005,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "senderIMID did not match A matching routedOrderID/routedQuoteID was identified on the exchange order; however, the senderIMID on the Order Route/Route Modified or Order Accepted/Order Modified/Routed Quote event did not match the corresponding routingParty on the exchange order or Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 6007,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Symbol/optionID did not match A matching routedOrderID/routedQuoteID was identified in the exchange order or Display-Only Facility Equity BBO event; however, the symbol/optionID on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event did not match the corresponding symbol/optionID on the exchange order or Display- Only Facility Equity BBO event"
+    },
+    {
+      "code": 6009,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "session did not match A matching routedOrderID/routedQuoteID was identified on the exchange order or Display-Only Facility Equity BBO event; however, the session on the Order Route or Route Modified/Routed Quote event did not match the session on the exchange order or Display- Only Facility Equity BBO event"
+    },
+    {
+      "code": 6011,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Multiple fields did not match A matching routedOrderID/routedQuoteID was identified on the exchange order or Display-Only Facility Equity BBO event; however, the symbol/optionID, senderIMID, or a combination of fields reported on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event did not match the corresponding symbol/optionID, routingParty or a combination of fields on the exchange order or Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 6013,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Duplicate Route Linkage Key on Route or Route Modified to Exchange Unlinked due to duplicated Route Linkage Key on a Route/Routed Quoted or Route Modified event to an Exchange or Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 6015,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Duplicate Route Linkage Key on Order Accepted or Modification from Exchange Unlinked due to duplicated Route Linkage Key on an Order Accepted or Modification received from an Exchange"
+    },
+    {
+      "code": 6017,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "destination did not match A matching routedOrderID/routedQuoteID was identified on the exchange order or Display-Only Facility Equity BBO event; however, the destination on the Order Route/Routed Quote or Route Modified event did not match the exchange ID on the exchange order or the applicable identifier of the Display-Only Facility"
+    },
+    {
+      "code": 6019,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "receiverIMID did not match A matching routedOrderID was identified on the exchange order; however, the receiverIMID on the Order Accepted or Order Modified event did not match the exchange ID on the exchange order Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 6021,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "tapeTradeID did not match The tapeTradeID reported on a Trade event did not match the unique identifier (e.g., MOOTLINK) provided in the exchange OT"
+    },
+    {
+      "code": 6023,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "marketCenterID did not match A matching tapeTradeID was identified on the exchange OT; however, the marketCenterID reported on the Trade event did not match the exchange ID on the exchange OT"
+    },
+    {
+      "code": 6025,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "side in buyDetails did not match A matching tapeTradeID was identified on the exchange OT; however, the side reported in the buyDetails of the Trade event did not match the side on the exchange OT"
+    },
+    {
+      "code": 6027,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "side in sellDetails did not match A matching tapeTradeID was identified on the exchange OT; however, the side reported in the sellDetails of the Trade event did not match the side on the exchange OT"
+    },
+    {
+      "code": 6029,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_LINKAGE",
+      "text": "Duplicate Exchange Trade Linkage Key Unlinked due to duplicated Exchange Trade Linkage Key. Error Facility) Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 7004,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named - Matching routedOrderID/routedQuoteID cannot be found Named on an exchange order/Display-Only Facility Equity BBO event, but the routedOrderID/routedQuoteID reported on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event does not match to a corresponding routedOrderID on the exchange order or Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 7006,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named - senderIMID did not match Named on an exchange order/Display-Only Facility Equity BBO event with a matching routedOrderID/routedQuoteID identified on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event; however, the senderIMID on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event did not match the routingParty reported on the corresponding exchange order/Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 7008,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named – symbol/optionID did not match Named on an exchange order/Display-Only Facility Equity BBO event with a matching routedOrderID/routedQuoteID identified on the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event; however, the symbol/optionID on the Order Route/Route Modified or Order Accepted/Order Modified/Routed Quote event did not match the symbol/optionID on the corresponding exchange order/Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 7010,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named - session did not match Named on an exchange order/Display-Only Facility Equity BBO event with a matching routedOrderID/routedQuoteID identified on the Order Route, Route Modified event or Routed Quote event; however, the session on the Order Route, Route Modified event or Routed Quote event did not match the session on the corresponding exchange order/Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 7012,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named - Multiple fields did not Named on an Order Route/Route Modified or Order Accepted/Order Modified/Display-Only Facility Equity BBO Error Error Code Error Code Description Explanation Error/ Warning match event with a matching routedOrderID/routedQuoteID identified in the Order Route/Route Modified/Routed Quote or Order Accepted/Order Modified event; however, the symbol/optionID, senderIMID or a combination of fields reported on the Order Route/Route Modified or Order Accepted/Order Modified event did not match the symbol/optionID or routingParty on the corresponding exchange order/Display-Only Facility Equity BBO event."
+    },
+    {
+      "code": 7018,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named – destination did not match Named on an exchange order/Display-Only Facility Equity BBO event with a matching routedOrderID/routedQuoteID identified on the Order Route or Route Modified event; however, the destination reported on the corresponding Order Route or Route Modified event did not match the exchange ID on the corresponding exchange order/Display-Only Facility Equity BBO event"
+    },
+    {
+      "code": 7020,
+      "severity": "ERROR",
+      "stage": "EXCHANGE_NAMED_LINKAGE",
+      "text": "Named – receiverIMID did not match Named on an exchange order with a matching routedOrderID identified on the Order Accepted or Order Modified event; however, the receiverIMID reported on the corresponding Order Accepted or Order Modified event did not match the exchange ID on the corresponding exchange order. Error Error Code Error Code Description Explanation Warning/"
+    },
+    {
+      "code": 3701,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID not found firmDesignatedID does not exist in CAIS for the CAT Reporter"
+    },
+    {
+      "code": 3702,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID not valid on Event Date firmDesignatedID is not valid in CAIS for the CAT Reporter for the event date. For all events, the Event Date is used. For allocation events, in addition to the Event Date, the tradeDate is used"
+    },
+    {
+      "code": 3703,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in buyDetails not found firmDesignatedID does not exist in CAIS for the CAT Reporter"
+    },
+    {
+      "code": 3704,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in buyDetails not valid on Event Date firmDesignatedID is not valid in CAIS for the CAT Reporter for the event date (i.e., the date portion of eventTimestamp)"
+    },
+    {
+      "code": 3705,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in sellDetails not found firmDesignatedID does not exist in CAIS for the CAT Reporter"
+    },
+    {
+      "code": 3706,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in sellDetails not valid on Event Date firmDesignatedID is not valid in CAIS for the CAT Reporter on the event date (i.e., the date portion of eventTimestamp)"
+    },
+    {
+      "code": 3707,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in firmDetails not found firmDesignatedID does not exist in CAIS for the CAT Reporter"
+    },
+    {
+      "code": 3708,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID in firmDetails not valid on Event Date firmDesignatedID is not valid in CAIS on the event date (i.e., the date portion of eventTimestamp)"
+    },
+    {
+      "code": 3709,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "newOrderFDID not found correspondentCRD is not populated or is equal to the CAT Reporter ID and newOrderFDID does not exist in CAIS for the CAT Reporter"
+    },
+    {
+      "code": 3710,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "newOrderFDID not valid on tradeDate correspondentCRD is not populated or is equal to the CAT Reporter ID and newOrderFDID is not valid in CAIS for the CAT Reporter on the tradeDate. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 3711,
+      "severity": "ERROR",
+      "stage": "FDID_VALIDATION",
+      "text": "firmDesignatedID is populated as ‘PENDING' firmDesignatedID is populated as ‘PENDING'. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 1101,
+      "severity": "WARNING",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error/warning code has been retired and may no longer be used"
+    },
+    {
+      "code": 1103,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Duplicate File A file with the same base name was previously accepted by CAT"
+    },
+    {
+      "code": 1104,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Missing or Invalid CAT Submitter ID CAT Submitter ID is missing or invalid"
+    },
+    {
+      "code": 1105,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1106,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1107,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1108,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1109,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Unauthorized CAT Submitter ID CAT Submitter ID has not been authorized to submit for the CAT Reporter IMID. Verify that the CAT Submitter ID and CAT Reporter IMID in the file name have a transmitting relationship"
+    },
+    {
+      "code": 1110,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1111,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1112,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1115,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used.'"
+    },
+    {
+      "code": 1116,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1120,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Invalid File in Delete Instruction The delete instruction is on a file that does not exist in CAT, contains event dates more than four days prior to the current processing date, or contains actionType other than ‘NEW'. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 1121,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1122,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1123,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1124,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1126,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1127,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used"
+    },
+    {
+      "code": 1128,
+      "severity": "ERROR",
+      "stage": "FILE_INTEGRITY",
+      "text": "Retired Error Code Error code has been retired and may no longer be used. Error The table below contains error messages that are associated with Data Ingestion. Error codes are associated with specific fields within an event. Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 9003,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Matching routedOrderID/receivedQuoteID cannot be found The routedOrderID/receivedQuoteID reported on the Order Accepted/Order Modified/Quote Received event does not match to a corresponding routedOrderID/routedQuoteID on the Order Route/Route Modified/Routed Quote event"
+    },
+    {
+      "code": 9004,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Named - Matching routedOrderID/routedQuoteID cannot be found Named on an Order Accepted/Order Modified/Quote Received event, but the routedOrderID/routedQuoteID reported on the Order Route/Route Modified/Routed Quote event does not match to a corresponding routedOrderID/receivedQuoteID on the Order Accepted/Order Modified/Quote Received event"
+    },
+    {
+      "code": 9005,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "senderIMID did not match A matching routedOrderID was identified in the Order Route/Route Modified event; however, the senderIMID on the Order Accepted/Order Modified event did not match the senderIMID on the Order Route/Route Modified event"
+    },
+    {
+      "code": 9006,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Named - senderIMID did not match Named on an Order Accepted/Order Modified event but the senderIMID reported on the Order Route/Route Modified does not match to a corresponding senderIMID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 9007,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "receiverIMID did not match A matching routedOrderID was identified in the Order Route/Route Modified event; however, the receiverIMID on the Order Accepted/Order Modified event did not match the destination on the Order Route/Route Modified event"
+    },
+    {
+      "code": 9008,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Named - receiverIMID did not match Named on an Order Accepted/Order Modified event but the destination reported on the Order Route/Route Modified does not match to a corresponding receiverIMID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 9009,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "symbol/optionID did not match A matching routedOrderID was identified in the Order Route/Route Modified event; however, the symbol/optionID on the Order Accepted/Order Modified event did not match the symbol/optionID on the Order Route/Route Modified event"
+    },
+    {
+      "code": 9010,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Named – symbol/optionID did not match Named on an Order Accepted/Order Modified event with a matching routedOrderID identified in the Order Route/Route Modified event; however, the symbol/optionID on the Order Route/Route Modified event did not match the symbol/optionID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 9011,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Multiple fields did not match A matching routedOrderID was identified in the Order Route/Route Modified event; however, the symbol/optionID, senderIMID, receiverIMID, receiverIMID, or a combination of fields on the Order Accepted/Order Modified event did not match the corresponding symbol/optionID, senderIMID, or destination on the Order Route/Route Modified event"
+    },
+    {
+      "code": 9012,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Named - Multiple fields did not match Named on an Order Accepted/Order Modified event with a matching routedOrderID identified in the Order Route/Route Modified event; however, the symbol/optionID, senderIMID, destination or a combination of fields on the Order Route/Route Modified event did not match the corresponding symbol/optionID, senderIMID, receiverIMID or a combination of fields on an Order Accepted/Order Modified event"
+    },
+    {
+      "code": 9013,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_RECEIVER",
+      "text": "Duplicate Route Linkage Key on Order Accepted or Modification received from Industry Member Unlinked due to duplicated Route Linkage Key on an Order Accepted or Modification received from another Industry Member"
+    },
+    {
+      "code": 8003,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Matching routedOrderID/routedQuoteID cannot be found The routedOrderID/routedQuoteID reported on the Order Route/Route Modified/Routed Quote event does not match to a corresponding routedOrderID/receivedQuoteID on the Order Accepted/Order Modified/Quote Received event"
+    },
+    {
+      "code": 8004,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Named - Matching routedOrderID/receivedQuoteID cannot be found Named on an Order Route/Route Modified/Routed Quote event, but the routedOrderID/receivedQuoteID reported on the Order Accepted/Order Modified/Quote Received event does not match to a corresponding routedOrderID/routedQuoteID on the Order Route/Route Modified/Routed Quote event"
+    },
+    {
+      "code": 8005,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "senderIMID did not match A matching routedOrderID was identified in the Order Accepted/Order Modified event; however, the senderIMID on the Order Route/Route Modified event did not match the senderIMID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 8006,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Named - senderIMID did not match Named on an Order Route/Route Modified event, but the senderIMID on the Order Accepted/Order Modified event does not match the senderIMID reported on the corresponding Order Route/Route Modified event"
+    },
+    {
+      "code": 8007,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "destination did not match A matching routedOrderID was identified in the Order Accepted/Order Modified event; however, the destination on the Order Route/Route Modified event did not match the receiverIMID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 8008,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Named – destination did not match Named on an Order Route/Route Modified event, but the receiverIMID on the Order Accepted/Order Modified event does not match the destination reported on the corresponding Order Route/Route Modified event"
+    },
+    {
+      "code": 8009,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "symbol/optionID did not match A matching routedOrderID was identified in the Order Accepted/Order Modified event; however, the symbol/optionID on the Order Route/Route Modified event did not match the symbol/optionID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 8010,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Named – symbol/optionID did not match Named on an Order Route/Route Modified event with a matching routedOrderID identified in the Order Accepted/Order Modified event; however, the symbol/optionID on the Order Accepted/Order Modified event did not match the symbol/optionID on the Order Route/Route Modified event"
+    },
+    {
+      "code": 8011,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Multiple fields did not match A matching routedOrderID was identified in the Order Accepted/Order Modified event; however, the symbol/optionID, senderIMID, destination, or a combination of fields on the Order Route/Route Modified event did not match the symbol/optionID, senderIMID, or receiverIMID on the Order Accepted/Order Modified event"
+    },
+    {
+      "code": 8012,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Named - Multiple fields did not match Named on an Order Route/Route Modified event with a matching routedOrderID identified in the Order Accepted/Order Modified event; however, the symbol/optionID, senderIMID, receiverIMID or a combination of fields on the Order Accepted/Order Modified event did not match the corresponding symbol/optionID, senderIMID, or destination on the Order Route/Route Modified event"
+    },
+    {
+      "code": 8013,
+      "severity": "ERROR",
+      "stage": "INTERFIRM_SENDER",
+      "text": "Duplicate Route Linkage Key on Route or Route Modified to Industry Member Unlinked due to duplicated Route Linkage Key on a Route/Route Modified to another Industry Member. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 3002,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate firmROEID on same day Duplicate firmROEID received by CAT; must be unique for the Event Date and CAT Reporter IMID. All events containing a duplicate firmROEID on the same day will be rejected"
+    },
+    {
+      "code": 3003,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate firmROEID on a prior processing day One or more events were reported with the same firmROEID as an event reported on a previous day. All events received on the current CAT Processing Date associated with the duplicate firmROEID will be rejected. The events received on a previous day associated with the duplicate firmROEID will not be rejected"
+    },
+    {
+      "code": 3004,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Order Key reported on same day More than one primary order event and/or secondary order event which reassigned an Order Key was reported with the same Order Key on the current CAT Processing Date. All events associated with the duplicate Order Key will be rejected"
+    },
+    {
+      "code": 3007,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Order Key reported on a prior processing day One or more primary order events and/or secondary order event which reassigned an Order Key were reported that have the same Order Key as an order reported on a previous day. All events received on the current CAT Processing Date associated with the duplicate Order Key will be rejected. The Error Error Code Error Code Description Explanation Error/ Warning events received on a previous day associated with the duplicate Order Key will not be rejected."
+    },
+    {
+      "code": 3010,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Trade Key reported on same day More than one Trade event was reported with the same Trade Key on the current CAT Processing Date. All events associated with the duplicate Trade Key will be rejected"
+    },
+    {
+      "code": 3011,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Trade Key reported on prior processing day One or more Trade events were reported with the same Trade Key as an event reported on a previous day. All events received on the current CAT Processing Date with a duplicate Trade Key will be rejected. The events received on a previous day associated with the duplicate Trade Key will not be rejected"
+    },
+    {
+      "code": 3012,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Fulfillment Key reported on same day More than one Order Fulfillment events or Fulfillment Amendment events which assigned a new Fulfillment key were reported with the same Fulfillment Key on the current CAT Processing Date. All events with a duplicate Fulfillment Key will be rejected"
+    },
+    {
+      "code": 3015,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Fulfillment Key reported on prior processing day One or more Order Fulfillment events or Fulfillment Amendment events which assigned a new Fulfillment key were reported with the same Fulfillment Key as an event reported on a previous day. All events received on the current CAT Processing Date associated with the duplicate Fulfillment Key will be rejected. The events received on a previous day with a duplicate Fulfillment Key will not be rejected"
+    },
+    {
+      "code": 3016,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Quote Key reported on same day More than one New Quote, Quote Received or Quote Modified event which reassigned a quote key were reported with the same Quote Key on the current CAT Processing Date. All events associated with the duplicate Quote Key will be rejected"
+    },
+    {
+      "code": 3017,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Quote Key reported on prior processing day One or more New Quote, Quote Received or Quote Modified events which reassigned a quote key were reported that have the same Quote Key as an event reported on a previous day. All events received on the current CAT Processing Date associated with the duplicate Quote Key will be rejected. The events received on a previous day associated with the duplicate Quote Key will not be rejected"
+    },
+    {
+      "code": 3020,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Allocation Key reported on same day More than one Post-Trade Allocation event or Amended Allocation event which assigned a new Allocation Key were reported with the same Allocation Key on the current CAT Processing Date. All events associated with the duplicate Allocation Key will be rejected"
+    },
+    {
+      "code": 3021,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Duplicate Allocation Key reported on prior processing day One or more Post-Trade Allocation events or Amended Allocation events which assigned a new Allocation Key were reported that have the same Allocation Key as an event reported on a previous day. All events received on the current CAT Processing Date associated with the duplicate Allocation Key will be rejected. The events received on a previous day associated with the duplicate Allocation Key will not be rejected"
+    },
+    {
+      "code": 3501,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Secondary Event – Order Key, Trade Key, Quote Key, Fulfillment Key, or Allocation Key not found The Secondary Event (as defined in Appendix F) references an Order Key, Trade Key, Quote Key, Fulfillment Key, or Allocation Key that does not exist in CAT because it was not reported or was rejected. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 3501,
+      "severity": "WARNING",
+      "stage": "INTRA_LINKAGE",
+      "text": "error on T+4 if the timeInForce is not corrected on the Primary event"
+    },
+    {
+      "code": 3502,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Trade Event –Order not found The Trade Event side details reference an Order Key that does not exist in CAT because it was not reported or was rejected"
+    },
+    {
+      "code": 3503,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Fulfillment Event –Order not found The Fulfillment Event side details reference an Order Key that does not exist in CAT because it was not reported or was rejected"
+    },
+    {
+      "code": 3504,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Aggregated Order – Customer/Client order not found Aggregated order references an Order Key that does not exist in CAT because it was not reported or was rejected"
+    },
+    {
+      "code": 3505,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Electronic Duplicate Order – Manual order not found Electronic duplicate order references a Manual Order Key that does not exist in CAT because it was not reported or was rejected"
+    },
+    {
+      "code": 3601,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Intrafirm Out of Sequence Event eventTimestamp of a Secondary Event (as defined in Primary Event (as defined in Appendix F). When comparing eventTimestamp, the Clock Drift allowance as specified in Appendix B must be considered"
+    },
+    {
+      "code": 3602,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Mismatched eventTimestamp on the Order/Modification/Trade/Fulfillment supplement event eventTimestamp on the Order/Modification/Trade/Fulfillment supplement event did not match the eventTimestamp on the corresponding Order/Modification/Trade/Fulfillment event. Timestamp compared up to milliseconds"
+    },
+    {
+      "code": 3603,
+      "severity": "ERROR",
+      "stage": "INTRA_LINKAGE",
+      "text": "Order Route event –quoteID not found The IDQS Linkage Key in the Order Route event references a quoteID that does not exist in CAT because it was not reported or was rejected"
+    },
+    {
+      "code": 4003,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "Matching tapeTradeID cannot be found The tapeTradeID reported on a Trade event did not match the unique identifier (e.g., Branch Sequence Number, Compliance ID) provided on the TRF/ADF/ORF Trade Report"
+    },
+    {
+      "code": 4005,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "marketCenterID cannot be found The marketCenterID reported on the Trade event did not match the Market Center ID on the TRF/ADF/ORF trade report"
+    },
+    {
+      "code": 4007,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "symbol cannot be found The symbol reported on the Trade event did not match the symbol on the TRF/ADF/ORF trade report"
+    },
+    {
+      "code": 4009,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "Multiple fields did not match A TRF/ADF/ORF Trade Report with a matching unique identifier (i.e. Branch Sequence Number) was found; however, the symbol, CATReporterIMID or a combination of fields reported on the Trade event did not match the corresponding symbol or reporting/contra firm on the TRF/ADF/ORF Trade Report"
+    },
+    {
+      "code": 4011,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "Duplicate TRF Linkage Key Unlinked due to duplicated TRF Linkage Key"
+    },
+    {
+      "code": 4013,
+      "severity": "ERROR",
+      "stage": "TRADE_LINKAGE",
+      "text": "CATReporterIMID cannot be found The CATReporterIMID used to report the Trade event did not match the Reporting Execution or Contra Execution MPID on the TRF/ADF/ORF trade report. Error Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 5004,
+      "severity": "ERROR",
+      "stage": "TRADE_NAMED_LINKAGE",
+      "text": "Named - Matching tapeTradeID cannot be found Named on a TRF/ADF/ORF Trade Report, but the tapeTradeID on the Trade event did not match the unique identifier (e.g., Branch Sequence Number, Compliance ID) on the corresponding TRF/ADF/ORF Trade Report"
+    },
+    {
+      "code": 5006,
+      "severity": "ERROR",
+      "stage": "TRADE_NAMED_LINKAGE",
+      "text": "Named - marketCenterID cannot be found Named on a TRF/ADF/ORF Trade Report, but the marketCenterID reported on the Trade event did not match the Market Center ID on the corresponding Trade event"
+    },
+    {
+      "code": 5008,
+      "severity": "ERROR",
+      "stage": "TRADE_NAMED_LINKAGE",
+      "text": "Named - symbol cannot be found Named on a TRF/ADF/ORF Trade Report, but the symbol reported on the Trade event did not match the symbol on the TRF/ADF/ORF Trade Report"
+    },
+    {
+      "code": 5010,
+      "severity": "ERROR",
+      "stage": "TRADE_NAMED_LINKAGE",
+      "text": "Named - Multiple fields did not match Named on a TRF/ADF/ORF Trade Report and a matching tapeTradeID on the CAT Trade Event was found; however, the symbol, CATReporterIMID or a combination of fields reported on the Trade event did not match the corresponding symbol or reporting/contra firm on the TRF/ADF/ORF Trade Report"
+    },
+    {
+      "code": 5014,
+      "severity": "ERROR",
+      "stage": "TRADE_NAMED_LINKAGE",
+      "text": "Named - CATReporterIMID cannot be found Named on a TRF/ADF/ORF Trade Report, but the CATReporterIMID reported on the Trade event did not match Error Error Code Error Code Description Explanation Error/ Warning the Reporting Execution or Contra Execution MPID on the corresponding Trade Report. Error Code Error Code Description Explanation"
+    },
+    {
+      "code": 395,
+      "severity": "WARNING",
+      "stage": "WARNING",
+      "text": "Early reported event firmDesignatedID or newOrderFDID is not found in CAIS because the event is reported to CAT prior to the due date. This warning is not repairable"
+    },
+    {
+      "code": 396,
+      "severity": "ERROR",
+      "stage": "WARNING",
+      "text": "Incorrect timeInForce on related Primary event Secondary event is related to a Primary event that contains an incorrect timeInForce. This Secondary event will receive a"
+    },
+    {
+      "code": 397,
+      "severity": "WARNING",
+      "stage": "WARNING",
+      "text": "Retired Error Code Error/warning code has been retired and may no longer be used"
+    },
+    {
+      "code": 398,
+      "severity": "WARNING",
+      "stage": "WARNING",
+      "text": "Order Key, Trade Key, Quote Key or Fulfillment Key prior to CAT go- live The Secondary Event (as defined in Appendix F) references an Order Key, Trade Key, Quote Key or Fulfillment Key that does not exist in CAT because it references a date prior to CAT go-live; or The aggregatedOrders field references an Order Key that does not exist in CAT because it references a date prior to CAT go-live. Warning 399 Duplicate Event The event has already been received by CAT. The first instance of the event will be retained; all subsequent submissions will be rejected. This rejection is not repairable"
+    },
+    {
+      "code": 897,
+      "severity": "WARNING",
+      "stage": "WARNING",
+      "text": "Retired Error Code Error/warning code has been retired and may no longer be used"
+    }
+  ]
+}
