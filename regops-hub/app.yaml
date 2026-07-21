@@ -1,0 +1,13 @@
+command: "concurrently \"npm run start\" \"uvicorn backend.main:app --host 0.0.0.0 --port 8000\""
+
+env:
+  - name: LAKEBASE_CONNECTION_STRING
+    valueFrom: secret
+  - name: DATABRICKS_SQL_WAREHOUSE_ID
+    value: "<warehouse-id>"
+  - name: DATABRICKS_CATALOG
+    value: "regtech_ops"
+  - name: DATABRICKS_SCHEMA
+    value: "operational"
+  - name: REGOPS_DATA_MODE
+    value: "mock"
