@@ -1,0 +1,48 @@
+You are building RegOps Hub, a Databricks App for RegTech Operations at eToro.
+
+ARCHITECTURE CONSTRAINTS (non-negotiable):
+- This is a Databricks App: React frontend (Vite + TypeScript) + FastAPI backend (Python)
+- Frontend: React 18, TypeScript, React Router, TanStack Query, Tailwind CSS
+- Backend: FastAPI, asyncpg (Lakebase/Postgres), databricks-sql-connector (Delta Lake)
+- AI: All AI calls use Foundation Model APIs via ai_query (SQL function) or direct HTTP to pay-per-token endpoints. NO custom Model Serving endpoints. NO LangGraph. NO agent frameworks.
+- Database: Lakebase (Postgres) for OLTP reads/writes (cases, comments, notifications). Delta Lake for analytical/time-series data (monitoring events, recon results).
+- Auth: Databricks OAuth handled by the platform. User identity comes from request headers. No custom auth code.
+- Deployment: Databricks Apps serverless. Config in app.yaml.
+
+CONSISTENCY CONTRACT:
+- Lakebase is authoritative for: cases, timeline_events, comments, notifications, users, mapping_rules, vendors, regulatory_reports, regulatory_calendar, briefings, active_alerts (cache), today_submissions (cache)
+- Delta Lake is authoritative for: monitoring_events, report_submissions, recon_runs, recon_breaks, ai_generations
+- NEVER join across Lakebase and Delta in a single query. Query each independently and merge in application code.
+- UI reads from Lakebase (fast). Historical/analytical queries go to Delta.
+
+CODE STYLE:
+- Python: type hints everywhere, Pydantic models for all API contracts, async functions for all I/O
+- TypeScript: strict mode, interfaces for all data shapes, no any types
+- Keep files small (<200 lines). One component per file. One router per domain.
+- No unnecessary abstractions. Direct, readable code over clever patterns.
+- Error handling: every external call (DB, AI) must have a timeout and fallback.
+
+MODULES (only these four exist):
+- Home: morning briefing, report status, feed status, recon summary, alerts, open cases
+- Monitoring: report timeline, feed status table, alert list with detail panel
+- Reconciliation: run overview, break table with AI categories, break detail with resolution
+- Cases: case list, case detail with timeline, paste-to-case creation
+
+DO NOT:
+- Add modules that don't exist (no Knowledge, no Investigations, no Executive Reporting)
+- Use any AI agent framework (no LangChain, no LangGraph, no CrewAI)
+- Create custom Model Serving endpoints
+- Add authentication/authorization code beyond reading user identity from headers
+- Use an ORM (use raw SQL with asyncpg and databricks-sql-connector)
+- Add WebSocket support (use polling with TanStack Query)
+
+PHASE 1 (current) NOTES:
+- All data access goes through backend/services/{lakebase,delta,ai}.py. These currently
+  read/write an in-memory mock dataset (backend/services/mock_store.py) instead of real
+  Postgres/Delta/model endpoints, but expose the same async function signatures that
+  Phase 2/3 will implement for real. Routers and frontend components must never depend on
+  the fact that the data is mocked.
+- Frontend components never call fetch()/the API directly and never import services/.
+  Components call hooks (src/hooks/*) which call services/ (src/services/*), which call
+  the backend over HTTP. This indirection is what lets Phase 2/3 swap mock data for real
+  queries without touching any component.
